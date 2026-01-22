@@ -5,6 +5,8 @@
 //  Created by Gavriil Mikhailov on 22.01.2026.
 //
 
+import SwiftData
+import Swinject
 import UIKit
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -34,7 +36,12 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = rootController
         window?.makeKeyAndVisible()
 
-        appCoordinator = AppCoordinator(router: Router(navigationController: rootController))
+        let assembler = Assembler([DatabaseAssembly(), QuestionsGridAssembly()])
+
+        appCoordinator = AppCoordinator(
+            router: Router(navigationController: rootController),
+            resolver: assembler.resolver
+        )
         appCoordinator?.start()
     }
 }

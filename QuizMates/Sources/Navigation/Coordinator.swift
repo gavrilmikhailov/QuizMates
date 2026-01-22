@@ -5,16 +5,20 @@
 //  Created by Gavriil Mikhailov on 22.01.2026.
 //
 
+import Swinject
+
 class Coordinator {
 
     // MARK: - Internal properties
 
-    var router: Router
+    let router: Router
+    let resolver: Resolver
 
     // MARK: - Initializer
 
-    init(router: Router) {
+    init(router: Router, resolver: Resolver) {
         self.router = router
+        self.resolver = resolver
     }
 
     // MARK: - Internal methods

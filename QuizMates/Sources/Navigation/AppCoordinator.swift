@@ -16,7 +16,7 @@ final class AppCoordinator: Coordinator {
     // MARK: - Private methods
 
     private func showRoot() {
-        let view = QuestionsGridConfigurator().configure()
+        let view = resolver.resolve(QuestionsGridViewController.self)!
 
         router.setRootView(view)
     }

@@ -7,7 +7,14 @@
 
 import SwiftUI
 
+protocol QuestionsGridViewDelegate: AnyObject {
+}
+
 struct QuestionsGridView: View {
+
+    @Bindable var viewModel: QuestionsGridViewModel
+
+    weak var delegate: QuestionsGridViewDelegate?
 
     var body: some View {
         List {

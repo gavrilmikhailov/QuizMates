@@ -7,7 +7,27 @@
 
 import SwiftUI
 
+protocol QuestionsGridViewControllerProtocol: AnyObject {
+}
+
 final class QuestionsGridViewController: UIHostingController<QuestionsGridView> {
+
+    // MARK: - Private properties
+
+    private let interactor: QuestionsGridInteractorProtocol
+    private let viewModel: QuestionsGridViewModel
+
+    // MARK: - Initializer
+
+    init(interactor: QuestionsGridInteractorProtocol, viewModel: QuestionsGridViewModel, rootView: QuestionsGridView) {
+        self.interactor = interactor
+        self.viewModel = viewModel
+        super.init(rootView: rootView)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     // MARK: - UIViewController
 
@@ -40,4 +60,14 @@ final class QuestionsGridViewController: UIHostingController<QuestionsGridView> 
     @objc
     private func addButtonTapped() {
     }
+}
+
+// MARK: - QuestionsGridViewControllerProtocol
+
+extension QuestionsGridViewController: QuestionsGridViewControllerProtocol {
+}
+
+// MARK: - QuestionsGridViewDelegate
+
+extension QuestionsGridViewController: QuestionsGridViewDelegate {
 }
