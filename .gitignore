@@ -2,13 +2,11 @@
 .DS_Store
 
 # XCode project
-QuizMates.xcodeproj
-QuizMates.xcworkspace
+QuizMates.xcodeproj/
+QuizMates.xcworkspace/
 
 # Tuist
 Derived
 # Ignore the generated Xcode project and workspace files
-*.xcodeproj
-*.xcworkspace
 Tuist/.build
 Tuist/Package.resolved
