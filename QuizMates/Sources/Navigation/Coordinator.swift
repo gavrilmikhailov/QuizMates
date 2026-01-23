@@ -7,22 +7,15 @@
 
 import Swinject
 
-class Coordinator {
+protocol CoordinatorFinishDelegate: AnyObject {
+    func coordinatorDidFinish(childCoordinator: Coordinator)
+}
 
-    // MARK: - Internal properties
+protocol Coordinator: AnyObject {
+    var finisherDelegate: CoordinatorFinishDelegate? { get set }
+    var childCoordinators: [Coordinator] { get set }
+    var router: Router { get }
+    var resolver: Resolver { get }
 
-    let router: Router
-    let resolver: Resolver
-
-    // MARK: - Initializer
-
-    init(router: Router, resolver: Resolver) {
-        self.router = router
-        self.resolver = resolver
-    }
-
-    // MARK: - Internal methods
-
-    func start() {
-    }
+    func start()
 }
