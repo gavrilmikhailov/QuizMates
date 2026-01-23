@@ -34,7 +34,9 @@ final class QuestionsGridGamesListInteractor: QuestionsGridGamesListInteractorPr
     // MARK: - QuestionsGridGamesListInteractorProtocol
 
     func fetchGames() {
-        let descriptor = FetchDescriptor<QuestionsGridGameModel>(sortBy: [SortDescriptor(\.createdAt)])
+        let descriptor = FetchDescriptor<QuestionsGridGameModel>(
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
         do {
             games = try context.fetch(descriptor)
             presenter.presentGames(result: .success(games))
