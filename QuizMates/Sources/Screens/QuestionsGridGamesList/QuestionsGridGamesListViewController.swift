@@ -102,4 +102,23 @@ extension QuestionsGridGamesListViewController: QuestionsGridGamesListViewDelega
     func didTapCreateNewGame() {
         onAddNewGame?()
     }
+
+    func didSwipeToDeleteGame(model: QuestionsGridGameModel) {
+        let alert = UIAlertController(
+            title: "Подтверждение",
+            message: "Вы уверены, что хотите удалить эту игру?",
+            preferredStyle: .alert
+        )
+
+        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+            self?.interactor.deleteGame(model: model)
+            self?.interactor.fetchGames()
+        }
+        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+
+        alert.addAction(cancelAction)
+        alert.addAction(deleteAction)
+
+        present(alert, animated: true, completion: nil)
+    }
 }

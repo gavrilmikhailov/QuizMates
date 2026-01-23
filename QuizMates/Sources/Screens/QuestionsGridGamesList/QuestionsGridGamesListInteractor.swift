@@ -11,6 +11,7 @@ import SwiftData
 @MainActor
 protocol QuestionsGridGamesListInteractorProtocol: AnyObject {
     func fetchGames()
+    func deleteGame(model: QuestionsGridGameModel)
 }
 
 @MainActor
@@ -40,5 +41,10 @@ final class QuestionsGridGamesListInteractor: QuestionsGridGamesListInteractorPr
         } catch {
             presenter.presentGames(result: .failure(error))
         }
+    }
+
+    func deleteGame(model: QuestionsGridGameModel) {
+        context.delete(model)
+        try? context.save()
     }
 }

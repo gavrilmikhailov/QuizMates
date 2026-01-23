@@ -10,6 +10,7 @@ import SwiftUI
 @MainActor
 protocol QuestionsGridGamesListViewDelegate: AnyObject {
     func didTapCreateNewGame()
+    func didSwipeToDeleteGame(model: QuestionsGridGameModel)
 }
 
 struct QuestionsGridGamesListView: View {
@@ -24,11 +25,22 @@ struct QuestionsGridGamesListView: View {
             loadingView
         case .normal:
             if !viewModel.games.isEmpty {
-                ScrollView(.vertical) {
-                    ForEach(viewModel.games) { game in
+                List {
+                    ForEach(viewModel.games, id: \.id) { game in
                         VStack(alignment: .leading, spacing: 0) {
                             Text(game.name)
                             Text(game.createdAt.description)
+                        }
+                        .swipeActions(allowsFullSwipe: true) {
+                            Button(
+                                action: {
+                                    delegate?.didSwipeToDeleteGame(model: game)
+                                },
+                                label: {
+                                    Label("Удалить", systemImage: "trash.fill")
+                                }
+                            )
+                            .tint(.red)
                         }
                     }
                 }
