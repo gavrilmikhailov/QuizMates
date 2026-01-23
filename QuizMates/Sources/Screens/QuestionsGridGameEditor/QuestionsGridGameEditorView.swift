@@ -17,6 +17,15 @@ struct QuestionsGridGameEditorView: View {
     weak var delegate: QuestionsGridGameEditorViewDelegate?
 
     var body: some View {
-        EmptyView()
+        ScrollView(.vertical) {
+            Button(
+                action: {
+                    print("TODO: Save")
+                },
+                label: {
+                    Text("Сохранить")
+                }
+            )
+        }
     }
 }

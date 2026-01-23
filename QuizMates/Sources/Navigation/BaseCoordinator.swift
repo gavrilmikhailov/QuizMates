@@ -6,13 +6,13 @@
 //
 
 import UIKit
-import Swinject
+@preconcurrency import Swinject
 
+@MainActor
 class BaseCoordinator: Coordinator {
 
     // MARK: - Internal properties
 
-    weak var finisherDelegate: CoordinatorFinishDelegate?
     var childCoordinators: [Coordinator] = []
     let router: Router
     let resolver: Resolver

@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 protocol QuestionsGridGamesListViewControllerProtocol: AnyObject {
     func displayGames(result: Result<[QuestionsGridGameModel], Error>)
 }

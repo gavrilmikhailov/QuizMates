@@ -6,7 +6,7 @@
 //
 
 import SwiftData
-import Swinject
+@preconcurrency import Swinject
 import UIKit
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {

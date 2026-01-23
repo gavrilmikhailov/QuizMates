@@ -5,14 +5,10 @@
 //  Created by Gavriil Mikhailov on 22.01.2026.
 //
 
-import Swinject
+@preconcurrency import Swinject
 
-protocol CoordinatorFinishDelegate: AnyObject {
-    func coordinatorDidFinish(childCoordinator: Coordinator)
-}
-
+@MainActor
 protocol Coordinator: AnyObject {
-    var finisherDelegate: CoordinatorFinishDelegate? { get set }
     var childCoordinators: [Coordinator] { get set }
     var router: Router { get }
     var resolver: Resolver { get }

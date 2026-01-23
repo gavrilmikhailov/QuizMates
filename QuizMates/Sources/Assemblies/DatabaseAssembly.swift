@@ -6,7 +6,7 @@
 //
 
 import SwiftData
-import Swinject
+@preconcurrency import Swinject
 
 final class DatabaseAssembly: Assembly {
 

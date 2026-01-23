@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 protocol QuestionsGridGamesListViewDelegate: AnyObject {
     func didTapCreateNewGame()
 }

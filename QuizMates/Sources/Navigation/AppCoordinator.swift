@@ -5,6 +5,7 @@
 //  Created by Gavriil Mikhailov on 22.01.2026.
 //
 
+@MainActor
 final class AppCoordinator: BaseCoordinator {
 
     // MARK: - Internal properties

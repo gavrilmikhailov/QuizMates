@@ -7,15 +7,15 @@
 
 import UIKit
 
-private var observerKey: UInt8 = 0
-
 extension UIViewController {
+
+    private static var observerKey: UInt8 = 0
 
     // Binding the observer to controller's lifecycle
     func onDeinit(_ closure: @escaping () -> Void) {
         objc_setAssociatedObject(
             self,
-            &observerKey,
+            &UIViewController.observerKey,
             DeinitObserver(identifier: "\(type(of: self))", onDeinit: closure),
             .OBJC_ASSOCIATION_RETAIN_NONATOMIC
         )

@@ -6,6 +6,7 @@ let teamId = "6PWFL227LZ"
 let deploymentTarget = "17.0"
 let bundleId = "gmikay.quiz.mates"
 let name = "Quiz Games"
+let swiftVersion = "6.2.3"
 
 let project = Project(
     name: "QuizMates",
@@ -79,7 +80,15 @@ let project = Project(
             settings: .settings(
                 base: SettingsDictionary()
                     .marketingVersion(versionNumber)
-                    .currentProjectVersion(buildNumber),
+                    .currentProjectVersion(buildNumber)
+                    .swiftVersion(swiftVersion)
+                    .merging(
+                        [
+                            "SWIFT_STRICT_CONCURRENCY": "complete",
+                            "ENABLE_GLOBAL_CONCURRENCY": true,
+                            "ENABLE_NONISOLATED_NONSENDING_BY_DEFAULT": true
+                        ]
+                    ),
                 configurations: [
                     .debug(
                         name: "Debug",

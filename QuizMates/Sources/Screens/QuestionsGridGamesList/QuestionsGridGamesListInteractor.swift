@@ -8,10 +8,12 @@
 import Foundation
 import SwiftData
 
+@MainActor
 protocol QuestionsGridGamesListInteractorProtocol: AnyObject {
     func fetchGames()
 }
 
+@MainActor
 final class QuestionsGridGamesListInteractor: QuestionsGridGamesListInteractorProtocol {
 
     // MARK: - Private properties
