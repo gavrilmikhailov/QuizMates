@@ -99,6 +99,6 @@ extension QuestionsGridGamesListViewController: QuestionsGridGamesListViewContro
 extension QuestionsGridGamesListViewController: QuestionsGridGamesListViewDelegate {
 
     func didTapCreateNewGame() {
-        print("TODO: Create game")
+        onAddNewGame?()
     }
 }
