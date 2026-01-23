@@ -28,11 +28,24 @@ final class QuestionsGridAssembly: Assembly {
                 presenter.view = view
                 return view
             }
-            
             container.register(QuestionsGridGameEditorViewController.self) { resolver in
                 let context = resolver.resolve(ModelContext.self)!
                 let presenter = QuestionsGridGameEditorPresenter()
-                let interactor = QuestionsGridGameEditorInteractor(presenter: presenter, context: context)
+                let interactor = QuestionsGridGameEditorInteractor(presenter: presenter, context: context, model: nil)
+                let viewModel = QuestionsGridGameEditorViewModel()
+                let view = QuestionsGridGameEditorViewController(
+                    interactor: interactor,
+                    viewModel: viewModel,
+                    rootView: QuestionsGridGameEditorView(viewModel: viewModel)
+                )
+                view.rootView.delegate = view
+                presenter.view = view
+                return view
+            }
+            container.register(QuestionsGridGameEditorViewController.self) { (resolver: Resolver, model: QuestionsGridGameModel) in
+                let context = resolver.resolve(ModelContext.self)!
+                let presenter = QuestionsGridGameEditorPresenter()
+                let interactor = QuestionsGridGameEditorInteractor(presenter: presenter, context: context, model: model)
                 let viewModel = QuestionsGridGameEditorViewModel()
                 let view = QuestionsGridGameEditorViewController(
                     interactor: interactor,

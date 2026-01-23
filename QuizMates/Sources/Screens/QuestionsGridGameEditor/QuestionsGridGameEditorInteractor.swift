@@ -8,7 +8,7 @@
 import SwiftData
 
 protocol QuestionsGridGameEditorInteractorProtocol {
-    func createNewGame()
+    func createNewGameIfNeeded()
 }
 
 final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractorProtocol {
@@ -17,17 +17,22 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
 
     private let presenter: QuestionsGridGameEditorPresenterProtocol
     private let context: ModelContext
+    private let model: QuestionsGridGameModel?
 
     // MARK: - Initializer
 
-    init(presenter: QuestionsGridGameEditorPresenterProtocol, context: ModelContext) {
+    init(presenter: QuestionsGridGameEditorPresenterProtocol, context: ModelContext, model: QuestionsGridGameModel?) {
         self.presenter = presenter
         self.context = context
+        self.model = model
     }
 
     // MARK: - QuestionsGridGameEditorInteractorProtocol
 
-    func createNewGame() {
+    func createNewGameIfNeeded() {
+        guard model == nil else {
+            return
+        }
         let defaultName = generateDefaultGameName()
         let newGame = QuestionsGridGameModel(name: defaultName, topics: [], createdAt: .now)
         context.insert(newGame)

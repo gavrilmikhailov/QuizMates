@@ -38,7 +38,7 @@ final class QuestionsGridGameEditorViewController: UIHostingController<Questions
     override func viewDidLoad() {
         super.viewDidLoad()
         configureAppearance()
-        interactor.createNewGame()
+        interactor.createNewGameIfNeeded()
     }
 
     // MARK: - Private methods

@@ -17,6 +17,7 @@ final class QuestionsGridGamesListViewController: UIHostingController<QuestionsG
     // MARK: - Internal properties
 
     var onAddNewGame: (() -> Void)?
+    var onOpenGame: ((QuestionsGridGameModel) -> Void)?
 
     // MARK: - Private properties
 
@@ -101,6 +102,10 @@ extension QuestionsGridGamesListViewController: QuestionsGridGamesListViewDelega
 
     func didTapCreateNewGame() {
         onAddNewGame?()
+    }
+
+    func didTapGame(model: QuestionsGridGameModel) {
+        onOpenGame?(model)
     }
 
     func didSwipeToDeleteGame(model: QuestionsGridGameModel) {
