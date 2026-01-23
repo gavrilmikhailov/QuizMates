@@ -7,17 +7,21 @@
 
 import SwiftData
 
+@MainActor
 protocol QuestionsGridGameEditorInteractorProtocol {
     func createNewGameIfNeeded()
+    func loadGameName()
+    func updateGameName(name: String)
 }
 
+@MainActor
 final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractorProtocol {
 
     // MARK: - Private properties
 
     private let presenter: QuestionsGridGameEditorPresenterProtocol
     private let context: ModelContext
-    private let model: QuestionsGridGameModel?
+    private var model: QuestionsGridGameModel?
 
     // MARK: - Initializer
 
@@ -35,7 +39,18 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
         }
         let defaultName = generateDefaultGameName()
         let newGame = QuestionsGridGameModel(name: defaultName, topics: [], createdAt: .now)
+        model = newGame
         context.insert(newGame)
+        try? context.save()
+    }
+
+    func loadGameName() {
+        let name = model?.name ?? ""
+        presenter.presentGameName(name: name)
+    }
+
+    func updateGameName(name: String) {
+        model?.name = name
         try? context.save()
     }
 

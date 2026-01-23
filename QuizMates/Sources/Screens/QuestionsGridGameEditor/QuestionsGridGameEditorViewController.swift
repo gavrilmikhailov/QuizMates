@@ -7,7 +7,9 @@
 
 import SwiftUI
 
+@MainActor
 protocol QuestionsGridGameEditorViewControllerProtocol: AnyObject {
+    func displayGameName(name: String)
 }
 
 final class QuestionsGridGameEditorViewController: UIHostingController<QuestionsGridGameEditorView> {
@@ -39,22 +41,35 @@ final class QuestionsGridGameEditorViewController: UIHostingController<Questions
         super.viewDidLoad()
         configureAppearance()
         interactor.createNewGameIfNeeded()
+        interactor.loadGameName()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.prefersLargeTitles = false
     }
 
     // MARK: - Private methods
 
     private func configureAppearance() {
         view.backgroundColor = .systemBackground
-        title = ""
     }
 }
 
 // MARK: - QuestionsGridGameEditorViewControllerProtocol
 
 extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewControllerProtocol {
+
+    func displayGameName(name: String) {
+        viewModel.name = name
+    }
 }
 
 // MARK: - QuestionsGridGameEditorViewDelegate
 
 extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewDelegate {
+
+    func didSumbitNewGameName(name: String) {
+        interactor.updateGameName(name: name)
+    }
 }

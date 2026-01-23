@@ -9,4 +9,5 @@ import Observation
 
 @Observable
 final class QuestionsGridGameEditorViewModel {
+    var name: String = ""
 }
