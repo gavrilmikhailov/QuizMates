@@ -28,8 +28,21 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
     // MARK: - QuestionsGridGameEditorInteractorProtocol
 
     func createNewGame() {
-        let newGame = QuestionsGridGameModel(name: "", topics: [], createdAt: .now)
+        let defaultName = generateDefaultGameName()
+        let newGame = QuestionsGridGameModel(name: defaultName, topics: [], createdAt: .now)
         context.insert(newGame)
         try? context.save()
+    }
+
+    // MARK: - Private methods
+
+    private func generateDefaultGameName() -> String {
+        let numberOfGames = try? context.fetchCount(FetchDescriptor<QuestionsGridGameModel>())
+        let newGameNumber = if let numberOfGames, numberOfGames > 0 {
+            numberOfGames + 1
+        } else {
+            1
+        }
+        return "Игра №\(newGameNumber)"
     }
 }
