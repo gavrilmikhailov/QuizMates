@@ -68,12 +68,30 @@ final class QuestionsGridAssembly: Assembly {
                 interactor.view = view
                 return view
             }
-            container.register(QuestionsGridQuestionEditorViewController.self) { resolver in
-                let interactor = QuestionsGridQuestionEditorInteractor()
+            container.register(QuestionsGridQuestionEditorViewController.self) { (resolver: Resolver, topic: QuestionsGridTopicModel) in
+                let interactor = QuestionsGridQuestionEditorInteractor(topic: topic, question: nil)
                 let viewModel = QuestionsGridQuestionEditorViewModel()
                 let view = QuestionsGridQuestionEditorViewController(
                     interactor: interactor,
                     viewModel: viewModel,
+                    isNew: true,
+                    rootView: QuestionsGridQuestionEditorView(viewModel: viewModel)
+                )
+                view.rootView.delegate = view
+                interactor.view = view
+                return view
+            }
+            container.register(QuestionsGridQuestionEditorViewController.self) { (resolver: Resolver, topic: QuestionsGridTopicModel, question: QuestionsGridQuestionModel) in
+                let interactor = QuestionsGridQuestionEditorInteractor(topic: topic, question: question)
+                let viewModel = QuestionsGridQuestionEditorViewModel(
+                    questionText: question.text,
+                    questionAnswer: question.answer,
+                    questionPrice: question.price
+                )
+                let view = QuestionsGridQuestionEditorViewController(
+                    interactor: interactor,
+                    viewModel: viewModel,
+                    isNew: false,
                     rootView: QuestionsGridQuestionEditorView(viewModel: viewModel)
                 )
                 view.rootView.delegate = view

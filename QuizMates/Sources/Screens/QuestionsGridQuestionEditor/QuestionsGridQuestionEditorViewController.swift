@@ -8,8 +8,13 @@
 import SwiftUI
 
 @MainActor
+protocol QuestionsGridQuestionEditorDelegate: AnyObject {
+    func didSubmitQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel, isNew: Bool)
+}
+
+@MainActor
 protocol QuestionsGridQuestionEditorViewControllerProtocol: AnyObject {
-    func displaySubmitQuestion(question: QuestionsGridQuestionModel)
+    func displaySubmitQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel)
 }
 
 final class QuestionsGridQuestionEditorViewController: UIHostingController<QuestionsGridQuestionEditorView> {
@@ -17,22 +22,25 @@ final class QuestionsGridQuestionEditorViewController: UIHostingController<Quest
     // MARK: - Internal properties
 
     var onClose: (() -> Void)?
-    var onSubmit: ((QuestionsGridQuestionModel) -> Void)?
+    weak var delegate: QuestionsGridQuestionEditorDelegate?
 
     // MARK: - Private properties
 
     private let interactor: QuestionsGridQuestionEditorInteractorProtocol
     private let viewModel: QuestionsGridQuestionEditorViewModel
+    private let isNew: Bool
 
     // MARK: - Initializer
 
     init(
         interactor: QuestionsGridQuestionEditorInteractorProtocol,
         viewModel: QuestionsGridQuestionEditorViewModel,
+        isNew: Bool,
         rootView: QuestionsGridQuestionEditorView
     ) {
         self.interactor = interactor
         self.viewModel = viewModel
+        self.isNew = isNew
         super.init(rootView: rootView)
     }
 
@@ -92,8 +100,9 @@ final class QuestionsGridQuestionEditorViewController: UIHostingController<Quest
 
 extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditorViewControllerProtocol {
 
-    func displaySubmitQuestion(question: QuestionsGridQuestionModel) {
-        onSubmit?(question)
+    func displaySubmitQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel) {
+        delegate?.didSubmitQuestion(question: question, topic: topic, isNew: isNew)
+        onClose?()
     }
 }
 

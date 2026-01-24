@@ -15,6 +15,7 @@ protocol QuestionsGridGameEditorInteractorProtocol {
     func updateGameName(name: String)
     func addNewTopic(topic: QuestionsGridTopicModel)
     func addNewQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel)
+    func updateQuestion(question: QuestionsGridQuestionModel)
 }
 
 @MainActor
@@ -71,6 +72,10 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
 
     func addNewQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel) {
         topic.questions.append(question)
+        try? context.save()
+    }
+
+    func updateQuestion(question: QuestionsGridQuestionModel) {
         try? context.save()
     }
 

@@ -19,12 +19,24 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
 
     // MARK: - Private properties
 
-    private lazy var question = QuestionsGridQuestionModel(
-        text: "",
-        answer: "",
-        price: 50,
-        isAnswered: false
-    )
+    private let topic: QuestionsGridTopicModel
+    private let question: QuestionsGridQuestionModel
+
+    // MARK: - Initializer
+
+    init(topic: QuestionsGridTopicModel, question: QuestionsGridQuestionModel?) {
+        self.topic = topic
+        if let question {
+            self.question = question
+        } else {
+            self.question = QuestionsGridQuestionModel(
+                text: "",
+                answer: "",
+                price: 50,
+                isAnswered: false
+            )
+        }
+    }
 
     // MARK: - QuestionsGridQuestionEditorInteractorProtocol
 
@@ -33,6 +45,6 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
         question.answer = answer
         question.price = price
         
-        view?.displaySubmitQuestion(question: question)
+        view?.displaySubmitQuestion(question: question, topic: topic)
     }
 }

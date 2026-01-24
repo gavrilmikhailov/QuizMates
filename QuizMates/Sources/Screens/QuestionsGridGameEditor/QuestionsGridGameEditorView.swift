@@ -11,7 +11,9 @@ import SwiftUI
 protocol QuestionsGridGameEditorViewDelegate: AnyObject {
     func didSumbitNewGameName(name: String)
     func didTapCreateNewTopic()
+    func didTapEditTopic(topic: QuestionsGridTopicModel)
     func didTapCreateNewQuestion(topic: QuestionsGridTopicModel)
+    func didTapEditQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel)
 }
 
 struct QuestionsGridGameEditorView: View {
@@ -27,8 +29,13 @@ struct QuestionsGridGameEditorView: View {
             gameNameView
                 .padding(top: 16, leading: 16, bottom: 0, trailing: 16)
 
-            gameTopicsView
-                .padding(top: 24, leading: 16, bottom: 0, trailing: 16)
+            if !viewModel.topics.isEmpty {
+                gameTopicsView
+                    .padding(top: 24, leading: 16, bottom: 0, trailing: 16)
+            } else {
+                emptyView
+                    .padding(top: 40)
+            }
         }
         .contentShape(Rectangle())
         .onTapGesture {
@@ -72,57 +79,70 @@ struct QuestionsGridGameEditorView: View {
 
     @ViewBuilder
     private var gameTopicsView: some View {
-        if !viewModel.topics.isEmpty {
-            Grid {
-                ForEach(viewModel.topics) { topic in
-                    GridRow {
-                        Text(topic.name)
-                        ForEach(topic.questions.sorted(by: { $0.price < $1.price })) { question in
-                            Text(question.price.description)
-                        }
-                        Button(
-                            action: {
-                                delegate?.didTapCreateNewQuestion(topic: topic)
-                            },
-                            label: {
-                                Label("Новый вопрос", systemImage: "plus")
-                            }
-                        )
-                    }
-                    Divider()
-                }
+        Grid {
+            ForEach(viewModel.topics) { topic in
                 GridRow {
                     Button(
                         action: {
-                            delegate?.didTapCreateNewTopic()
+                            delegate?.didTapEditTopic(topic: topic)
                         },
                         label: {
-                            Label("Новая тема", systemImage: "plus")
+                            Text(topic.name)
                         }
                     )
-                }
-            }
-        } else {
-            ContentUnavailableView(
-                label: {
-                    Label("Нет тем", systemImage: "folder.badge.questionmark")
-                },
-                description: {
-                    Text("Вы еще не создали ни одной темы для вопросов")
-                },
-                actions: {
+                    ForEach(topic.questions.sorted(by: { $0.price < $1.price })) { question in
+                        Button(
+                            action: {
+                                delegate?.didTapEditQuestion(question: question, topic: topic)
+                            },
+                            label: {
+                                Text(question.price.description)
+                            }
+                        )
+                    }
                     Button(
                         action: {
-                            delegate?.didTapCreateNewTopic()
+                            delegate?.didTapCreateNewQuestion(topic: topic)
                         },
                         label: {
-                            Label("Добавить новую тему", systemImage: "plus")
+                            Label("Новый вопрос", systemImage: "plus")
                         }
                     )
                 }
-            )
-            .padding(top: 40)
+                Divider()
+            }
+            GridRow {
+                Button(
+                    action: {
+                        delegate?.didTapCreateNewTopic()
+                    },
+                    label: {
+                        Label("Новая тема", systemImage: "plus")
+                    }
+                )
+            }
         }
+    }
+
+    private var emptyView: some View {
+        ContentUnavailableView(
+            label: {
+                Label("Нет тем", systemImage: "folder.badge.questionmark")
+            },
+            description: {
+                Text("Вы еще не создали ни одной темы для вопросов")
+            },
+            actions: {
+                Button(
+                    action: {
+                        delegate?.didTapCreateNewTopic()
+                    },
+                    label: {
+                        Label("Добавить новую тему", systemImage: "plus")
+                    }
+                )
+            }
+        )
     }
 
     private func toggleNameEditing(isOn: Bool) {

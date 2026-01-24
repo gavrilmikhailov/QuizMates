@@ -47,9 +47,7 @@ final class AppCoordinator: BaseCoordinator {
             }
         }
         view.onAddNewQuestion = { [weak self, weak view] topic in
-            self?.showNewQuestion { question in
-                view?.addNewQuestion(question: question, topic: topic)
-            }
+            self?.showEditQuestion(question: nil, topic: topic, delegate: view)
         }
 
         router.pushView(view, animated: true, hideBottomBar: true)
@@ -64,9 +62,10 @@ final class AppCoordinator: BaseCoordinator {
             }
         }
         view.onAddNewQuestion = { [weak self, weak view] topic in
-            self?.showNewQuestion { question in
-                view?.addNewQuestion(question: question, topic: topic)
-            }
+            self?.showEditQuestion(question: nil, topic: topic, delegate: view)
+        }
+        view.onEditQuestion = { [weak self, weak view] question, topic in
+            self?.showEditQuestion(question: question, topic: topic, delegate: view)
         }
 
         router.pushView(view, animated: true, hideBottomBar: true)
@@ -88,16 +87,20 @@ final class AppCoordinator: BaseCoordinator {
         router.presentView(nav, animated: true, completion: nil)
     }
 
-    private func showNewQuestion(onSubmit: ((QuestionsGridQuestionModel) -> Void)?) {
-        let view = resolver.resolve(QuestionsGridQuestionEditorViewController.self)!
-        
+    private func showEditQuestion(
+        question: QuestionsGridQuestionModel?,
+        topic: QuestionsGridTopicModel,
+        delegate: QuestionsGridQuestionEditorDelegate?
+    ) {
+        let view: QuestionsGridQuestionEditorViewController = if let question {
+            resolver.resolve(QuestionsGridQuestionEditorViewController.self, arguments: topic, question)!
+        } else {
+            resolver.resolve(QuestionsGridQuestionEditorViewController.self, argument: topic)!
+        }
+        view.delegate = delegate
+
         view.onClose = { [weak self] in
             self?.router.dismissView(animated: true, completion: nil)
-        }
-        view.onSubmit = { [weak self] question in
-            self?.router.dismissView(animated: true) {
-                onSubmit?(question)
-            }
         }
 
         let nav = UINavigationController(rootViewController: view)

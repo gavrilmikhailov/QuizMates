@@ -18,7 +18,9 @@ final class QuestionsGridGameEditorViewController: UIHostingController<Questions
     // MARK: - Internal properties
 
     var onAddNewTopic: (() -> Void)?
+    var onEditTopic: ((QuestionsGridTopicModel) -> Void)?
     var onAddNewQuestion: ((QuestionsGridTopicModel) -> Void)?
+    var onEditQuestion: ((QuestionsGridQuestionModel, QuestionsGridTopicModel) -> Void)?
 
     // MARK: - Private properties
 
@@ -67,11 +69,6 @@ final class QuestionsGridGameEditorViewController: UIHostingController<Questions
         interactor.loadGameTopics()
     }
 
-    func addNewQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel) {
-        interactor.addNewQuestion(question: question, topic: topic)
-        interactor.loadGameTopics()
-    }
-
     // MARK: - Private methods
 
     private func configureAppearance() {
@@ -104,7 +101,29 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewDele
         onAddNewTopic?()
     }
 
+    func didTapEditTopic(topic: QuestionsGridTopicModel) {
+        onEditTopic?(topic)
+    }
+
     func didTapCreateNewQuestion(topic: QuestionsGridTopicModel) {
         onAddNewQuestion?(topic)
+    }
+
+    func didTapEditQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel) {
+        onEditQuestion?(question, topic)
+    }
+}
+
+// MARK: - QuestionsGridQuestionEditorDelegate
+
+extension QuestionsGridGameEditorViewController: QuestionsGridQuestionEditorDelegate {
+
+    func didSubmitQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel, isNew: Bool) {
+        if isNew {
+            interactor.addNewQuestion(question: question, topic: topic)
+        } else {
+            interactor.updateQuestion(question: question)
+        }
+        interactor.loadGameTopics()
     }
 }
