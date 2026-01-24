@@ -58,16 +58,6 @@ final class QuestionsGridGameEditorViewController: UIHostingController<Questions
         navigationController?.navigationBar.prefersLargeTitles = false
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-
-    // MARK: - Internal methods
-
-    func addNewTopic(topic: QuestionsGridTopicModel) {
-
-    }
-
     // MARK: - Private methods
 
     private func configureAppearance() {
@@ -104,12 +94,50 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewDele
         onEditTopic?(topic, interactor.game)
     }
 
+    func didTapDeleteTopic(topic: QuestionsGridTopicModel) {
+        let alert = UIAlertController(
+            title: "Подтверждение",
+            message: "Вы уверены, что хотите удалить эту тему?\nВсе вопросы из этой темы будут также удалены",
+            preferredStyle: .alert
+        )
+
+        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+            self?.interactor.deleteTopic(topic: topic)
+            self?.interactor.loadGameTopics()
+        }
+        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+
+        alert.addAction(cancelAction)
+        alert.addAction(deleteAction)
+
+        present(alert, animated: true, completion: nil)
+    }
+
     func didTapCreateNewQuestion(topic: QuestionsGridTopicModel) {
         onAddNewQuestion?(topic)
     }
 
     func didTapEditQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel) {
         onEditQuestion?(question, topic)
+    }
+
+    func didTapDeleteQuestion(question: QuestionsGridQuestionModel) {
+        let alert = UIAlertController(
+            title: "Подтверждение",
+            message: "Вы уверены, что хотите удалить этот вопрос?",
+            preferredStyle: .alert
+        )
+
+        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+            self?.interactor.deleteQuestion(question: question)
+            self?.interactor.loadGameTopics()
+        }
+        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+
+        alert.addAction(cancelAction)
+        alert.addAction(deleteAction)
+
+        present(alert, animated: true, completion: nil)
     }
 }
 

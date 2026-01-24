@@ -12,8 +12,10 @@ protocol QuestionsGridGameEditorViewDelegate: AnyObject {
     func didSumbitNewGameName(name: String)
     func didTapCreateNewTopic()
     func didTapEditTopic(topic: QuestionsGridTopicModel)
+    func didTapDeleteTopic(topic: QuestionsGridTopicModel)
     func didTapCreateNewQuestion(topic: QuestionsGridTopicModel)
     func didTapEditQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel)
+    func didTapDeleteQuestion(question: QuestionsGridQuestionModel)
 }
 
 struct QuestionsGridGameEditorView: View {
@@ -90,6 +92,13 @@ struct QuestionsGridGameEditorView: View {
                             Text(topic.name)
                         }
                     )
+                    .contextMenu {
+                        Button(role: .destructive) {
+                            delegate?.didTapDeleteTopic(topic: topic)
+                        } label: {
+                            Label("Удалить", systemImage: "trash")
+                        }
+                    }
                     ForEach(topic.questions.sorted(by: { $0.price < $1.price })) { question in
                         Button(
                             action: {
@@ -99,6 +108,13 @@ struct QuestionsGridGameEditorView: View {
                                 Text(question.price.description)
                             }
                         )
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                delegate?.didTapDeleteQuestion(question: question)
+                            } label: {
+                                Label("Удалить", systemImage: "trash")
+                            }
+                        }
                     }
                     Button(
                         action: {
