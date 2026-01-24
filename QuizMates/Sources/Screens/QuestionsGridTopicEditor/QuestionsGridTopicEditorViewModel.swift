@@ -9,5 +9,9 @@ import Observation
 
 @Observable
 final class QuestionsGridTopicEditorViewModel {
-    var name: String = ""
+    var name: String
+
+    init(name: String = "") {
+        self.name = name
+    }
 }

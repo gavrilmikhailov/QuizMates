@@ -26,10 +26,10 @@ final class AppCoordinator: BaseCoordinator {
         let view = resolver.resolve(QuestionsGridGamesListViewController.self)!
 
         view.onAddNewGame = { [weak self] in
-            self?.showNewGame()
+            self?.showEditGame(game: nil)
         }
-        view.onOpenGame = { [weak self] model in
-            self?.showEditGame(model: model)
+        view.onOpenGame = { [weak self] game in
+            self?.showEditGame(game: game)
         }
         view.onDeinit { [weak self] in
             self?.onFinish?()
@@ -38,28 +38,18 @@ final class AppCoordinator: BaseCoordinator {
         router.setRootView(view)
     }
 
-    private func showNewGame() {
-        let view = resolver.resolve(QuestionsGridGameEditorViewController.self)!
-
-        view.onAddNewTopic = { [weak self, weak view] in
-            self?.showNewTopic { topic in
-                view?.addNewTopic(topic: topic)
-            }
-        }
-        view.onAddNewQuestion = { [weak self, weak view] topic in
-            self?.showEditQuestion(question: nil, topic: topic, delegate: view)
+    private func showEditGame(game: QuestionsGridGameModel?) {
+        let view: QuestionsGridGameEditorViewController = if let game {
+            resolver.resolve(QuestionsGridGameEditorViewController.self, argument: game)!
+        } else {
+            resolver.resolve(QuestionsGridGameEditorViewController.self)!
         }
 
-        router.pushView(view, animated: true, hideBottomBar: true)
-    }
-
-    private func showEditGame(model: QuestionsGridGameModel) {
-        let view = resolver.resolve(QuestionsGridGameEditorViewController.self, argument: model)!
-
-        view.onAddNewTopic = { [weak self, weak view] in
-            self?.showNewTopic { topic in
-                view?.addNewTopic(topic: topic)
-            }
+        view.onAddNewTopic = { [weak self, weak view] game in
+            self?.showEditTopic(topic: nil, game: game, delegate: view)
+        }
+        view.onEditTopic = { [weak self, weak view] topic, game in
+            self?.showEditTopic(topic: topic, game: game, delegate: view)
         }
         view.onAddNewQuestion = { [weak self, weak view] topic in
             self?.showEditQuestion(question: nil, topic: topic, delegate: view)
@@ -71,16 +61,20 @@ final class AppCoordinator: BaseCoordinator {
         router.pushView(view, animated: true, hideBottomBar: true)
     }
 
-    private func showNewTopic(onSubmit: ((QuestionsGridTopicModel) -> Void)?) {
-        let view = resolver.resolve(QuestionsGridTopicEditorViewController.self)!
+    private func showEditTopic(
+        topic: QuestionsGridTopicModel?,
+        game: QuestionsGridGameModel,
+        delegate: QuestionsGridTopicEditorDelegate?
+    ) {
+        let view: QuestionsGridTopicEditorViewController = if let topic {
+            resolver.resolve(QuestionsGridTopicEditorViewController.self, arguments: game, topic)!
+        } else {
+            resolver.resolve(QuestionsGridTopicEditorViewController.self, argument: game)!
+        }
 
+        view.delegate = delegate
         view.onClose = { [weak self] in
             self?.router.dismissView(animated: true, completion: nil)
-        }
-        view.onSubmit = { [weak self] topic in
-            self?.router.dismissView(animated: true) {
-                onSubmit?(topic)
-            }
         }
 
         let nav = UINavigationController(rootViewController: view)

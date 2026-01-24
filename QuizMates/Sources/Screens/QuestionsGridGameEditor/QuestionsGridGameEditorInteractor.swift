@@ -9,11 +9,14 @@ import SwiftData
 
 @MainActor
 protocol QuestionsGridGameEditorInteractorProtocol {
+    var game: QuestionsGridGameModel { get }
+
     func createNewGameIfNeeded()
     func loadGameName()
     func loadGameTopics()
     func updateGameName(name: String)
-    func addNewTopic(topic: QuestionsGridTopicModel)
+    func addNewTopic(topic: QuestionsGridTopicModel, game: QuestionsGridGameModel)
+    func updateTopic(topic: QuestionsGridTopicModel)
     func addNewQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel)
     func updateQuestion(question: QuestionsGridQuestionModel)
 }
@@ -25,48 +28,52 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
 
     private let presenter: QuestionsGridGameEditorPresenterProtocol
     private let context: ModelContext
-    private var model: QuestionsGridGameModel?
+    var game: QuestionsGridGameModel
+    private let isNew: Bool
 
     // MARK: - Initializer
 
-    init(presenter: QuestionsGridGameEditorPresenterProtocol, context: ModelContext, model: QuestionsGridGameModel?) {
+    init(presenter: QuestionsGridGameEditorPresenterProtocol, context: ModelContext, game: QuestionsGridGameModel?) {
         self.presenter = presenter
         self.context = context
-        self.model = model
+        if let game {
+            self.game = game
+        } else {
+            self.game = QuestionsGridGameModel(name: "", topics: [], createdAt: .now)
+        }
+        self.isNew = game == nil
     }
 
     // MARK: - QuestionsGridGameEditorInteractorProtocol
 
     func createNewGameIfNeeded() {
-        guard model == nil else {
+        guard isNew else {
             return
         }
-        let defaultName = generateDefaultGameName()
-        let newGame = QuestionsGridGameModel(name: defaultName, topics: [], createdAt: .now)
-        model = newGame
-        context.insert(newGame)
+        game.name = generateDefaultGameName()
+        context.insert(game)
         try? context.save()
     }
 
     func loadGameName() {
-        guard let model else {
-            return
-        }
-        presenter.presentGameName(name: model.name)
+        presenter.presentGameName(name: game.name)
     }
 
     func loadGameTopics() {
-        let topics = model?.topics ?? []
-        presenter.presentGameTopics(topics: topics)
+        presenter.presentGameTopics(topics: game.topics)
     }
 
     func updateGameName(name: String) {
-        model?.name = name
+        game.name = name
         try? context.save()
     }
 
-    func addNewTopic(topic: QuestionsGridTopicModel) {
-        model?.topics.append(topic)
+    func addNewTopic(topic: QuestionsGridTopicModel, game: QuestionsGridGameModel) {
+        game.topics.append(topic)
+        try? context.save()
+    }
+
+    func updateTopic(topic: QuestionsGridTopicModel) {
         try? context.save()
     }
 

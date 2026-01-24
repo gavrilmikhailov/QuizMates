@@ -8,8 +8,13 @@
 import SwiftUI
 
 @MainActor
+protocol QuestionsGridTopicEditorDelegate: AnyObject {
+    func didSubmitTopic(topic: QuestionsGridTopicModel, game: QuestionsGridGameModel, isNew: Bool)
+}
+
+@MainActor
 protocol QuestionsGridTopicEditorViewControllerProtocol: AnyObject {
-    func displaySubmitNewTopicName(topic: QuestionsGridTopicModel)
+    func displaySubmitTopic(topic: QuestionsGridTopicModel, game: QuestionsGridGameModel)
 }
 
 final class QuestionsGridTopicEditorViewController: UIHostingController<QuestionsGridTopicEditorView> {
@@ -17,22 +22,25 @@ final class QuestionsGridTopicEditorViewController: UIHostingController<Question
     // MARK: - Internal properties
 
     var onClose: (() -> Void)?
-    var onSubmit: ((QuestionsGridTopicModel) -> Void)?
+    weak var delegate: QuestionsGridTopicEditorDelegate?
 
     // MARK: - Private properties
 
     private let interactor: QuestionsGridTopicEditorInteractorProtocol
     private let viewModel: QuestionsGridTopicEditorViewModel
+    private let isNew: Bool
 
     // MARK: - Initializer
 
     init(
         interactor: QuestionsGridTopicEditorInteractorProtocol,
         viewModel: QuestionsGridTopicEditorViewModel,
+        isNew: Bool,
         rootView: QuestionsGridTopicEditorView
     ) {
         self.interactor = interactor
         self.viewModel = viewModel
+        self.isNew = isNew
         super.init(rootView: rootView)
     }
 
@@ -80,7 +88,7 @@ final class QuestionsGridTopicEditorViewController: UIHostingController<Question
 
     @objc
     private func saveButtonTapped() {
-        didSubmitNewTopicName()
+        interactor.submitTopic(name: viewModel.name)
     }
 }
 
@@ -88,16 +96,13 @@ final class QuestionsGridTopicEditorViewController: UIHostingController<Question
 
 extension QuestionsGridTopicEditorViewController: QuestionsGridTopicEditorViewControllerProtocol {
 
-    func displaySubmitNewTopicName(topic: QuestionsGridTopicModel) {
-        onSubmit?(topic)
+    func displaySubmitTopic(topic: QuestionsGridTopicModel, game: QuestionsGridGameModel) {
+        delegate?.didSubmitTopic(topic: topic, game: game, isNew: isNew)
+        onClose?()
     }
 }
 
 // MARK: - QuestionsGridTopicEditorViewDelegate
 
 extension QuestionsGridTopicEditorViewController: QuestionsGridTopicEditorViewDelegate {
-
-    func didSubmitNewTopicName() {
-        interactor.updateTopicName(name: viewModel.name)
-    }
 }

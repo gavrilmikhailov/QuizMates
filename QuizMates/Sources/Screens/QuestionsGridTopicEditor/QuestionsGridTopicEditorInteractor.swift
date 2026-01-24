@@ -7,7 +7,7 @@
 
 @MainActor
 protocol QuestionsGridTopicEditorInteractorProtocol {
-    func updateTopicName(name: String)
+    func submitTopic(name: String)
 }
 
 @MainActor
@@ -19,12 +19,24 @@ final class QuestionsGridTopicEditorInteractor: QuestionsGridTopicEditorInteract
 
     // MARK: - Private properties
 
-    private lazy var topic = QuestionsGridTopicModel(name: "", createdAt: .now, questions: [])
+    private let game: QuestionsGridGameModel
+    private let topic: QuestionsGridTopicModel
+
+    // MARK: - Initializer
+
+    init(game: QuestionsGridGameModel, topic: QuestionsGridTopicModel?) {
+        self.game = game
+        if let topic {
+            self.topic = topic
+        } else {
+            self.topic = QuestionsGridTopicModel(name: "", createdAt: .now, questions: [])
+        }
+    }
 
     // MARK: - QuestionsGridTopicEditorInteractorProtocol
 
-    func updateTopicName(name: String) {
+    func submitTopic(name: String) {
         topic.name = name
-        view?.displaySubmitNewTopicName(topic: topic)
+        view?.displaySubmitTopic(topic: topic, game: game)
     }
 }

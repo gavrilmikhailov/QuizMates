@@ -9,7 +9,6 @@ import SwiftUI
 
 @MainActor
 protocol QuestionsGridTopicEditorViewDelegate: AnyObject {
-    func didSubmitNewTopicName()
 }
 
 struct QuestionsGridTopicEditorView: View {
@@ -25,10 +24,10 @@ struct QuestionsGridTopicEditorView: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            toggleNameEditing(isOn: false, isFinal: false)
+            toggleNameEditing(isOn: false)
         }
         .onAppear {
-            toggleNameEditing(isOn: true, isFinal: false)
+            toggleNameEditing(isOn: true)
         }
     }
 
@@ -41,13 +40,13 @@ struct QuestionsGridTopicEditorView: View {
                 .focused($isFocused)
                 .submitLabel(.done)
                 .onSubmit {
-                    toggleNameEditing(isOn: false, isFinal: true)
+                    toggleNameEditing(isOn: false)
                 }
             Spacer()
         }
     }
 
-    private func toggleNameEditing(isOn: Bool, isFinal: Bool) {
+    private func toggleNameEditing(isOn: Bool) {
         if isOn {
             withAnimation(.spring()) {
                 isEditing = true
@@ -66,9 +65,6 @@ struct QuestionsGridTopicEditorView: View {
             withAnimation(.spring()) {
                 isEditing = false
                 isFocused = false
-            }
-            if isFinal {
-                delegate?.didSubmitNewTopicName()
             }
         }
     }

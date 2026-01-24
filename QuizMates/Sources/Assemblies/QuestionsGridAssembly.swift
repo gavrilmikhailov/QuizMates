@@ -28,10 +28,11 @@ final class QuestionsGridAssembly: Assembly {
                 presenter.view = view
                 return view
             }
+            // New game
             container.register(QuestionsGridGameEditorViewController.self) { resolver in
                 let context = resolver.resolve(ModelContext.self)!
                 let presenter = QuestionsGridGameEditorPresenter()
-                let interactor = QuestionsGridGameEditorInteractor(presenter: presenter, context: context, model: nil)
+                let interactor = QuestionsGridGameEditorInteractor(presenter: presenter, context: context, game: nil)
                 let viewModel = QuestionsGridGameEditorViewModel()
                 let view = QuestionsGridGameEditorViewController(
                     interactor: interactor,
@@ -42,10 +43,11 @@ final class QuestionsGridAssembly: Assembly {
                 presenter.view = view
                 return view
             }
-            container.register(QuestionsGridGameEditorViewController.self) { (resolver: Resolver, model: QuestionsGridGameModel) in
+            // Edit game
+            container.register(QuestionsGridGameEditorViewController.self) { (resolver: Resolver, game: QuestionsGridGameModel) in
                 let context = resolver.resolve(ModelContext.self)!
                 let presenter = QuestionsGridGameEditorPresenter()
-                let interactor = QuestionsGridGameEditorInteractor(presenter: presenter, context: context, model: model)
+                let interactor = QuestionsGridGameEditorInteractor(presenter: presenter, context: context, game: game)
                 let viewModel = QuestionsGridGameEditorViewModel()
                 let view = QuestionsGridGameEditorViewController(
                     interactor: interactor,
@@ -56,18 +58,35 @@ final class QuestionsGridAssembly: Assembly {
                 presenter.view = view
                 return view
             }
-            container.register(QuestionsGridTopicEditorViewController.self) { resolver in
-                let interactor = QuestionsGridTopicEditorInteractor()
+            // New topic
+            container.register(QuestionsGridTopicEditorViewController.self) { (resolver: Resolver, game: QuestionsGridGameModel) in
+                let interactor = QuestionsGridTopicEditorInteractor(game: game, topic: nil)
                 let viewModel = QuestionsGridTopicEditorViewModel()
                 let view = QuestionsGridTopicEditorViewController(
                     interactor: interactor,
                     viewModel: viewModel,
+                    isNew: true,
                     rootView: QuestionsGridTopicEditorView(viewModel: viewModel)
                 )
                 view.rootView.delegate = view
                 interactor.view = view
                 return view
             }
+            // Edit topic
+            container.register(QuestionsGridTopicEditorViewController.self) { (resolver: Resolver, game: QuestionsGridGameModel, topic: QuestionsGridTopicModel) in
+                let interactor = QuestionsGridTopicEditorInteractor(game: game, topic: topic)
+                let viewModel = QuestionsGridTopicEditorViewModel(name: topic.name)
+                let view = QuestionsGridTopicEditorViewController(
+                    interactor: interactor,
+                    viewModel: viewModel,
+                    isNew: false,
+                    rootView: QuestionsGridTopicEditorView(viewModel: viewModel)
+                )
+                view.rootView.delegate = view
+                interactor.view = view
+                return view
+            }
+            // New Question
             container.register(QuestionsGridQuestionEditorViewController.self) { (resolver: Resolver, topic: QuestionsGridTopicModel) in
                 let interactor = QuestionsGridQuestionEditorInteractor(topic: topic, question: nil)
                 let viewModel = QuestionsGridQuestionEditorViewModel()
@@ -81,6 +100,7 @@ final class QuestionsGridAssembly: Assembly {
                 interactor.view = view
                 return view
             }
+            // Edit Question
             container.register(QuestionsGridQuestionEditorViewController.self) { (resolver: Resolver, topic: QuestionsGridTopicModel, question: QuestionsGridQuestionModel) in
                 let interactor = QuestionsGridQuestionEditorInteractor(topic: topic, question: question)
                 let viewModel = QuestionsGridQuestionEditorViewModel(
