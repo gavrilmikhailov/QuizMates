@@ -10,6 +10,7 @@ import SwiftData
 
 @MainActor
 protocol QuestionsGridGamesListInteractorProtocol: AnyObject {
+    func cleanUp()
     func fetchGames()
     func deleteGame(model: QuestionsGridGameModel)
 }
@@ -20,18 +21,28 @@ final class QuestionsGridGamesListInteractor: QuestionsGridGamesListInteractorPr
     // MARK: - Private properties
 
     private let presenter: QuestionsGridGamesListPresenterProtocol
+    private let mediaStorageService: MediaStorageServiceProtocol
     private let context: ModelContext
 
     private var games: [QuestionsGridGameModel] = []
 
     // MARK: - Initializer
 
-    init(presenter: QuestionsGridGamesListPresenterProtocol, context: ModelContext) {
+    init(
+        presenter: QuestionsGridGamesListPresenterProtocol,
+        mediaStorageService: MediaStorageServiceProtocol,
+        context: ModelContext
+    ) {
         self.presenter = presenter
+        self.mediaStorageService = mediaStorageService
         self.context = context
     }
 
     // MARK: - QuestionsGridGamesListInteractorProtocol
+
+    func cleanUp() {
+        mediaStorageService.removeOrphanedItems(modelContext: context)
+    }
 
     func fetchGames() {
         let descriptor = FetchDescriptor<QuestionsGridGameModel>(

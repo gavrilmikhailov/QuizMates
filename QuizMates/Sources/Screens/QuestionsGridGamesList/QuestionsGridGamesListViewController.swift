@@ -45,6 +45,7 @@ final class QuestionsGridGamesListViewController: UIHostingController<QuestionsG
     override func viewDidLoad() {
         super.viewDidLoad()
         configureAppearance()
+        interactor.cleanUp()
     }
 
     override func viewWillAppear(_ animated: Bool) {

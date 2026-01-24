@@ -16,8 +16,13 @@ final class QuestionsGridAssembly: Assembly {
         MainActor.assumeIsolated {
             container.register(QuestionsGridGamesListViewController.self) { resolver in
                 let context = resolver.resolve(ModelContext.self)!
+                let mediaStorageService = resolver.resolve(MediaStorageService.self)!
                 let presenter = QuestionsGridGamesListPresenter()
-                let interactor = QuestionsGridGamesListInteractor(presenter: presenter, context: context)
+                let interactor = QuestionsGridGamesListInteractor(
+                    presenter: presenter,
+                    mediaStorageService: mediaStorageService,
+                    context: context
+                )
                 let viewModel = QuestionsGridGamesListViewModel()
                 let view = QuestionsGridGamesListViewController(
                     interactor: interactor,
