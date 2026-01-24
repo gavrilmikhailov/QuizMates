@@ -11,6 +11,7 @@ import SwiftUI
 protocol QuestionsGridGameEditorViewDelegate: AnyObject {
     func didSumbitNewGameName(name: String)
     func didTapCreateNewTopic()
+    func didTapCreateNewQuestion(topic: QuestionsGridTopicModel)
 }
 
 struct QuestionsGridGameEditorView: View {
@@ -76,9 +77,12 @@ struct QuestionsGridGameEditorView: View {
                 ForEach(viewModel.topics) { topic in
                     GridRow {
                         Text(topic.name)
+                        ForEach(topic.questions.sorted(by: { $0.price < $1.price })) { question in
+                            Text(question.price.description)
+                        }
                         Button(
                             action: {
-                                print("TODO: New question for \(topic.name)")
+                                delegate?.didTapCreateNewQuestion(topic: topic)
                             },
                             label: {
                                 Label("Новый вопрос", systemImage: "plus")

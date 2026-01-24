@@ -18,6 +18,7 @@ final class QuestionsGridGameEditorViewController: UIHostingController<Questions
     // MARK: - Internal properties
 
     var onAddNewTopic: (() -> Void)?
+    var onAddNewQuestion: ((QuestionsGridTopicModel) -> Void)?
 
     // MARK: - Private properties
 
@@ -66,6 +67,11 @@ final class QuestionsGridGameEditorViewController: UIHostingController<Questions
         interactor.loadGameTopics()
     }
 
+    func addNewQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel) {
+        interactor.addNewQuestion(question: question, topic: topic)
+        interactor.loadGameTopics()
+    }
+
     // MARK: - Private methods
 
     private func configureAppearance() {
@@ -96,5 +102,9 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewDele
 
     func didTapCreateNewTopic() {
         onAddNewTopic?()
+    }
+
+    func didTapCreateNewQuestion(topic: QuestionsGridTopicModel) {
+        onAddNewQuestion?(topic)
     }
 }

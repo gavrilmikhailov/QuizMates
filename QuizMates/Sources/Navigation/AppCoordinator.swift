@@ -46,6 +46,11 @@ final class AppCoordinator: BaseCoordinator {
                 view?.addNewTopic(topic: topic)
             }
         }
+        view.onAddNewQuestion = { [weak self, weak view] topic in
+            self?.showNewQuestion { question in
+                view?.addNewQuestion(question: question, topic: topic)
+            }
+        }
 
         router.pushView(view, animated: true, hideBottomBar: true)
     }
@@ -56,6 +61,11 @@ final class AppCoordinator: BaseCoordinator {
         view.onAddNewTopic = { [weak self, weak view] in
             self?.showNewTopic { topic in
                 view?.addNewTopic(topic: topic)
+            }
+        }
+        view.onAddNewQuestion = { [weak self, weak view] topic in
+            self?.showNewQuestion { question in
+                view?.addNewQuestion(question: question, topic: topic)
             }
         }
 
@@ -71,6 +81,22 @@ final class AppCoordinator: BaseCoordinator {
         view.onSubmit = { [weak self] topic in
             self?.router.dismissView(animated: true) {
                 onSubmit?(topic)
+            }
+        }
+
+        let nav = UINavigationController(rootViewController: view)
+        router.presentView(nav, animated: true, completion: nil)
+    }
+
+    private func showNewQuestion(onSubmit: ((QuestionsGridQuestionModel) -> Void)?) {
+        let view = resolver.resolve(QuestionsGridQuestionEditorViewController.self)!
+        
+        view.onClose = { [weak self] in
+            self?.router.dismissView(animated: true, completion: nil)
+        }
+        view.onSubmit = { [weak self] question in
+            self?.router.dismissView(animated: true) {
+                onSubmit?(question)
             }
         }
 

@@ -9,4 +9,7 @@ import Observation
 
 @Observable
 final class QuestionsGridQuestionEditorViewModel {
+    var questionText: String = ""
+    var questionAnswer: String = ""
+    var questionPrice: Int = 50
 }
