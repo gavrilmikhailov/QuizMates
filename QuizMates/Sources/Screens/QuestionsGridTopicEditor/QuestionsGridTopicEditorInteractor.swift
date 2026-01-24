@@ -19,7 +19,7 @@ final class QuestionsGridTopicEditorInteractor: QuestionsGridTopicEditorInteract
 
     // MARK: - Private properties
 
-    private let topic = QuestionsGridTopicModel(name: "", questions: [])
+    private lazy var topic = QuestionsGridTopicModel(name: "", createdAt: .now, questions: [])
 
     // MARK: - QuestionsGridTopicEditorInteractorProtocol
 

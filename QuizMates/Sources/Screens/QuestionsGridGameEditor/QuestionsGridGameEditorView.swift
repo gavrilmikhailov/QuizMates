@@ -72,9 +72,30 @@ struct QuestionsGridGameEditorView: View {
     @ViewBuilder
     private var gameTopicsView: some View {
         if !viewModel.topics.isEmpty {
-            VStack(alignment: .leading, spacing: 16) {
+            Grid {
                 ForEach(viewModel.topics) { topic in
-                    Text(topic.name)
+                    GridRow {
+                        Text(topic.name)
+                        Button(
+                            action: {
+                                print("TODO: New question for \(topic.name)")
+                            },
+                            label: {
+                                Label("Новый вопрос", systemImage: "plus")
+                            }
+                        )
+                    }
+                    Divider()
+                }
+                GridRow {
+                    Button(
+                        action: {
+                            delegate?.didTapCreateNewTopic()
+                        },
+                        label: {
+                            Label("Новая тема", systemImage: "plus")
+                        }
+                    )
                 }
             }
         } else {

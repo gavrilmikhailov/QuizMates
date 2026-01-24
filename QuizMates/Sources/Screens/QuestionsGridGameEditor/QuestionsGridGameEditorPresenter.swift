@@ -25,6 +25,9 @@ final class QuestionsGridGameEditorPresenter: QuestionsGridGameEditorPresenterPr
     }
 
     func presentGameTopics(topics: [QuestionsGridTopicModel]) {
-        view?.displayGameTopics(topics: topics)
+        let sortedTopics = topics.sorted { lhs, rhs in
+            lhs.createdAt < rhs.createdAt
+        }
+        view?.displayGameTopics(topics: sortedTopics)
     }
 }
