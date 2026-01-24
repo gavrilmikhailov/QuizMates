@@ -8,6 +8,7 @@
 @MainActor
 protocol QuestionsGridQuestionEditorInteractorProtocol {
     func submitQuestion(text: String, answer: String, price: Int)
+    func deleteQuestion()
 }
 
 @MainActor
@@ -46,5 +47,9 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
         question.price = price
         
         view?.displaySubmitQuestion(question: question, topic: topic)
+    }
+
+    func deleteQuestion() {
+        view?.displayDeleteQuestion(question: question)
     }
 }

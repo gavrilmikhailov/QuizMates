@@ -8,6 +8,7 @@
 @MainActor
 protocol QuestionsGridTopicEditorInteractorProtocol {
     func submitTopic(name: String)
+    func deleteTopic()
 }
 
 @MainActor
@@ -38,5 +39,9 @@ final class QuestionsGridTopicEditorInteractor: QuestionsGridTopicEditorInteract
     func submitTopic(name: String) {
         topic.name = name
         view?.displaySubmitTopic(topic: topic, game: game)
+    }
+
+    func deleteTopic() {
+        view?.displayDeleteTopic(topic: topic)
     }
 }

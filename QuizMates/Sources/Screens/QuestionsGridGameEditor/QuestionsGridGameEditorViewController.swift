@@ -153,6 +153,11 @@ extension QuestionsGridGameEditorViewController: QuestionsGridTopicEditorDelegat
         }
         interactor.loadGameTopics()
     }
+
+    func didDeleteTopic(topic: QuestionsGridTopicModel) {
+        interactor.deleteTopic(topic: topic)
+        interactor.loadGameTopics()
+    }
 }
 
 // MARK: - QuestionsGridQuestionEditorDelegate
@@ -165,6 +170,11 @@ extension QuestionsGridGameEditorViewController: QuestionsGridQuestionEditorDele
         } else {
             interactor.updateQuestion(question: question)
         }
+        interactor.loadGameTopics()
+    }
+
+    func didDeleteQuestion(question: QuestionsGridQuestionModel) {
+        interactor.deleteQuestion(question: question)
         interactor.loadGameTopics()
     }
 }

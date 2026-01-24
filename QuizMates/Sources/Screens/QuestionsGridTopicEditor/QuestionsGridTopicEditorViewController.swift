@@ -10,11 +10,13 @@ import SwiftUI
 @MainActor
 protocol QuestionsGridTopicEditorDelegate: AnyObject {
     func didSubmitTopic(topic: QuestionsGridTopicModel, game: QuestionsGridGameModel, isNew: Bool)
+    func didDeleteTopic(topic: QuestionsGridTopicModel)
 }
 
 @MainActor
 protocol QuestionsGridTopicEditorViewControllerProtocol: AnyObject {
     func displaySubmitTopic(topic: QuestionsGridTopicModel, game: QuestionsGridGameModel)
+    func displayDeleteTopic(topic: QuestionsGridTopicModel)
 }
 
 final class QuestionsGridTopicEditorViewController: UIHostingController<QuestionsGridTopicEditorView> {
@@ -73,17 +75,46 @@ final class QuestionsGridTopicEditorViewController: UIHostingController<Question
             target: self,
             action: #selector(closeButtonTapped)
         )
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
+        let deleteButton = UIBarButtonItem(
+            barButtonSystemItem: .trash,
+            target: self,
+            action: #selector(deleteButtonTapped)
+        )
+        let saveButton = UIBarButtonItem(
             barButtonSystemItem: .done,
             target: self,
             action: #selector(saveButtonTapped)
         )
+        if isNew {
+            navigationItem.rightBarButtonItem = saveButton
+        } else {
+            navigationItem.rightBarButtonItems = [saveButton, deleteButton]
+        }
         title = "Новая тема"
     }
 
     @objc
     private func closeButtonTapped() {
         onClose?()
+    }
+
+    @objc
+    private func deleteButtonTapped() {
+        let alert = UIAlertController(
+            title: "Подтверждение",
+            message: "Вы уверены, что хотите удалить эту тему?\nВсе вопросы из этой темы будут также удалены",
+            preferredStyle: .alert
+        )
+
+        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+            self?.interactor.deleteTopic()
+        }
+        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+
+        alert.addAction(cancelAction)
+        alert.addAction(deleteAction)
+
+        present(alert, animated: true, completion: nil)
     }
 
     @objc
@@ -98,6 +129,11 @@ extension QuestionsGridTopicEditorViewController: QuestionsGridTopicEditorViewCo
 
     func displaySubmitTopic(topic: QuestionsGridTopicModel, game: QuestionsGridGameModel) {
         delegate?.didSubmitTopic(topic: topic, game: game, isNew: isNew)
+        onClose?()
+    }
+
+    func displayDeleteTopic(topic: QuestionsGridTopicModel) {
+        delegate?.didDeleteTopic(topic: topic)
         onClose?()
     }
 }
