@@ -30,4 +30,12 @@ final class Router {
         controller.hidesBottomBarWhenPushed = hideBottomBar
         navigationController.pushViewController(controller, animated: animated)
     }
+
+    func presentView(_ controller: UIViewController, animated: Bool, completion: (() -> Void)?) {
+        navigationController.present(controller, animated: animated, completion: completion)
+    }
+
+    func dismissView(animated: Bool, completion: (() -> Void)?) {
+        navigationController.dismiss(animated: animated, completion: completion)
+    }
 }

@@ -11,7 +11,9 @@ import SwiftData
 protocol QuestionsGridGameEditorInteractorProtocol {
     func createNewGameIfNeeded()
     func loadGameName()
+    func loadGameTopics()
     func updateGameName(name: String)
+    func addNewTopic(topic: QuestionsGridTopicModel)
 }
 
 @MainActor
@@ -45,12 +47,24 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
     }
 
     func loadGameName() {
-        let name = model?.name ?? ""
-        presenter.presentGameName(name: name)
+        guard let model else {
+            return
+        }
+        presenter.presentGameName(name: model.name)
+    }
+
+    func loadGameTopics() {
+        let topics = model?.topics ?? []
+        presenter.presentGameTopics(topics: topics)
     }
 
     func updateGameName(name: String) {
         model?.name = name
+        try? context.save()
+    }
+
+    func addNewTopic(topic: QuestionsGridTopicModel) {
+        model?.topics.append(topic)
         try? context.save()
     }
 

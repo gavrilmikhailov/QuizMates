@@ -16,4 +16,8 @@ extension View {
     func padding(all: CGFloat) -> some View {
         padding(EdgeInsets(top: all, leading: all, bottom: all, trailing: all))
     }
+
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
 }

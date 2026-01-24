@@ -56,6 +56,18 @@ final class QuestionsGridAssembly: Assembly {
                 presenter.view = view
                 return view
             }
+            container.register(QuestionsGridTopicEditorViewController.self) { resolver in
+                let interactor = QuestionsGridTopicEditorInteractor()
+                let viewModel = QuestionsGridTopicEditorViewModel()
+                let view = QuestionsGridTopicEditorViewController(
+                    interactor: interactor,
+                    viewModel: viewModel,
+                    rootView: QuestionsGridTopicEditorView(viewModel: viewModel)
+                )
+                view.rootView.delegate = view
+                interactor.view = view
+                return view
+            }
         }
     }
 }

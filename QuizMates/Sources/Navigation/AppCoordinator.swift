@@ -5,6 +5,8 @@
 //  Created by Gavriil Mikhailov on 22.01.2026.
 //
 
+import UIKit
+
 @MainActor
 final class AppCoordinator: BaseCoordinator {
 
@@ -39,12 +41,40 @@ final class AppCoordinator: BaseCoordinator {
     private func showNewGame() {
         let view = resolver.resolve(QuestionsGridGameEditorViewController.self)!
 
+        view.onAddNewTopic = { [weak self, weak view] in
+            self?.showNewTopic { topic in
+                view?.addNewTopic(topic: topic)
+            }
+        }
+
         router.pushView(view, animated: true, hideBottomBar: true)
     }
 
     private func showEditGame(model: QuestionsGridGameModel) {
         let view = resolver.resolve(QuestionsGridGameEditorViewController.self, argument: model)!
 
+        view.onAddNewTopic = { [weak self, weak view] in
+            self?.showNewTopic { topic in
+                view?.addNewTopic(topic: topic)
+            }
+        }
+
         router.pushView(view, animated: true, hideBottomBar: true)
+    }
+
+    private func showNewTopic(onSubmit: ((QuestionsGridTopicModel) -> Void)?) {
+        let view = resolver.resolve(QuestionsGridTopicEditorViewController.self)!
+
+        view.onClose = { [weak self] in
+            self?.router.dismissView(animated: true, completion: nil)
+        }
+        view.onSubmit = { [weak self] topic in
+            self?.router.dismissView(animated: true) {
+                onSubmit?(topic)
+            }
+        }
+
+        let nav = UINavigationController(rootViewController: view)
+        router.presentView(nav, animated: true, completion: nil)
     }
 }

@@ -10,6 +10,7 @@ import SwiftUI
 @MainActor
 protocol QuestionsGridGameEditorViewDelegate: AnyObject {
     func didSumbitNewGameName(name: String)
+    func didTapCreateNewTopic()
 }
 
 struct QuestionsGridGameEditorView: View {
@@ -22,56 +23,104 @@ struct QuestionsGridGameEditorView: View {
 
     var body: some View {
         ScrollView(.vertical) {
-            HStack(alignment: .center, spacing: 12) {
-                if isEditing {
-                    TextField("Название игры", text: $viewModel.name)
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .textFieldStyle(.plain)
-                        .focused($isFocused)
-                        .submitLabel(.done)
-                        .onSubmit {
-                            withAnimation(.spring()) {
-                                isEditing = false
-                            }
-                            delegate?.didSumbitNewGameName(name: viewModel.name)
-                        }
-                } else {
-                    Text(viewModel.name)
-                        .font(.title2)
-                        .fontWeight(.bold)
+            gameNameView
+                .padding(top: 16, leading: 16, bottom: 0, trailing: 16)
+
+            gameTopicsView
+                .padding(top: 24, leading: 16, bottom: 0, trailing: 16)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            toggleNameEditing(isOn: false)
+        }
+    }
+
+    private var gameNameView: some View {
+        HStack(alignment: .center, spacing: 12) {
+            if isEditing {
+                TextField("Название игры", text: $viewModel.name)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .textFieldStyle(.plain)
+                    .focused($isFocused)
+                    .submitLabel(.done)
+                    .onSubmit {
+                        toggleNameEditing(isOn: false)
+                    }
+            } else {
+                Text(viewModel.name)
+                    .font(.title2)
+                    .fontWeight(.bold)
+            }
+            if !isEditing {
+                Button(
+                    action: {
+                        toggleNameEditing(isOn: true)
+                    }, label: {
+                        Image(systemName: "square.and.pencil")
+                            .imageScale(.small)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundStyle(Color(UIColor.label))
+                    }
+                )
+            }
+            Spacer()
+        }
+    }
+
+    @ViewBuilder
+    private var gameTopicsView: some View {
+        if !viewModel.topics.isEmpty {
+            VStack(alignment: .leading, spacing: 16) {
+                ForEach(viewModel.topics) { topic in
+                    Text(topic.name)
                 }
-                if !isEditing {
+            }
+        } else {
+            ContentUnavailableView(
+                label: {
+                    Label("Нет тем", systemImage: "folder.badge.questionmark")
+                },
+                description: {
+                    Text("Вы еще не создали ни одной темы для вопросов")
+                },
+                actions: {
                     Button(
                         action: {
-                            withAnimation(.spring()) {
-                                isEditing = true
-                                isFocused = true
-                            }
-                            Task {
-                                try? await Task.sleep(for: .milliseconds(50))
-                                UIApplication.shared.sendAction(
-                                    #selector(UIResponder.selectAll(_:)),
-                                    to: nil,
-                                    from: nil,
-                                    for: nil
-                                )
-                            }
-                        }, label: {
-                            Image(systemName: "square.and.pencil")
-                                .imageScale(.small)
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .foregroundStyle(Color(UIColor.label))
+                            delegate?.didTapCreateNewTopic()
+                        },
+                        label: {
+                            Label("Добавить новую тему", systemImage: "plus")
                         }
                     )
                 }
-                Spacer()
-            }
-            .padding(top: 16, leading: 16, bottom: 0, trailing: 16)
+            )
+            .padding(top: 40)
+        }
+    }
 
-            Text("TODO: Grid of questions")
-                .padding(top: 40)
+    private func toggleNameEditing(isOn: Bool) {
+        if isOn {
+            withAnimation(.spring()) {
+                isEditing = true
+                isFocused = true
+            }
+            Task {
+                try? await Task.sleep(for: .milliseconds(50))
+                UIApplication.shared.sendAction(
+                    #selector(UIResponder.selectAll(_:)),
+                    to: nil,
+                    from: nil,
+                    for: nil
+                )
+            }
+        } else {
+            withAnimation(.spring()) {
+                isEditing = false
+                isFocused = false
+            }
+            delegate?.didSumbitNewGameName(name: viewModel.name)
         }
     }
 }

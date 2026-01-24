@@ -10,9 +10,14 @@ import SwiftUI
 @MainActor
 protocol QuestionsGridGameEditorViewControllerProtocol: AnyObject {
     func displayGameName(name: String)
+    func displayGameTopics(topics: [QuestionsGridTopicModel])
 }
 
 final class QuestionsGridGameEditorViewController: UIHostingController<QuestionsGridGameEditorView> {
+
+    // MARK: - Internal properties
+
+    var onAddNewTopic: (() -> Void)?
 
     // MARK: - Private properties
 
@@ -42,11 +47,23 @@ final class QuestionsGridGameEditorViewController: UIHostingController<Questions
         configureAppearance()
         interactor.createNewGameIfNeeded()
         interactor.loadGameName()
+        interactor.loadGameTopics()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.prefersLargeTitles = false
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+    }
+
+    // MARK: - Internal methods
+
+    func addNewTopic(topic: QuestionsGridTopicModel) {
+        interactor.addNewTopic(topic: topic)
+        interactor.loadGameTopics()
     }
 
     // MARK: - Private methods
@@ -63,6 +80,10 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewCont
     func displayGameName(name: String) {
         viewModel.name = name
     }
+
+    func displayGameTopics(topics: [QuestionsGridTopicModel]) {
+        viewModel.topics = topics
+    }
 }
 
 // MARK: - QuestionsGridGameEditorViewDelegate
@@ -71,5 +92,9 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewDele
 
     func didSumbitNewGameName(name: String) {
         interactor.updateGameName(name: name)
+    }
+
+    func didTapCreateNewTopic() {
+        onAddNewTopic?()
     }
 }

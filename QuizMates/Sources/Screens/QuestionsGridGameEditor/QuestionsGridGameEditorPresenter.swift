@@ -8,6 +8,7 @@
 @MainActor
 protocol QuestionsGridGameEditorPresenterProtocol {
     func presentGameName(name: String)
+    func presentGameTopics(topics: [QuestionsGridTopicModel])
 }
 
 @MainActor
@@ -21,5 +22,9 @@ final class QuestionsGridGameEditorPresenter: QuestionsGridGameEditorPresenterPr
 
     func presentGameName(name: String) {
         view?.displayGameName(name: name)
+    }
+
+    func presentGameTopics(topics: [QuestionsGridTopicModel]) {
+        view?.displayGameTopics(topics: topics)
     }
 }
