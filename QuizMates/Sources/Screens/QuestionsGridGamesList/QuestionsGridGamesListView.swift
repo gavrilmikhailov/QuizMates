@@ -55,6 +55,13 @@ struct QuestionsGridGamesListView: View {
                             )
                             .tint(.red)
                         }
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                delegate?.didSwipeToDeleteGame(model: game)
+                            } label: {
+                                Label("Удалить", systemImage: "trash")
+                            }
+                        }
                     }
                 }
             } else {
