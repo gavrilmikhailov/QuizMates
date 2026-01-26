@@ -29,6 +29,8 @@ protocol DatabaseService: Actor {
     func readQuestion(id: PersistentIdentifier) async throws -> QuestionsGridQuestionDTO
     func updateQuestion(dto: QuestionsGridQuestionDTO) async throws
     func deleteQuestion(dto: QuestionsGridQuestionDTO) async throws
+
+    func readMedias() async throws -> [QuestionsGridMediaDTO]
 }
 
 actor DatabaseActor: DatabaseService {
@@ -181,5 +183,13 @@ actor DatabaseActor: DatabaseService {
         let question = modelContext.model(for: dto.id)
         modelContext.delete(question)
         try modelContext.save()
+    }
+
+    func readMedias() async throws -> [QuestionsGridMediaDTO] {
+        let descriptor = FetchDescriptor<QuestionsGridMediaModel>()
+        let medias = try modelContext.fetch(descriptor)
+        return medias.map { media in
+            QuestionsGridMediaDTO(from: media)
+        }
     }
 }

@@ -13,11 +13,10 @@ final class HelpersAssembly: Assembly {
     // MARK: - Assembly
 
     func assemble(container: Container) {
-        /*
         container.register(MediaStorageService.self) { resolver in
-            return MediaStorageService()
+            let databaseService = resolver.resolve(DatabaseService.self)!
+            return MediaStorageActor(databaseService: databaseService)
         }
         .inObjectScope(.container)
-        */
     }
 }
