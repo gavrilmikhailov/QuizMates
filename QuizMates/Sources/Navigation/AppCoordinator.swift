@@ -38,21 +38,15 @@ final class AppCoordinator: BaseCoordinator {
         router.setRootView(view)
     }
 
-    private func showEditGame(game: QuestionsGridGameModel?) {
+    private func showEditGame(game: QuestionsGridGameDTO?) {
         let view: QuestionsGridGameEditorViewController = if let game {
             resolver.resolve(QuestionsGridGameEditorViewController.self, argument: game)!
         } else {
             resolver.resolve(QuestionsGridGameEditorViewController.self)!
         }
 
-        view.onAddNewTopic = { [weak self, weak view] game in
-            self?.showEditTopic(topic: nil, game: game, delegate: view)
-        }
         view.onEditTopic = { [weak self, weak view] topic, game in
             self?.showEditTopic(topic: topic, game: game, delegate: view)
-        }
-        view.onAddNewQuestion = { [weak self, weak view] topic in
-            self?.showEditQuestion(question: nil, topic: topic, delegate: view)
         }
         view.onEditQuestion = { [weak self, weak view] question, topic in
             self?.showEditQuestion(question: question, topic: topic, delegate: view)
@@ -62,8 +56,8 @@ final class AppCoordinator: BaseCoordinator {
     }
 
     private func showEditTopic(
-        topic: QuestionsGridTopicModel?,
-        game: QuestionsGridGameModel,
+        topic: QuestionsGridTopicDTO?,
+        game: QuestionsGridGameDTO,
         delegate: QuestionsGridTopicEditorDelegate?
     ) {
         let view: QuestionsGridTopicEditorViewController = if let topic {
@@ -82,8 +76,8 @@ final class AppCoordinator: BaseCoordinator {
     }
 
     private func showEditQuestion(
-        question: QuestionsGridQuestionModel?,
-        topic: QuestionsGridTopicModel,
+        question: QuestionsGridQuestionDTO?,
+        topic: QuestionsGridTopicDTO,
         delegate: QuestionsGridQuestionEditorDelegate?
     ) {
         let view: QuestionsGridQuestionEditorViewController = if let question {

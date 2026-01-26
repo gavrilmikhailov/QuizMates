@@ -13,5 +13,5 @@ final class QuestionsGridGamesListViewModel {
     // MARK: - Internal properties
 
     var viewState: ViewState = .loading
-    var games: [QuestionsGridGameModel] = []
+    var games: [QuestionsGridGameDTO] = []
 }

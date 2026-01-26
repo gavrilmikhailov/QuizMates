@@ -5,22 +5,28 @@
 //  Created by Gavriil Mikhailov on 25.01.2026.
 //
 
+/*
 import Foundation
 import SwiftData
+import UIKit
 
 protocol MediaStorageServiceProtocol {
-    func save(data: Data, for item: MediaItem) throws
+    func saveImage(data: Data, for item: MediaItem) throws
     func remove(item: MediaItem)
     @MainActor
     func removeOrphanedItems(modelContext: ModelContext)
 }
 
-final class MediaStorageService: MediaStorageServiceProtocol {
+actor MediaStorageService {
 
     // MARK: - Internal methods
 
-    func save(data: Data, for item: MediaItem) throws {
-        try data.write(to: item.localURL, options: .atomic)
+    func saveImage(data: Data, for item: MediaItem) throws {
+        if let image = UIImage(data: data), let compressedData = image.jpegData(compressionQuality: 0.8) {
+            try compressedData.write(to: item.localURL, options: .atomic)
+        } else {
+            try data.write(to: item.localURL, options: .atomic)
+        }
     }
 
     func remove(item: MediaItem) {
@@ -64,3 +70,4 @@ final class MediaStorageService: MediaStorageServiceProtocol {
         }
     }
 }
+*/

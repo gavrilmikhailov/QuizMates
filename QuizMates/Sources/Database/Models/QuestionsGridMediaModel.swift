@@ -1,5 +1,5 @@
 //
-//  MediaModel.swift
+//  QuestionsGridMediaModel.swift
 //  QuizMates
 //
 //  Created by Gavriil Mikhailov on 25.01.2026.
@@ -9,14 +9,12 @@ import Foundation
 import SwiftData
 
 @Model
-class MediaItem {
-    var id: UUID
+class QuestionsGridMediaModel {
     var fileName: String
     var fileExtension: String
     var createdAt: Date
 
     init(fileName: String, fileExtension: String) {
-        self.id = UUID()
         self.fileName = fileName
         self.fileExtension = fileExtension
         self.createdAt = .now
@@ -30,7 +28,7 @@ class MediaItem {
         // Создаем папку, если её нет
         try? FileManager.default.createDirectory(at: mediaFolder, withIntermediateDirectories: true)
 
-        return mediaFolder.appendingPathComponent("\(id.uuidString).\(fileExtension)")
+        return mediaFolder.appendingPathComponent("\(fileName).\(fileExtension)")
     }
 
     func cleanUp() {

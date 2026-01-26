@@ -15,13 +15,11 @@ final class QuestionsGridAssembly: Assembly {
     func assemble(container: Container) {
         MainActor.assumeIsolated {
             container.register(QuestionsGridGamesListViewController.self) { resolver in
-                let context = resolver.resolve(ModelContext.self)!
-                let mediaStorageService = resolver.resolve(MediaStorageService.self)!
+                let databaseService = resolver.resolve(DatabaseService.self)!
                 let presenter = QuestionsGridGamesListPresenter()
                 let interactor = QuestionsGridGamesListInteractor(
                     presenter: presenter,
-                    mediaStorageService: mediaStorageService,
-                    context: context
+                    databaseService: databaseService
                 )
                 let viewModel = QuestionsGridGamesListViewModel()
                 let view = QuestionsGridGamesListViewController(
@@ -35,9 +33,13 @@ final class QuestionsGridAssembly: Assembly {
             }
             // New game
             container.register(QuestionsGridGameEditorViewController.self) { resolver in
-                let context = resolver.resolve(ModelContext.self)!
+                let databaseService = resolver.resolve(DatabaseService.self)!
                 let presenter = QuestionsGridGameEditorPresenter()
-                let interactor = QuestionsGridGameEditorInteractor(presenter: presenter, context: context, game: nil)
+                let interactor = QuestionsGridGameEditorInteractor(
+                    presenter: presenter,
+                    databaseSevice: databaseService,
+                    game: nil
+                )
                 let viewModel = QuestionsGridGameEditorViewModel()
                 let view = QuestionsGridGameEditorViewController(
                     interactor: interactor,
@@ -49,10 +51,14 @@ final class QuestionsGridAssembly: Assembly {
                 return view
             }
             // Edit game
-            container.register(QuestionsGridGameEditorViewController.self) { (resolver: Resolver, game: QuestionsGridGameModel) in
-                let context = resolver.resolve(ModelContext.self)!
+            container.register(QuestionsGridGameEditorViewController.self) { (resolver: Resolver, game: QuestionsGridGameDTO) in
+                let databaseService = resolver.resolve(DatabaseService.self)!
                 let presenter = QuestionsGridGameEditorPresenter()
-                let interactor = QuestionsGridGameEditorInteractor(presenter: presenter, context: context, game: game)
+                let interactor = QuestionsGridGameEditorInteractor(
+                    presenter: presenter,
+                    databaseSevice: databaseService,
+                    game: game
+                )
                 let viewModel = QuestionsGridGameEditorViewModel()
                 let view = QuestionsGridGameEditorViewController(
                     interactor: interactor,
@@ -64,8 +70,13 @@ final class QuestionsGridAssembly: Assembly {
                 return view
             }
             // New topic
-            container.register(QuestionsGridTopicEditorViewController.self) { (resolver: Resolver, game: QuestionsGridGameModel) in
-                let interactor = QuestionsGridTopicEditorInteractor(game: game, topic: nil)
+            container.register(QuestionsGridTopicEditorViewController.self) { (resolver: Resolver, game: QuestionsGridGameDTO) in
+                let databaseService = resolver.resolve(DatabaseService.self)!
+                let interactor = QuestionsGridTopicEditorInteractor(
+                    databaseService: databaseService,
+                    game: game,
+                    topic: nil
+                )
                 let viewModel = QuestionsGridTopicEditorViewModel()
                 let view = QuestionsGridTopicEditorViewController(
                     interactor: interactor,
@@ -78,8 +89,13 @@ final class QuestionsGridAssembly: Assembly {
                 return view
             }
             // Edit topic
-            container.register(QuestionsGridTopicEditorViewController.self) { (resolver: Resolver, game: QuestionsGridGameModel, topic: QuestionsGridTopicModel) in
-                let interactor = QuestionsGridTopicEditorInteractor(game: game, topic: topic)
+            container.register(QuestionsGridTopicEditorViewController.self) { (resolver: Resolver, game: QuestionsGridGameDTO, topic: QuestionsGridTopicDTO) in
+                let databaseService = resolver.resolve(DatabaseService.self)!
+                let interactor = QuestionsGridTopicEditorInteractor(
+                    databaseService: databaseService,
+                    game: game,
+                    topic: topic
+                )
                 let viewModel = QuestionsGridTopicEditorViewModel(name: topic.name)
                 let view = QuestionsGridTopicEditorViewController(
                     interactor: interactor,
@@ -92,8 +108,13 @@ final class QuestionsGridAssembly: Assembly {
                 return view
             }
             // New Question
-            container.register(QuestionsGridQuestionEditorViewController.self) { (resolver: Resolver, topic: QuestionsGridTopicModel) in
-                let interactor = QuestionsGridQuestionEditorInteractor(topic: topic, question: nil)
+            container.register(QuestionsGridQuestionEditorViewController.self) { (resolver: Resolver, topic: QuestionsGridTopicDTO) in
+                let databaseService = resolver.resolve(DatabaseService.self)!
+                let interactor = QuestionsGridQuestionEditorInteractor(
+                    databaseService: databaseService,
+                    topic: topic,
+                    question: nil
+                )
                 let viewModel = QuestionsGridQuestionEditorViewModel()
                 let view = QuestionsGridQuestionEditorViewController(
                     interactor: interactor,
@@ -106,8 +127,13 @@ final class QuestionsGridAssembly: Assembly {
                 return view
             }
             // Edit Question
-            container.register(QuestionsGridQuestionEditorViewController.self) { (resolver: Resolver, topic: QuestionsGridTopicModel, question: QuestionsGridQuestionModel) in
-                let interactor = QuestionsGridQuestionEditorInteractor(topic: topic, question: question)
+            container.register(QuestionsGridQuestionEditorViewController.self) { (resolver: Resolver, topic: QuestionsGridTopicDTO, question: QuestionsGridQuestionDTO) in
+                let databaseService = resolver.resolve(DatabaseService.self)!
+                let interactor = QuestionsGridQuestionEditorInteractor(
+                    databaseService: databaseService,
+                    topic: topic,
+                    question: question
+                )
                 let viewModel = QuestionsGridQuestionEditorViewModel(
                     questionText: question.text,
                     questionAnswer: question.answer,

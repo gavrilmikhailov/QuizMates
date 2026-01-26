@@ -6,13 +6,12 @@
 //
 
 import Foundation
-import SwiftData
 
 @MainActor
 protocol QuestionsGridGamesListInteractorProtocol: AnyObject {
     func cleanUp()
     func fetchGames()
-    func deleteGame(model: QuestionsGridGameModel)
+    func deleteGame(dto: QuestionsGridGameDTO)
 }
 
 @MainActor
@@ -21,43 +20,53 @@ final class QuestionsGridGamesListInteractor: QuestionsGridGamesListInteractorPr
     // MARK: - Private properties
 
     private let presenter: QuestionsGridGamesListPresenterProtocol
-    private let mediaStorageService: MediaStorageServiceProtocol
-    private let context: ModelContext
+    private let databaseService: DatabaseService
 
-    private var games: [QuestionsGridGameModel] = []
+    private var games: [QuestionsGridGameDTO] = []
 
     // MARK: - Initializer
 
     init(
         presenter: QuestionsGridGamesListPresenterProtocol,
-        mediaStorageService: MediaStorageServiceProtocol,
-        context: ModelContext
+        databaseService: DatabaseService
     ) {
         self.presenter = presenter
-        self.mediaStorageService = mediaStorageService
-        self.context = context
+        self.databaseService = databaseService
     }
 
     // MARK: - QuestionsGridGamesListInteractorProtocol
 
     func cleanUp() {
-        mediaStorageService.removeOrphanedItems(modelContext: context)
+        // TODO: Очистка медиа
+        // mediaStorageService.removeOrphanedItems(modelContext: context)
     }
 
     func fetchGames() {
-        let descriptor = FetchDescriptor<QuestionsGridGameModel>(
-            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
-        )
-        do {
-            games = try context.fetch(descriptor)
-            presenter.presentGames(result: .success(games))
-        } catch {
-            presenter.presentGames(result: .failure(error))
+        Task {
+            do {
+                games = try await databaseService.readGames()
+                await MainActor.run {
+                    presenter.presentGames(result: .success(games))
+                }
+            } catch {
+                await MainActor.run {
+                    presenter.presentGames(result: .failure(error))
+                }
+            }
         }
     }
 
-    func deleteGame(model: QuestionsGridGameModel) {
-        context.delete(model)
-        try? context.save()
+    func deleteGame(dto: QuestionsGridGameDTO) {
+        Task {
+            do {
+                try await databaseService.deleteGame(id: dto.id)
+                games = try await databaseService.readGames()
+                await MainActor.run {
+                    presenter.presentGames(result: .success(games))
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
     }
 }

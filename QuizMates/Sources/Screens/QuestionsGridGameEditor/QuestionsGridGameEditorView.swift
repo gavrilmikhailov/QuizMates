@@ -11,11 +11,11 @@ import SwiftUI
 protocol QuestionsGridGameEditorViewDelegate: AnyObject {
     func didSumbitNewGameName(name: String)
     func didTapCreateNewTopic()
-    func didTapEditTopic(topic: QuestionsGridTopicModel)
-    func didTapDeleteTopic(topic: QuestionsGridTopicModel)
-    func didTapCreateNewQuestion(topic: QuestionsGridTopicModel)
-    func didTapEditQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel)
-    func didTapDeleteQuestion(question: QuestionsGridQuestionModel)
+    func didTapEditTopic(topic: QuestionsGridTopicDTO)
+    func didTapDeleteTopic(topic: QuestionsGridTopicDTO)
+    func didTapCreateNewQuestion(topic: QuestionsGridTopicDTO)
+    func didTapEditQuestion(question: QuestionsGridQuestionDTO, topic: QuestionsGridTopicDTO)
+    func didTapDeleteQuestion(question: QuestionsGridQuestionDTO)
 }
 
 struct QuestionsGridGameEditorView: View {
@@ -82,27 +82,27 @@ struct QuestionsGridGameEditorView: View {
     @ViewBuilder
     private var gameTopicsView: some View {
         Grid {
-            ForEach(viewModel.topics) { topic in
+            ForEach(viewModel.topics, id: \.0.id) { tuple in
                 GridRow {
                     Button(
                         action: {
-                            delegate?.didTapEditTopic(topic: topic)
+                            delegate?.didTapEditTopic(topic: tuple.0)
                         },
                         label: {
-                            Text(topic.name)
+                            Text(tuple.0.name)
                         }
                     )
                     .contextMenu {
                         Button(role: .destructive) {
-                            delegate?.didTapDeleteTopic(topic: topic)
+                            delegate?.didTapDeleteTopic(topic: tuple.0)
                         } label: {
                             Label("Удалить", systemImage: "trash")
                         }
                     }
-                    ForEach(topic.questions.sorted(by: { $0.price < $1.price })) { question in
+                    ForEach(tuple.1, id: \.id) { question in
                         Button(
                             action: {
-                                delegate?.didTapEditQuestion(question: question, topic: topic)
+                                delegate?.didTapEditQuestion(question: question, topic: tuple.0)
                             },
                             label: {
                                 Text(question.price.description)
@@ -118,7 +118,7 @@ struct QuestionsGridGameEditorView: View {
                     }
                     Button(
                         action: {
-                            delegate?.didTapCreateNewQuestion(topic: topic)
+                            delegate?.didTapCreateNewQuestion(topic: tuple.0)
                         },
                         label: {
                             Label("Новый вопрос", systemImage: "plus")

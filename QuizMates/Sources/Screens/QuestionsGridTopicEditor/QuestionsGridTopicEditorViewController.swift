@@ -9,14 +9,18 @@ import SwiftUI
 
 @MainActor
 protocol QuestionsGridTopicEditorDelegate: AnyObject {
-    func didSubmitTopic(topic: QuestionsGridTopicModel, game: QuestionsGridGameModel, isNew: Bool)
-    func didDeleteTopic(topic: QuestionsGridTopicModel)
+    func didSubmitTopic(topic: QuestionsGridTopicDraft, game: QuestionsGridGameDTO)
+    func didSubmitTopic(topic: QuestionsGridTopicDTO)
+    func didDeleteTopic(topic: QuestionsGridTopicDTO)
 }
 
 @MainActor
 protocol QuestionsGridTopicEditorViewControllerProtocol: AnyObject {
-    func displaySubmitTopic(topic: QuestionsGridTopicModel, game: QuestionsGridGameModel)
-    func displayDeleteTopic(topic: QuestionsGridTopicModel)
+    func displayContentLoading()
+    func displayContent(topic: QuestionsGridTopicDTO)
+    func displaySubmitTopic(topic: QuestionsGridTopicDTO, game: QuestionsGridGameDTO)
+    func displayDeleteTopic(topic: QuestionsGridTopicDTO)
+    func displayError(text: String)
 }
 
 final class QuestionsGridTopicEditorViewController: UIHostingController<QuestionsGridTopicEditorView> {
@@ -55,6 +59,7 @@ final class QuestionsGridTopicEditorViewController: UIHostingController<Question
     override func viewDidLoad() {
         super.viewDidLoad()
         configureAppearance()
+        interactor.createNewTopicIfNeeded()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -127,14 +132,29 @@ final class QuestionsGridTopicEditorViewController: UIHostingController<Question
 
 extension QuestionsGridTopicEditorViewController: QuestionsGridTopicEditorViewControllerProtocol {
 
-    func displaySubmitTopic(topic: QuestionsGridTopicModel, game: QuestionsGridGameModel) {
-        delegate?.didSubmitTopic(topic: topic, game: game, isNew: isNew)
+    func displayContentLoading() {
+        interactor.loadTopicContent()
+    }
+
+    func displayContent(topic: QuestionsGridTopicDTO) {
+        viewModel.name = topic.name
+    }
+
+    func displaySubmitTopic(topic: QuestionsGridTopicDTO, game: QuestionsGridGameDTO) {
+        delegate?.didSubmitTopic(topic: topic)
         onClose?()
     }
 
-    func displayDeleteTopic(topic: QuestionsGridTopicModel) {
+    func displayDeleteTopic(topic: QuestionsGridTopicDTO) {
         delegate?.didDeleteTopic(topic: topic)
         onClose?()
+    }
+
+    func displayError(text: String) {
+        let alert = UIAlertController(title: "Ошибка", message: text, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        alert.addAction(okAction)
+        present(alert, animated: true, completion: nil)
     }
 }
 

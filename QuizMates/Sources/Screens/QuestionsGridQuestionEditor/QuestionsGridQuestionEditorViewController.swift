@@ -9,14 +9,18 @@ import SwiftUI
 
 @MainActor
 protocol QuestionsGridQuestionEditorDelegate: AnyObject {
-    func didSubmitQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel, isNew: Bool)
-    func didDeleteQuestion(question: QuestionsGridQuestionModel)
+    func didSubmitQuestion(question: QuestionsGridQuestionDraft, topic: QuestionsGridTopicDTO)
+    func didSubmitQuestion(question: QuestionsGridQuestionDTO, topic: QuestionsGridTopicDTO)
+    func didDeleteQuestion(question: QuestionsGridQuestionDTO)
 }
 
 @MainActor
 protocol QuestionsGridQuestionEditorViewControllerProtocol: AnyObject {
-    func displaySubmitQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel)
-    func displayDeleteQuestion(question: QuestionsGridQuestionModel)
+    func displayQuestionLoading()
+    func displayQuestionContent(question: QuestionsGridQuestionDTO)
+    func displaySubmitQuestion(question: QuestionsGridQuestionDTO, topic: QuestionsGridTopicDTO)
+    func displayDeleteQuestion(question: QuestionsGridQuestionDTO)
+    func displayError(text: String)
 }
 
 final class QuestionsGridQuestionEditorViewController: UIHostingController<QuestionsGridQuestionEditorView> {
@@ -55,6 +59,7 @@ final class QuestionsGridQuestionEditorViewController: UIHostingController<Quest
     override func viewDidLoad() {
         super.viewDidLoad()
         configureAppearance()
+        interactor.createNewQuestionIfNeeded()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -131,14 +136,31 @@ final class QuestionsGridQuestionEditorViewController: UIHostingController<Quest
 
 extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditorViewControllerProtocol {
 
-    func displaySubmitQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel) {
-        delegate?.didSubmitQuestion(question: question, topic: topic, isNew: isNew)
+    func displayQuestionLoading() {
+        interactor.loadQuestionContent()
+    }
+
+    func displayQuestionContent(question: QuestionsGridQuestionDTO) {
+        viewModel.questionText = question.text
+        viewModel.questionAnswer = question.answer
+        viewModel.questionPrice = question.price
+    }
+
+    func displaySubmitQuestion(question: QuestionsGridQuestionDTO, topic: QuestionsGridTopicDTO) {
+        delegate?.didSubmitQuestion(question: question, topic: topic)
         onClose?()
     }
 
-    func displayDeleteQuestion(question: QuestionsGridQuestionModel) {
+    func displayDeleteQuestion(question: QuestionsGridQuestionDTO) {
         delegate?.didDeleteQuestion(question: question)
         onClose?()
+    }
+
+    func displayError(text: String) {
+        let alert = UIAlertController(title: "Ошибка", message: text, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        alert.addAction(okAction)
+        present(alert, animated: true, completion: nil)
     }
 }
 

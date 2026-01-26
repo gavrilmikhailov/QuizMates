@@ -10,5 +10,5 @@ import Observation
 @Observable
 final class QuestionsGridGameEditorViewModel {
     var name: String = ""
-    var topics: [QuestionsGridTopicModel] = []
+    var topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])] = []
 }

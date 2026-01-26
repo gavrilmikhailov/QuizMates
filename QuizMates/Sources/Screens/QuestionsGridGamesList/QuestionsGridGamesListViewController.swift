@@ -9,7 +9,7 @@ import SwiftUI
 
 @MainActor
 protocol QuestionsGridGamesListViewControllerProtocol: AnyObject {
-    func displayGames(result: Result<[QuestionsGridGameModel], Error>)
+    func displayGames(result: Result<[QuestionsGridGameDTO], Error>)
 }
 
 final class QuestionsGridGamesListViewController: UIHostingController<QuestionsGridGamesListView> {
@@ -17,7 +17,7 @@ final class QuestionsGridGamesListViewController: UIHostingController<QuestionsG
     // MARK: - Internal properties
 
     var onAddNewGame: (() -> Void)?
-    var onOpenGame: ((QuestionsGridGameModel) -> Void)?
+    var onOpenGame: ((QuestionsGridGameDTO) -> Void)?
 
     // MARK: - Private properties
 
@@ -84,7 +84,7 @@ final class QuestionsGridGamesListViewController: UIHostingController<QuestionsG
 
 extension QuestionsGridGamesListViewController: QuestionsGridGamesListViewControllerProtocol {
 
-    func displayGames(result: Result<[QuestionsGridGameModel], Error>) {
+    func displayGames(result: Result<[QuestionsGridGameDTO], Error>) {
         switch result {
         case .success(let games):
             viewModel.viewState = .normal
@@ -105,11 +105,11 @@ extension QuestionsGridGamesListViewController: QuestionsGridGamesListViewDelega
         onAddNewGame?()
     }
 
-    func didTapGame(model: QuestionsGridGameModel) {
-        onOpenGame?(model)
+    func didTapGame(dto: QuestionsGridGameDTO) {
+        onOpenGame?(dto)
     }
 
-    func didSwipeToDeleteGame(model: QuestionsGridGameModel) {
+    func didSwipeToDeleteGame(dto: QuestionsGridGameDTO) {
         let alert = UIAlertController(
             title: "Подтверждение",
             message: "Вы уверены, что хотите удалить эту игру?",
@@ -117,8 +117,7 @@ extension QuestionsGridGamesListViewController: QuestionsGridGamesListViewDelega
         )
 
         let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
-            self?.interactor.deleteGame(model: model)
-            self?.interactor.fetchGames()
+            self?.interactor.deleteGame(dto: dto)
         }
         let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
 

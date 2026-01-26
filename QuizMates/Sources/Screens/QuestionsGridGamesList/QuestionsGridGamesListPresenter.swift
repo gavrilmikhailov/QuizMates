@@ -7,7 +7,7 @@
 
 @MainActor
 protocol QuestionsGridGamesListPresenterProtocol: AnyObject {
-    func presentGames(result: Result<[QuestionsGridGameModel], Error>)
+    func presentGames(result: Result<[QuestionsGridGameDTO], Error>)
 }
 
 @MainActor
@@ -19,7 +19,7 @@ final class QuestionsGridGamesListPresenter: QuestionsGridGamesListPresenterProt
 
     // MARK: - QuestionsGridGamesListPresenterProtocol
 
-    func presentGames(result: Result<[QuestionsGridGameModel], Error>) {
+    func presentGames(result: Result<[QuestionsGridGameDTO], Error>) {
         view?.displayGames(result: result)
     }
 }

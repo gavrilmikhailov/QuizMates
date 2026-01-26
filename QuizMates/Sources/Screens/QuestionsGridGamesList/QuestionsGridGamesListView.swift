@@ -10,8 +10,8 @@ import SwiftUI
 @MainActor
 protocol QuestionsGridGamesListViewDelegate: AnyObject {
     func didTapCreateNewGame()
-    func didTapGame(model: QuestionsGridGameModel)
-    func didSwipeToDeleteGame(model: QuestionsGridGameModel)
+    func didTapGame(dto: QuestionsGridGameDTO)
+    func didSwipeToDeleteGame(dto: QuestionsGridGameDTO)
 }
 
 struct QuestionsGridGamesListView: View {
@@ -30,7 +30,7 @@ struct QuestionsGridGamesListView: View {
                     ForEach(viewModel.games, id: \.id) { game in
                         Button(
                             action: {
-                                delegate?.didTapGame(model: game)
+                                delegate?.didTapGame(dto: game)
                             },
                             label: {
                                 HStack(alignment: .center, spacing: 0) {
@@ -47,7 +47,7 @@ struct QuestionsGridGamesListView: View {
                         .swipeActions(allowsFullSwipe: true) {
                             Button(
                                 action: {
-                                    delegate?.didSwipeToDeleteGame(model: game)
+                                    delegate?.didSwipeToDeleteGame(dto: game)
                                 },
                                 label: {
                                     Label("Удалить", systemImage: "trash.fill")
@@ -57,7 +57,7 @@ struct QuestionsGridGamesListView: View {
                         }
                         .contextMenu {
                             Button(role: .destructive) {
-                                delegate?.didSwipeToDeleteGame(model: game)
+                                delegate?.didSwipeToDeleteGame(dto: game)
                             } label: {
                                 Label("Удалить", systemImage: "trash")
                             }

@@ -7,8 +7,14 @@
 
 @MainActor
 protocol QuestionsGridGameEditorPresenterProtocol {
-    func presentGameName(name: String)
-    func presentGameTopics(topics: [QuestionsGridTopicModel])
+    func presentGameLoading()
+    func presentGameContent(
+        game: QuestionsGridGameDTO,
+        topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])]
+    )
+    func presentNavigateToEditTopic(topic: QuestionsGridTopicDTO?, game: QuestionsGridGameDTO)
+    func presentNavigateToEditQuestion(question: QuestionsGridQuestionDTO?, topic: QuestionsGridTopicDTO)
+    func presentError(text: String)
 }
 
 @MainActor
@@ -20,14 +26,33 @@ final class QuestionsGridGameEditorPresenter: QuestionsGridGameEditorPresenterPr
 
     // MARK: - QuestionsGridGameEditorPresenterProtocol
 
-    func presentGameName(name: String) {
-        view?.displayGameName(name: name)
+    func presentGameLoading() {
+        view?.displayGameLoading()
     }
 
-    func presentGameTopics(topics: [QuestionsGridTopicModel]) {
-        let sortedTopics = topics.sorted { lhs, rhs in
-            lhs.createdAt < rhs.createdAt
-        }
-        view?.displayGameTopics(topics: sortedTopics)
+    func presentGameContent(
+        game: QuestionsGridGameDTO,
+        topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])]
+    ) {
+        let sortedTopics = topics
+            .sorted { lhs, rhs in
+                return lhs.0.createdAt < rhs.0.createdAt
+            }
+            .map { topic, questions in
+                return (topic, questions.sorted { $0.price < $1.price })
+            }
+        view?.displayGameContent(game: game, topics: sortedTopics)
+    }
+
+    func presentNavigateToEditTopic(topic: QuestionsGridTopicDTO?, game: QuestionsGridGameDTO) {
+        view?.displayNavigateToEditTopic(topic: topic, game: game)
+    }
+
+    func presentNavigateToEditQuestion(question: QuestionsGridQuestionDTO?, topic: QuestionsGridTopicDTO) {
+        view?.displayNavigateToEditQuestion(question: question, topic: topic)
+    }
+
+    func presentError(text: String) {
+        view?.displayError(text: text)
     }
 }

@@ -13,9 +13,11 @@ final class HelpersAssembly: Assembly {
     // MARK: - Assembly
 
     func assemble(container: Container) {
+        /*
         container.register(MediaStorageService.self) { resolver in
             return MediaStorageService()
         }
         .inObjectScope(.container)
+        */
     }
 }

@@ -9,18 +9,19 @@ import SwiftData
 
 @MainActor
 protocol QuestionsGridGameEditorInteractorProtocol {
-    var game: QuestionsGridGameModel { get }
-
     func createNewGameIfNeeded()
-    func loadGameName()
-    func loadGameTopics()
+    func loadGameContent()
     func updateGameName(name: String)
-    func addNewTopic(topic: QuestionsGridTopicModel, game: QuestionsGridGameModel)
-    func updateTopic(topic: QuestionsGridTopicModel)
-    func deleteTopic(topic: QuestionsGridTopicModel)
-    func addNewQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel)
-    func updateQuestion(question: QuestionsGridQuestionModel)
-    func deleteQuestion(question: QuestionsGridQuestionModel)
+    func addNewTopic(topic: QuestionsGridTopicDraft, game: QuestionsGridGameDTO)
+    func updateTopic(topic: QuestionsGridTopicDTO)
+    func deleteTopic(topic: QuestionsGridTopicDTO)
+    func addNewQuestion(question: QuestionsGridQuestionDraft, topic: QuestionsGridTopicDTO)
+    func updateQuestion(question: QuestionsGridQuestionDTO)
+    func deleteQuestion(question: QuestionsGridQuestionDTO)
+    func navigateToCreateNewTopic()
+    func navigateToEditTopic(topic: QuestionsGridTopicDTO?)
+    func navigateToCreateNewQuestion(topic: QuestionsGridTopicDTO)
+    func navigateToEditQuestion(question: QuestionsGridQuestionDTO, topic: QuestionsGridTopicDTO)
 }
 
 @MainActor
@@ -29,78 +30,212 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
     // MARK: - Private properties
 
     private let presenter: QuestionsGridGameEditorPresenterProtocol
-    private let context: ModelContext
-    var game: QuestionsGridGameModel
+    private let databaseSevice: DatabaseService
+    private var game: QuestionsGridGameDTO?
     private let isNew: Bool
 
     // MARK: - Initializer
 
-    init(presenter: QuestionsGridGameEditorPresenterProtocol, context: ModelContext, game: QuestionsGridGameModel?) {
+    init(
+        presenter: QuestionsGridGameEditorPresenterProtocol,
+        databaseSevice: DatabaseService,
+        game: QuestionsGridGameDTO?
+    ) {
         self.presenter = presenter
-        self.context = context
-        if let game {
-            self.game = game
-        } else {
-            self.game = QuestionsGridGameModel(name: "", topics: [], createdAt: .now)
-        }
+        self.databaseSevice = databaseSevice
+        self.game = game
         self.isNew = game == nil
     }
 
     // MARK: - QuestionsGridGameEditorInteractorProtocol
 
     func createNewGameIfNeeded() {
-        guard isNew else {
+        if isNew {
+            Task {
+                do {
+                    let draft = QuestionsGridGameDraft(name: generateDefaultGameName(), createdAt: .now)
+                    game = try await databaseSevice.createGame(draft: draft)
+                    await MainActor.run {
+                        presenter.presentGameLoading()
+                    }
+                } catch {
+                    await MainActor.run {
+                        presenter.presentError(text: error.localizedDescription)
+                    }
+                }
+            }
+        } else {
+            presenter.presentGameLoading()
+        }
+    }
+
+    func loadGameContent() {
+        guard let gameId = game?.id else {
+            presenter.presentError(text: "Ошибка")
             return
         }
-        game.name = generateDefaultGameName()
-        context.insert(game)
-        try? context.save()
-    }
-
-    func loadGameName() {
-        presenter.presentGameName(name: game.name)
-    }
-
-    func loadGameTopics() {
-        presenter.presentGameTopics(topics: game.topics)
+        Task {
+            do {
+                let game = try await databaseSevice.readGame(id: gameId)
+                let topics = try await databaseSevice.readTopics(ids: game.topics)
+                var content: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])] = []
+                for topic in topics {
+                    let topicQuestions = try await databaseSevice.readQuestions(ids: topic.questions)
+                    content.append((topic, topicQuestions))
+                }
+                await MainActor.run {
+                    presenter.presentGameContent(game: game, topics: content)
+                }
+            } catch {
+                await MainActor.run {
+                    presenter.presentError(text: error.localizedDescription)
+                }
+            }
+        }
     }
 
     func updateGameName(name: String) {
-        game.name = name
-        try? context.save()
+        guard let game else {
+            presenter.presentError(text: "Ошибка")
+            return
+        }
+        let newGame = QuestionsGridGameDTO(
+            id: game.id,
+            name: name,
+            createdAt: game.createdAt,
+            topics: game.topics
+        )
+        Task {
+            do {
+                try await databaseSevice.updateGame(dto: newGame)
+                await MainActor.run {
+                    presenter.presentGameLoading()
+                }
+            } catch {
+                await MainActor.run {
+                    presenter.presentError(text: error.localizedDescription)
+                }
+            }
+        }
     }
 
-    func addNewTopic(topic: QuestionsGridTopicModel, game: QuestionsGridGameModel) {
-        game.topics.append(topic)
-        try? context.save()
+    func addNewTopic(topic: QuestionsGridTopicDraft, game: QuestionsGridGameDTO) {
+        Task {
+            do {
+                let _ = try await databaseSevice.createTopic(draft: topic, game: game)
+                await MainActor.run {
+                    presenter.presentGameLoading()
+                }
+            } catch {
+                await MainActor.run {
+                    presenter.presentError(text: error.localizedDescription)
+                }
+            }
+        }
     }
 
-    func updateTopic(topic: QuestionsGridTopicModel) {
-        try? context.save()
+    func updateTopic(topic: QuestionsGridTopicDTO) {
+        Task {
+            do {
+                try await databaseSevice.updateTopic(dto: topic)
+                await MainActor.run {
+                    presenter.presentGameLoading()
+                }
+            } catch {
+                await MainActor.run {
+                    presenter.presentError(text: error.localizedDescription)
+                }
+            }
+        }
     }
 
-    func deleteTopic(topic: QuestionsGridTopicModel) {
-        context.delete(topic)
-        try? context.save()
+    func deleteTopic(topic: QuestionsGridTopicDTO) {
+        Task {
+            do {
+                try await databaseSevice.deleteTopic(dto: topic)
+                await MainActor.run {
+                    presenter.presentGameLoading()
+                }
+            } catch {
+                await MainActor.run {
+                    presenter.presentError(text: error.localizedDescription)
+                }
+            }
+        }
     }
 
-    func addNewQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel) {
-        topic.questions.append(question)
-        try? context.save()
+    func addNewQuestion(question: QuestionsGridQuestionDraft, topic: QuestionsGridTopicDTO) {
+        Task {
+            do {
+                let _ = try await databaseSevice.createQuestion(draft: question, topic: topic)
+                await MainActor.run {
+                    presenter.presentGameLoading()
+                }
+            } catch {
+                await MainActor.run {
+                    presenter.presentError(text: error.localizedDescription)
+                }
+            }
+        }
     }
 
-    func updateQuestion(question: QuestionsGridQuestionModel) {
-        try? context.save()
+    func updateQuestion(question: QuestionsGridQuestionDTO) {
+        Task {
+            do {
+                try await databaseSevice.updateQuestion(dto: question)
+                await MainActor.run {
+                    presenter.presentGameLoading()
+                }
+            } catch {
+                await MainActor.run {
+                    presenter.presentError(text: error.localizedDescription)
+                }
+            }
+        }
     }
 
-    func deleteQuestion(question: QuestionsGridQuestionModel) {
-        context.delete(question)
-        try? context.save()
+    func deleteQuestion(question: QuestionsGridQuestionDTO) {
+        Task {
+            do {
+                try await databaseSevice.deleteQuestion(dto: question)
+                await MainActor.run {
+                    presenter.presentGameLoading()
+                }
+            } catch {
+                await MainActor.run {
+                    presenter.presentError(text: error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    func navigateToCreateNewTopic() {
+        guard let game else {
+            return
+        }
+        presenter.presentNavigateToEditTopic(topic: nil, game: game)
+    }
+
+    func navigateToEditTopic(topic: QuestionsGridTopicDTO?) {
+        guard let game else {
+            return
+        }
+        presenter.presentNavigateToEditTopic(topic: topic, game: game)
+    }
+
+    func navigateToCreateNewQuestion(topic: QuestionsGridTopicDTO) {
+        presenter.presentNavigateToEditQuestion(question: nil, topic: topic)
+    }
+
+    func navigateToEditQuestion(question: QuestionsGridQuestionDTO, topic: QuestionsGridTopicDTO) {
+        presenter.presentNavigateToEditQuestion(question: question, topic: topic)
     }
 
     // MARK: - Private methods
 
     private func generateDefaultGameName() -> String {
+        return "Игра"
+        /*
         let numberOfGames = try? context.fetchCount(FetchDescriptor<QuestionsGridGameModel>())
         let newGameNumber = if let numberOfGames, numberOfGames > 0 {
             numberOfGames + 1
@@ -108,5 +243,6 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
             1
         }
         return "Игра №\(newGameNumber)"
+        */
     }
 }

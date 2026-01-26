@@ -7,6 +7,8 @@
 
 @MainActor
 protocol QuestionsGridQuestionEditorInteractorProtocol {
+    func createNewQuestionIfNeeded()
+    func loadQuestionContent()
     func submitQuestion(text: String, answer: String, price: Int)
     func deleteQuestion()
 }
@@ -20,36 +22,87 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
 
     // MARK: - Private properties
 
-    private let topic: QuestionsGridTopicModel
-    private let question: QuestionsGridQuestionModel
+    private let databaseService: DatabaseService
+    private let topic: QuestionsGridTopicDTO
+    private var question: QuestionsGridQuestionDTO?
+    private let isNew: Bool
 
     // MARK: - Initializer
 
-    init(topic: QuestionsGridTopicModel, question: QuestionsGridQuestionModel?) {
+    init(databaseService: DatabaseService, topic: QuestionsGridTopicDTO, question: QuestionsGridQuestionDTO?) {
+        self.databaseService = databaseService
         self.topic = topic
-        if let question {
-            self.question = question
-        } else {
-            self.question = QuestionsGridQuestionModel(
-                text: "",
-                answer: "",
-                price: 50,
-                isAnswered: false
-            )
-        }
+        self.question = question
+        self.isNew = question == nil
     }
 
     // MARK: - QuestionsGridQuestionEditorInteractorProtocol
 
+    func createNewQuestionIfNeeded() {
+        if isNew {
+            Task {
+                do {
+                    let draft = QuestionsGridQuestionDraft(
+                        text: "",
+                        answer: "",
+                        price: 50,
+                        isAnswered: false
+                    )
+                    question = try await databaseService.createQuestion(draft: draft, topic: topic)
+                    await MainActor.run {
+                        view?.displayQuestionLoading()
+                    }
+                } catch {
+                    await MainActor.run {
+                        view?.displayError(text: error.localizedDescription)
+                    }
+                }
+            }
+        } else {
+            view?.displayQuestionLoading()
+        }
+    }
+
+    func loadQuestionContent() {
+        guard let questionId = question?.id else {
+            view?.displayError(text: "Ошибка")
+            return
+        }
+        Task {
+            do {
+                let question = try await databaseService.readQuestion(id: questionId)
+                self.question = question
+                await MainActor.run {
+                    view?.displayQuestionLoading()
+                    view?.displayQuestionContent(question: question)
+                }
+            } catch {
+                await MainActor.run {
+                    view?.displayError(text: error.localizedDescription)
+                }
+            }
+        }
+    }
+
     func submitQuestion(text: String, answer: String, price: Int) {
-        question.text = text
-        question.answer = answer
-        question.price = price
-        
-        view?.displaySubmitQuestion(question: question, topic: topic)
+        guard let question else {
+            return
+        }
+        let newQuestion = QuestionsGridQuestionDTO(
+            id: question.id,
+            medias: question.medias,
+            text: text,
+            answer: answer,
+            price: price,
+            isAnswered: question.isAnswered
+        )
+        view?.displaySubmitQuestion(question: newQuestion, topic: topic)
     }
 
     func deleteQuestion() {
+        guard let question else {
+            return
+        }
         view?.displayDeleteQuestion(question: question)
     }
 }

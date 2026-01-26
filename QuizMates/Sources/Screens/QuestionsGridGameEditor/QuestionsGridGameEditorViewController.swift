@@ -9,18 +9,19 @@ import SwiftUI
 
 @MainActor
 protocol QuestionsGridGameEditorViewControllerProtocol: AnyObject {
-    func displayGameName(name: String)
-    func displayGameTopics(topics: [QuestionsGridTopicModel])
+    func displayGameLoading()
+    func displayGameContent(game: QuestionsGridGameDTO, topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])])
+    func displayNavigateToEditTopic(topic: QuestionsGridTopicDTO?, game: QuestionsGridGameDTO)
+    func displayNavigateToEditQuestion(question: QuestionsGridQuestionDTO?, topic: QuestionsGridTopicDTO)
+    func displayError(text: String)
 }
 
 final class QuestionsGridGameEditorViewController: UIHostingController<QuestionsGridGameEditorView> {
 
     // MARK: - Internal properties
 
-    var onAddNewTopic: ((QuestionsGridGameModel) -> Void)?
-    var onEditTopic: ((QuestionsGridTopicModel, QuestionsGridGameModel) -> Void)?
-    var onAddNewQuestion: ((QuestionsGridTopicModel) -> Void)?
-    var onEditQuestion: ((QuestionsGridQuestionModel, QuestionsGridTopicModel) -> Void)?
+    var onEditTopic: ((QuestionsGridTopicDTO?, QuestionsGridGameDTO) -> Void)?
+    var onEditQuestion: ((QuestionsGridQuestionDTO?, QuestionsGridTopicDTO) -> Void)?
 
     // MARK: - Private properties
 
@@ -49,8 +50,6 @@ final class QuestionsGridGameEditorViewController: UIHostingController<Questions
         super.viewDidLoad()
         configureAppearance()
         interactor.createNewGameIfNeeded()
-        interactor.loadGameName()
-        interactor.loadGameTopics()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -69,12 +68,28 @@ final class QuestionsGridGameEditorViewController: UIHostingController<Questions
 
 extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewControllerProtocol {
 
-    func displayGameName(name: String) {
-        viewModel.name = name
+    func displayGameLoading() {
+        interactor.loadGameContent()
     }
 
-    func displayGameTopics(topics: [QuestionsGridTopicModel]) {
+    func displayGameContent(game: QuestionsGridGameDTO, topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])]) {
+        viewModel.name = game.name
         viewModel.topics = topics
+    }
+
+    func displayError(text: String) {
+        let alert = UIAlertController(title: "Ошибка", message: text, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        alert.addAction(okAction)
+        present(alert, animated: true, completion: nil)
+    }
+
+    func displayNavigateToEditTopic(topic: QuestionsGridTopicDTO?, game: QuestionsGridGameDTO) {
+        onEditTopic?(topic, game)
+    }
+
+    func displayNavigateToEditQuestion(question: QuestionsGridQuestionDTO?, topic: QuestionsGridTopicDTO) {
+        onEditQuestion?(question, topic)
     }
 }
 
@@ -87,14 +102,14 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewDele
     }
 
     func didTapCreateNewTopic() {
-        onAddNewTopic?(interactor.game)
+        interactor.navigateToEditTopic(topic: nil)
     }
 
-    func didTapEditTopic(topic: QuestionsGridTopicModel) {
-        onEditTopic?(topic, interactor.game)
+    func didTapEditTopic(topic: QuestionsGridTopicDTO) {
+        interactor.navigateToEditTopic(topic: topic)
     }
 
-    func didTapDeleteTopic(topic: QuestionsGridTopicModel) {
+    func didTapDeleteTopic(topic: QuestionsGridTopicDTO) {
         let alert = UIAlertController(
             title: "Подтверждение",
             message: "Вы уверены, что хотите удалить эту тему?\nВсе вопросы из этой темы будут также удалены",
@@ -103,7 +118,6 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewDele
 
         let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
             self?.interactor.deleteTopic(topic: topic)
-            self?.interactor.loadGameTopics()
         }
         let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
 
@@ -113,15 +127,15 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewDele
         present(alert, animated: true, completion: nil)
     }
 
-    func didTapCreateNewQuestion(topic: QuestionsGridTopicModel) {
-        onAddNewQuestion?(topic)
+    func didTapCreateNewQuestion(topic: QuestionsGridTopicDTO) {
+        interactor.navigateToCreateNewQuestion(topic: topic)
     }
 
-    func didTapEditQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel) {
-        onEditQuestion?(question, topic)
+    func didTapEditQuestion(question: QuestionsGridQuestionDTO, topic: QuestionsGridTopicDTO) {
+        interactor.navigateToEditQuestion(question: question, topic: topic)
     }
 
-    func didTapDeleteQuestion(question: QuestionsGridQuestionModel) {
+    func didTapDeleteQuestion(question: QuestionsGridQuestionDTO) {
         let alert = UIAlertController(
             title: "Подтверждение",
             message: "Вы уверены, что хотите удалить этот вопрос?",
@@ -130,7 +144,6 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewDele
 
         let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
             self?.interactor.deleteQuestion(question: question)
-            self?.interactor.loadGameTopics()
         }
         let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
 
@@ -145,18 +158,19 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewDele
 
 extension QuestionsGridGameEditorViewController: QuestionsGridTopicEditorDelegate {
 
-    func didSubmitTopic(topic: QuestionsGridTopicModel, game: QuestionsGridGameModel, isNew: Bool) {
-        if isNew {
-            interactor.addNewTopic(topic: topic, game: game)
-        } else {
-            interactor.updateTopic(topic: topic)
-        }
-        interactor.loadGameTopics()
+    func didSubmitTopic(topic: QuestionsGridTopicDraft, game: QuestionsGridGameDTO) {
+        // interactor.addNewTopic(topic: topic, game: game)
+        interactor.loadGameContent()
     }
 
-    func didDeleteTopic(topic: QuestionsGridTopicModel) {
-        interactor.deleteTopic(topic: topic)
-        interactor.loadGameTopics()
+    func didSubmitTopic(topic: QuestionsGridTopicDTO) {
+        // interactor.updateTopic(topic: topic)
+        interactor.loadGameContent()
+    }
+
+    func didDeleteTopic(topic: QuestionsGridTopicDTO) {
+        // interactor.deleteTopic(topic: topic)
+        interactor.loadGameContent()
     }
 }
 
@@ -164,17 +178,15 @@ extension QuestionsGridGameEditorViewController: QuestionsGridTopicEditorDelegat
 
 extension QuestionsGridGameEditorViewController: QuestionsGridQuestionEditorDelegate {
 
-    func didSubmitQuestion(question: QuestionsGridQuestionModel, topic: QuestionsGridTopicModel, isNew: Bool) {
-        if isNew {
-            interactor.addNewQuestion(question: question, topic: topic)
-        } else {
-            interactor.updateQuestion(question: question)
-        }
-        interactor.loadGameTopics()
+    func didSubmitQuestion(question: QuestionsGridQuestionDraft, topic: QuestionsGridTopicDTO) {
+        interactor.addNewQuestion(question: question, topic: topic)
     }
 
-    func didDeleteQuestion(question: QuestionsGridQuestionModel) {
+    func didSubmitQuestion(question: QuestionsGridQuestionDTO, topic: QuestionsGridTopicDTO) {
+        interactor.updateQuestion(question: question)
+    }
+
+    func didDeleteQuestion(question: QuestionsGridQuestionDTO) {
         interactor.deleteQuestion(question: question)
-        interactor.loadGameTopics()
     }
 }

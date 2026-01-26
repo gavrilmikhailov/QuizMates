@@ -20,9 +20,9 @@ final class DatabaseAssembly: Assembly {
         }
         .inObjectScope(.container)
 
-        container.register(ModelContext.self) { resolver in
+        container.register(DatabaseService.self) { resolver in
             let modelContainer = resolver.resolve(ModelContainer.self)!
-            return ModelContext(modelContainer)
+            return DatabaseActor(container: modelContainer)
         }
         .inObjectScope(.container)
     }
