@@ -149,6 +149,7 @@ extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditor
 
     func displaySubmitNewQuestion(question: QuestionsGridQuestionDraft, topic: QuestionsGridTopicDTO) {
         delegate?.didSubmitNewQuestion(question: question, topic: topic)
+        onClose?()
     }
 
     func displaySubmitUpdatedQuestion(question: QuestionsGridQuestionDTO) {

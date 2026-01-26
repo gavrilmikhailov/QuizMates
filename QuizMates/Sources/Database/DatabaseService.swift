@@ -136,7 +136,7 @@ actor DatabaseActor: DatabaseService {
             throw DatabaseError.notFound
         }
         let question = QuestionsGridQuestionModel(
-            text: draft.answer,
+            text: draft.text,
             medias: [],
             answer: draft.answer,
             price: draft.price,
