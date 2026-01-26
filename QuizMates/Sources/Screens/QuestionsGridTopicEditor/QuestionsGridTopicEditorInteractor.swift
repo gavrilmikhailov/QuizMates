@@ -7,7 +7,6 @@
 
 @MainActor
 protocol QuestionsGridTopicEditorInteractorProtocol {
-    func createNewTopicIfNeeded()
     func loadTopicContent()
     func submitTopic(name: String)
     func deleteTopic()
@@ -24,80 +23,49 @@ final class QuestionsGridTopicEditorInteractor: QuestionsGridTopicEditorInteract
 
     private let databaseService: DatabaseService
     private let game: QuestionsGridGameDTO
-    private var topic: QuestionsGridTopicDTO?
-    private let isNew: Bool
+    private let mode: QuestionsGridTopicEditorMode
 
     // MARK: - Initializer
 
-    init(databaseService: DatabaseService, game: QuestionsGridGameDTO, topic: QuestionsGridTopicDTO?) {
+    init(databaseService: DatabaseService, game: QuestionsGridGameDTO, mode: QuestionsGridTopicEditorMode) {
         self.databaseService = databaseService
         self.game = game
-        self.topic = topic
-        self.isNew = topic == nil
+        self.mode = mode
     }
 
     // MARK: - QuestionsGridTopicEditorInteractorProtocol
 
-    func createNewTopicIfNeeded() {
-        if isNew {
-            Task {
-                do {
-                    let topic = try await databaseService.createTopic(
-                        draft: QuestionsGridTopicDraft(name: "", createdAt: .now),
-                        game: game
-                    )
-                    self.topic = topic
-                    await MainActor.run {
-                        view?.displayContentLoading()
-                    }
-                } catch {
-                    await MainActor.run {
-                        view?.displayError(text: error.localizedDescription)
-                    }
-                }
-            }
-        } else {
-            view?.displayContentLoading()
-        }
-    }
-
     func loadTopicContent() {
-        guard let topicId = topic?.id else {
-            view?.displayError(text: "Ошибка")
-            return
-        }
-        Task {
-            do {
-                let topic = try await databaseService.readTopic(id: topicId)
-                self.topic = topic
-                await MainActor.run {
-                    view?.displayContent(topic: topic)
-                }
-            } catch {
-                await MainActor.run {
-                    view?.displayError(text: error.localizedDescription)
-                }
-            }
+        switch mode {
+        case .createNewTopic(let draft):
+            view?.displayContent(name: draft.name)
+        case .editExistingTopic(let dto):
+            view?.displayContent(name: dto.name)
         }
     }
 
     func submitTopic(name: String) {
-        guard let topic else {
-            return
+        switch mode {
+        case .createNewTopic(let draft):
+            let newDraft = QuestionsGridTopicDraft(name: name, createdAt: draft.createdAt)
+            view?.displaySubmitNewTopic(topic: newDraft, game: game)
+        case .editExistingTopic(let dto):
+            let newDTO = QuestionsGridTopicDTO(
+                id: dto.id,
+                name: name,
+                createdAt: dto.createdAt,
+                questions: dto.questions
+            )
+            view?.displaySubmitUpdatedTopic(topic: newDTO)
         }
-        let newTopic = QuestionsGridTopicDTO(
-            id: topic.id,
-            name: name,
-            createdAt: topic.createdAt,
-            questions: topic.questions
-        )
-        view?.displaySubmitTopic(topic: newTopic, game: game)
     }
 
     func deleteTopic() {
-        guard let topic else {
-            return
+        switch mode {
+        case .createNewTopic:
+            break
+        case .editExistingTopic(let dto):
+            view?.displayDeleteTopic(topic: dto)
         }
-        view?.displayDeleteTopic(topic: topic)
     }
 }

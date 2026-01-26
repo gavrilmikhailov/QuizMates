@@ -9,16 +9,17 @@ import SwiftUI
 
 @MainActor
 protocol QuestionsGridTopicEditorDelegate: AnyObject {
-    func didSubmitTopic(topic: QuestionsGridTopicDraft, game: QuestionsGridGameDTO)
-    func didSubmitTopic(topic: QuestionsGridTopicDTO)
+    func didSubmitNewTopic(topic: QuestionsGridTopicDraft, game: QuestionsGridGameDTO)
+    func didSubmitUpdatedTopic(topic: QuestionsGridTopicDTO)
     func didDeleteTopic(topic: QuestionsGridTopicDTO)
 }
 
 @MainActor
 protocol QuestionsGridTopicEditorViewControllerProtocol: AnyObject {
     func displayContentLoading()
-    func displayContent(topic: QuestionsGridTopicDTO)
-    func displaySubmitTopic(topic: QuestionsGridTopicDTO, game: QuestionsGridGameDTO)
+    func displayContent(name: String)
+    func displaySubmitNewTopic(topic: QuestionsGridTopicDraft, game: QuestionsGridGameDTO)
+    func displaySubmitUpdatedTopic(topic: QuestionsGridTopicDTO)
     func displayDeleteTopic(topic: QuestionsGridTopicDTO)
     func displayError(text: String)
 }
@@ -59,7 +60,7 @@ final class QuestionsGridTopicEditorViewController: UIHostingController<Question
     override func viewDidLoad() {
         super.viewDidLoad()
         configureAppearance()
-        interactor.createNewTopicIfNeeded()
+        interactor.loadTopicContent()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -136,12 +137,17 @@ extension QuestionsGridTopicEditorViewController: QuestionsGridTopicEditorViewCo
         interactor.loadTopicContent()
     }
 
-    func displayContent(topic: QuestionsGridTopicDTO) {
-        viewModel.name = topic.name
+    func displayContent(name: String) {
+        viewModel.name = name
     }
 
-    func displaySubmitTopic(topic: QuestionsGridTopicDTO, game: QuestionsGridGameDTO) {
-        delegate?.didSubmitTopic(topic: topic)
+    func displaySubmitNewTopic(topic: QuestionsGridTopicDraft, game: QuestionsGridGameDTO) {
+        delegate?.didSubmitNewTopic(topic: topic, game: game)
+        onClose?()
+    }
+
+    func displaySubmitUpdatedTopic(topic: QuestionsGridTopicDTO) {
+        delegate?.didSubmitUpdatedTopic(topic: topic)
         onClose?()
     }
 

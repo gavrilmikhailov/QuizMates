@@ -75,7 +75,7 @@ final class QuestionsGridAssembly: Assembly {
                 let interactor = QuestionsGridTopicEditorInteractor(
                     databaseService: databaseService,
                     game: game,
-                    topic: nil
+                    mode: .createNewTopic(QuestionsGridTopicDraft(name: "", createdAt: .now))
                 )
                 let viewModel = QuestionsGridTopicEditorViewModel()
                 let view = QuestionsGridTopicEditorViewController(
@@ -94,7 +94,7 @@ final class QuestionsGridAssembly: Assembly {
                 let interactor = QuestionsGridTopicEditorInteractor(
                     databaseService: databaseService,
                     game: game,
-                    topic: topic
+                    mode: .editExistingTopic(topic)
                 )
                 let viewModel = QuestionsGridTopicEditorViewModel(name: topic.name)
                 let view = QuestionsGridTopicEditorViewController(
