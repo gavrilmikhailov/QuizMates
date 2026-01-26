@@ -9,16 +9,17 @@ import SwiftUI
 
 @MainActor
 protocol QuestionsGridQuestionEditorDelegate: AnyObject {
-    func didSubmitQuestion(question: QuestionsGridQuestionDraft, topic: QuestionsGridTopicDTO)
-    func didSubmitQuestion(question: QuestionsGridQuestionDTO, topic: QuestionsGridTopicDTO)
+    func didSubmitNewQuestion(question: QuestionsGridQuestionDraft, topic: QuestionsGridTopicDTO)
+    func didSubmitUpdatedQuestion(question: QuestionsGridQuestionDTO)
     func didDeleteQuestion(question: QuestionsGridQuestionDTO)
 }
 
 @MainActor
 protocol QuestionsGridQuestionEditorViewControllerProtocol: AnyObject {
     func displayQuestionLoading()
-    func displayQuestionContent(question: QuestionsGridQuestionDTO)
-    func displaySubmitQuestion(question: QuestionsGridQuestionDTO, topic: QuestionsGridTopicDTO)
+    func displayQuestionContent(text: String, answer: String, price: Int)
+    func displaySubmitNewQuestion(question: QuestionsGridQuestionDraft, topic: QuestionsGridTopicDTO)
+    func displaySubmitUpdatedQuestion(question: QuestionsGridQuestionDTO)
     func displayDeleteQuestion(question: QuestionsGridQuestionDTO)
     func displayError(text: String)
 }
@@ -59,7 +60,7 @@ final class QuestionsGridQuestionEditorViewController: UIHostingController<Quest
     override func viewDidLoad() {
         super.viewDidLoad()
         configureAppearance()
-        interactor.createNewQuestionIfNeeded()
+        interactor.loadQuestionContent()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -140,14 +141,18 @@ extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditor
         interactor.loadQuestionContent()
     }
 
-    func displayQuestionContent(question: QuestionsGridQuestionDTO) {
-        viewModel.questionText = question.text
-        viewModel.questionAnswer = question.answer
-        viewModel.questionPrice = question.price
+    func displayQuestionContent(text: String, answer: String, price: Int) {
+        viewModel.questionText = text
+        viewModel.questionAnswer = answer
+        viewModel.questionPrice = price
     }
 
-    func displaySubmitQuestion(question: QuestionsGridQuestionDTO, topic: QuestionsGridTopicDTO) {
-        delegate?.didSubmitQuestion(question: question, topic: topic)
+    func displaySubmitNewQuestion(question: QuestionsGridQuestionDraft, topic: QuestionsGridTopicDTO) {
+        delegate?.didSubmitNewQuestion(question: question, topic: topic)
+    }
+
+    func displaySubmitUpdatedQuestion(question: QuestionsGridQuestionDTO) {
+        delegate?.didSubmitUpdatedQuestion(question: question)
         onClose?()
     }
 

@@ -113,7 +113,9 @@ final class QuestionsGridAssembly: Assembly {
                 let interactor = QuestionsGridQuestionEditorInteractor(
                     databaseService: databaseService,
                     topic: topic,
-                    question: nil
+                    mode: .createNewQuestion(
+                        QuestionsGridQuestionDraft(text: "", answer: "", price: 50, isAnswered: false)
+                    )
                 )
                 let viewModel = QuestionsGridQuestionEditorViewModel()
                 let view = QuestionsGridQuestionEditorViewController(
@@ -132,7 +134,7 @@ final class QuestionsGridAssembly: Assembly {
                 let interactor = QuestionsGridQuestionEditorInteractor(
                     databaseService: databaseService,
                     topic: topic,
-                    question: question
+                    mode: .editExistingQuestion(question)
                 )
                 let viewModel = QuestionsGridQuestionEditorViewModel(
                     questionText: question.text,

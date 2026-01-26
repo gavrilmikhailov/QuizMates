@@ -7,7 +7,6 @@
 
 @MainActor
 protocol QuestionsGridQuestionEditorInteractorProtocol {
-    func createNewQuestionIfNeeded()
     func loadQuestionContent()
     func submitQuestion(text: String, answer: String, price: Int)
     func deleteQuestion()
@@ -24,85 +23,56 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
 
     private let databaseService: DatabaseService
     private let topic: QuestionsGridTopicDTO
-    private var question: QuestionsGridQuestionDTO?
-    private let isNew: Bool
+    private let mode: QuestionsGridQuestionEditorMode
 
     // MARK: - Initializer
 
-    init(databaseService: DatabaseService, topic: QuestionsGridTopicDTO, question: QuestionsGridQuestionDTO?) {
+    init(databaseService: DatabaseService, topic: QuestionsGridTopicDTO, mode: QuestionsGridQuestionEditorMode) {
         self.databaseService = databaseService
         self.topic = topic
-        self.question = question
-        self.isNew = question == nil
+        self.mode = mode
     }
 
     // MARK: - QuestionsGridQuestionEditorInteractorProtocol
 
-    func createNewQuestionIfNeeded() {
-        if isNew {
-            Task {
-                do {
-                    let draft = QuestionsGridQuestionDraft(
-                        text: "",
-                        answer: "",
-                        price: 50,
-                        isAnswered: false
-                    )
-                    question = try await databaseService.createQuestion(draft: draft, topic: topic)
-                    await MainActor.run {
-                        view?.displayQuestionLoading()
-                    }
-                } catch {
-                    await MainActor.run {
-                        view?.displayError(text: error.localizedDescription)
-                    }
-                }
-            }
-        } else {
-            view?.displayQuestionLoading()
-        }
-    }
-
     func loadQuestionContent() {
-        guard let questionId = question?.id else {
-            view?.displayError(text: "Ошибка")
-            return
-        }
-        Task {
-            do {
-                let question = try await databaseService.readQuestion(id: questionId)
-                self.question = question
-                await MainActor.run {
-                    view?.displayQuestionLoading()
-                    view?.displayQuestionContent(question: question)
-                }
-            } catch {
-                await MainActor.run {
-                    view?.displayError(text: error.localizedDescription)
-                }
-            }
+        switch mode {
+        case .createNewQuestion(let draft):
+            view?.displayQuestionContent(text: draft.text, answer: draft.answer, price: draft.price)
+        case .editExistingQuestion(let dto):
+            view?.displayQuestionContent(text: dto.text, answer: dto.answer, price: dto.price)
         }
     }
 
     func submitQuestion(text: String, answer: String, price: Int) {
-        guard let question else {
-            return
+        switch mode {
+        case .createNewQuestion(let draft):
+            let newDraft = QuestionsGridQuestionDraft(
+                text: text,
+                answer: answer,
+                price: price,
+                isAnswered: draft.isAnswered
+            )
+            view?.displaySubmitNewQuestion(question: newDraft, topic: topic)
+        case .editExistingQuestion(let dto):
+            let newDTO = QuestionsGridQuestionDTO(
+                id: dto.id,
+                medias: dto.medias,
+                text: text,
+                answer: answer,
+                price: price,
+                isAnswered: dto.isAnswered
+            )
+            view?.displaySubmitUpdatedQuestion(question: newDTO)
         }
-        let newQuestion = QuestionsGridQuestionDTO(
-            id: question.id,
-            medias: question.medias,
-            text: text,
-            answer: answer,
-            price: price,
-            isAnswered: question.isAnswered
-        )
-        view?.displaySubmitQuestion(question: newQuestion, topic: topic)
     }
 
     func deleteQuestion() {
-        guard let question else {
-            return
+        switch mode {
+        case .createNewQuestion:
+            break
+        case .editExistingQuestion(let dto):
+            view?.displayDeleteQuestion(question: dto)
         }
-        view?.displayDeleteQuestion(question: question)
     }
 }
