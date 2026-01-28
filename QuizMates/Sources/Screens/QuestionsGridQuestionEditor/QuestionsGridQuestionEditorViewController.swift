@@ -159,8 +159,10 @@ extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditor
         answer: String,
         price: Int
     ) {
-        viewModel.medias = medias
-        viewModel.mediaDrafts = mediaDrafts
+        withAnimation {
+            viewModel.medias = medias
+            viewModel.mediaDrafts = mediaDrafts
+        }
         viewModel.questionText = text
         viewModel.questionAnswer = answer
         viewModel.questionPrice = price
@@ -207,5 +209,13 @@ extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditor
 
     func didPickPhoto(photo: PhotosPickerItem) {
         interactor.addPhoto(photo: photo)
+    }
+
+    func didDeleteMedia(index: Int) {
+        interactor.deleteMedia(index: index)
+    }
+
+    func didDeleteMediaDraft(index: Int) {
+        interactor.deleteMediaDraft(index: index)
     }
 }

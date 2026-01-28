@@ -13,6 +13,8 @@ protocol QuestionsGridQuestionEditorInteractorProtocol {
     func loadQuestionContent()
     func updateQuestionContent(text: String, answer: String, price: Int)
     func addPhoto(photo: PhotosPickerItem)
+    func deleteMedia(index: Int)
+    func deleteMediaDraft(index: Int)
     func submitQuestion(text: String, answer: String, price: Int)
     func deleteQuestion()
 }
@@ -115,6 +117,16 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
                 print(error.localizedDescription)
             }
         }
+    }
+
+    func deleteMedia(index: Int) {
+        medias.remove(at: index)
+        view?.displayUpdateContent()
+    }
+    
+    func deleteMediaDraft(index: Int) {
+        mediaDrafts.remove(at: index)
+        view?.displayUpdateContent()
     }
 
     func submitQuestion(text: String, answer: String, price: Int) {

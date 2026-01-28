@@ -11,6 +11,8 @@ import SwiftUI
 @MainActor
 protocol QuestionsGridQuestionEditorViewDelegate: AnyObject {
     func didPickPhoto(photo: PhotosPickerItem)
+    func didDeleteMedia(index: Int)
+    func didDeleteMediaDraft(index: Int)
 }
 
 struct QuestionsGridQuestionEditorView: View {
@@ -46,20 +48,24 @@ struct QuestionsGridQuestionEditorView: View {
     private var photosView: some View {
         ScrollView(.horizontal) {
             HStack(alignment: .center, spacing: 8) {
-                ForEach(viewModel.medias) { media in
+                ForEach(Array(viewModel.medias.enumerated()), id: \.element.id) { index, element in
                     QuestionsGridQuestionEditorThumbnailView(
-                        fileName: media.fileName,
-                        fileExtension: media.fileExtension,
+                        fileName: element.fileName,
+                        fileExtension: element.fileExtension,
                         size: CGSize(width: 100, height: 100),
-                        delegate: delegate
+                        onDelete: {
+                            delegate?.didDeleteMedia(index: index)
+                        }
                     )
                 }
-                ForEach(viewModel.mediaDrafts) { mediaDraft in
+                ForEach(Array(viewModel.mediaDrafts.enumerated()), id: \.element.id) { index, element in
                     QuestionsGridQuestionEditorThumbnailView(
-                        fileName: mediaDraft.fileName,
-                        fileExtension: mediaDraft.fileExtension,
+                        fileName: element.fileName,
+                        fileExtension: element.fileExtension,
                         size: CGSize(width: 100, height: 100),
-                        delegate: delegate
+                        onDelete: {
+                            delegate?.didDeleteMedia(index: index)
+                        }
                     )
                 }
             }
@@ -160,16 +166,32 @@ private struct QuestionsGridQuestionEditorThumbnailView: View {
     let fileName: String
     let fileExtension: String
     let size: CGSize
-
-    weak var delegate: QuestionsGridQuestionEditorViewDelegate?
+    let onDelete: () -> Void
 
     var body: some View {
         if let image = loadImage() {
-            Image(uiImage: image)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: size.width, height: size.height)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+            Button(
+                action: {
+                    
+                },
+                label: {
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: size.width, height: size.height)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+            )
+            .buttonStyle(.plain)
+            .contextMenu {
+                Button(
+                    role: .destructive,
+                    action: onDelete,
+                    label: {
+                        Label("Удалить", systemImage: "trash")
+                    }
+                )
+            }
         } else {
             ProgressView()
         }
