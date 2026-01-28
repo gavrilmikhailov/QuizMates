@@ -112,8 +112,10 @@ final class QuestionsGridAssembly: Assembly {
             // New Question
             container.register(QuestionsGridQuestionEditorViewController.self) { (resolver: Resolver, topic: QuestionsGridTopicDTO) in
                 let databaseService = resolver.resolve(DatabaseService.self)!
+                let mediaStorageService = resolver.resolve(MediaStorageService.self)!
                 let interactor = QuestionsGridQuestionEditorInteractor(
                     databaseService: databaseService,
+                    mediaStorageService: mediaStorageService,
                     topic: topic,
                     mode: .createNewQuestion(
                         QuestionsGridQuestionDraft(text: "", answer: "", price: 50, isAnswered: false)
@@ -133,8 +135,10 @@ final class QuestionsGridAssembly: Assembly {
             // Edit Question
             container.register(QuestionsGridQuestionEditorViewController.self) { (resolver: Resolver, topic: QuestionsGridTopicDTO, question: QuestionsGridQuestionDTO) in
                 let databaseService = resolver.resolve(DatabaseService.self)!
+                let mediaStorageService = resolver.resolve(MediaStorageService.self)!
                 let interactor = QuestionsGridQuestionEditorInteractor(
                     databaseService: databaseService,
+                    mediaStorageService: mediaStorageService,
                     topic: topic,
                     mode: .editExistingQuestion(question)
                 )

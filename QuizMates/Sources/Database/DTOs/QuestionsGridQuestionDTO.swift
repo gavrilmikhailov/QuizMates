@@ -9,7 +9,6 @@ import Foundation
 import SwiftData
 
 struct QuestionsGridQuestionDTO: Sendable, Identifiable {
-
     let id: PersistentIdentifier
     let medias: [PersistentIdentifier]
     let text: String

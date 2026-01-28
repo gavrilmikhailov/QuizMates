@@ -5,9 +5,14 @@
 //  Created by Gavriil Mikhailov on 24.01.2026.
 //
 
+import PhotosUI
+import SwiftUI
+
 @MainActor
 protocol QuestionsGridQuestionEditorInteractorProtocol {
     func loadQuestionContent()
+    func updateQuestionContent(text: String, answer: String, price: Int)
+    func addPhoto(photo: PhotosPickerItem)
     func submitQuestion(text: String, answer: String, price: Int)
     func deleteQuestion()
 }
@@ -22,13 +27,22 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
     // MARK: - Private properties
 
     private let databaseService: DatabaseService
+    private let mediaStorageService: MediaStorageService
     private let topic: QuestionsGridTopicDTO
     private let mode: QuestionsGridQuestionEditorMode
+    private var medias: [QuestionsGridMediaDTO] = []
+    private var mediaDrafts: [QuestionsGridMediaDraft] = []
 
     // MARK: - Initializer
 
-    init(databaseService: DatabaseService, topic: QuestionsGridTopicDTO, mode: QuestionsGridQuestionEditorMode) {
+    init(
+        databaseService: DatabaseService,
+        mediaStorageService: MediaStorageService,
+        topic: QuestionsGridTopicDTO,
+        mode: QuestionsGridQuestionEditorMode
+    ) {
         self.databaseService = databaseService
+        self.mediaStorageService = mediaStorageService
         self.topic = topic
         self.mode = mode
     }
@@ -38,9 +52,68 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
     func loadQuestionContent() {
         switch mode {
         case .createNewQuestion(let draft):
-            view?.displayQuestionContent(text: draft.text, answer: draft.answer, price: draft.price)
+            medias = []
+            mediaDrafts = []
+            view?.displayQuestionContent(
+                medias: medias,
+                mediaDrafts: mediaDrafts,
+                text: draft.text,
+                answer: draft.answer,
+                price: draft.price
+            )
         case .editExistingQuestion(let dto):
-            view?.displayQuestionContent(text: dto.text, answer: dto.answer, price: dto.price)
+            Task {
+                do {
+                    medias = try await databaseService.readMedias(ids: dto.medias)
+                    mediaDrafts = []
+                    await MainActor.run {
+                        view?.displayQuestionContent(
+                            medias: medias,
+                            mediaDrafts: mediaDrafts,
+                            text: dto.text,
+                            answer: dto.answer,
+                            price: dto.price
+                        )
+                    }
+                } catch {
+                    await MainActor.run {
+                        view?.displayError(text: error.localizedDescription)
+                    }
+                }
+            }
+        }
+    }
+
+    func updateQuestionContent(text: String, answer: String, price: Int) {
+        view?.displayQuestionContent(
+            medias: medias,
+            mediaDrafts: mediaDrafts,
+            text: text,
+            answer: answer,
+            price: price
+        )
+    }
+
+    func addPhoto(photo: PhotosPickerItem) {
+        Task {
+            do {
+                guard let data = try await photo.loadTransferable(type: Data.self) else {
+                    return
+                }
+                let draft = QuestionsGridMediaDraft(
+                    id: UUID(),
+                    fileName: UUID().uuidString,
+                    fileExtension: "png",
+                    createdAt: .now
+                )
+                try await mediaStorageService.saveImage(data: data, for: draft)
+                mediaDrafts.append(draft)
+                await MainActor.run {
+                    view?.displayUpdateContent()
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
         }
     }
 
@@ -53,17 +126,17 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
                 price: price,
                 isAnswered: draft.isAnswered
             )
-            view?.displaySubmitNewQuestion(question: newDraft, topic: topic)
+            view?.displaySubmitNewQuestion(question: newDraft, medias: mediaDrafts, topic: topic)
         case .editExistingQuestion(let dto):
             let newDTO = QuestionsGridQuestionDTO(
                 id: dto.id,
-                medias: dto.medias,
+                medias: medias.map { $0.id },
                 text: text,
                 answer: answer,
                 price: price,
                 isAnswered: dto.isAnswered
             )
-            view?.displaySubmitUpdatedQuestion(question: newDTO)
+            view?.displaySubmitUpdatedQuestion(question: newDTO, medias: mediaDrafts)
         }
     }
 

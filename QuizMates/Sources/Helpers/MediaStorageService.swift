@@ -10,7 +10,7 @@ import SwiftData
 import UIKit
 
 protocol MediaStorageService: Actor {
-    func saveImage(data: Data, for item: QuestionsGridMediaDTO) throws
+    func saveImage(data: Data, for draft: QuestionsGridMediaDraft) throws
     func remove(item: QuestionsGridMediaDTO)
     func removeOrphanedItems() async
 }
@@ -29,11 +29,11 @@ actor MediaStorageActor: MediaStorageService {
 
     // MARK: - MediaStorageService
 
-    func saveImage(data: Data, for item: QuestionsGridMediaDTO) throws {
+    func saveImage(data: Data, for draft: QuestionsGridMediaDraft) throws {
         if let image = UIImage(data: data), let compressedData = image.jpegData(compressionQuality: 0.8) {
-            try compressedData.write(to: item.localURL, options: .atomic)
+            try compressedData.write(to: draft.localURL, options: .atomic)
         } else {
-            try data.write(to: item.localURL, options: .atomic)
+            try data.write(to: draft.localURL, options: .atomic)
         }
     }
 

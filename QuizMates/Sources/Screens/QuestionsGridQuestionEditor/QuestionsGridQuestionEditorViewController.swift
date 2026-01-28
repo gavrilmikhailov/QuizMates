@@ -5,21 +5,36 @@
 //  Created by Gavriil Mikhailov on 24.01.2026.
 //
 
+import PhotosUI
 import SwiftUI
 
 @MainActor
 protocol QuestionsGridQuestionEditorDelegate: AnyObject {
-    func didSubmitNewQuestion(question: QuestionsGridQuestionDraft, topic: QuestionsGridTopicDTO)
-    func didSubmitUpdatedQuestion(question: QuestionsGridQuestionDTO)
+    func didSubmitNewQuestion(
+        question: QuestionsGridQuestionDraft,
+        medias: [QuestionsGridMediaDraft],
+        topic: QuestionsGridTopicDTO
+    )
+    func didSubmitUpdatedQuestion(question: QuestionsGridQuestionDTO, medias: [QuestionsGridMediaDraft],)
     func didDeleteQuestion(question: QuestionsGridQuestionDTO)
 }
 
 @MainActor
 protocol QuestionsGridQuestionEditorViewControllerProtocol: AnyObject {
-    func displayQuestionLoading()
-    func displayQuestionContent(text: String, answer: String, price: Int)
-    func displaySubmitNewQuestion(question: QuestionsGridQuestionDraft, topic: QuestionsGridTopicDTO)
-    func displaySubmitUpdatedQuestion(question: QuestionsGridQuestionDTO)
+    func displayQuestionContent(
+        medias: [QuestionsGridMediaDTO],
+        mediaDrafts: [QuestionsGridMediaDraft],
+        text: String,
+        answer: String,
+        price: Int
+    )
+    func displayUpdateContent()
+    func displaySubmitNewQuestion(
+        question: QuestionsGridQuestionDraft,
+        medias: [QuestionsGridMediaDraft],
+        topic: QuestionsGridTopicDTO
+    )
+    func displaySubmitUpdatedQuestion(question: QuestionsGridQuestionDTO, medias: [QuestionsGridMediaDraft])
     func displayDeleteQuestion(question: QuestionsGridQuestionDTO)
     func displayError(text: String)
 }
@@ -137,23 +152,39 @@ final class QuestionsGridQuestionEditorViewController: UIHostingController<Quest
 
 extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditorViewControllerProtocol {
 
-    func displayQuestionLoading() {
-        interactor.loadQuestionContent()
-    }
-
-    func displayQuestionContent(text: String, answer: String, price: Int) {
+    func displayQuestionContent(
+        medias: [QuestionsGridMediaDTO],
+        mediaDrafts: [QuestionsGridMediaDraft],
+        text: String,
+        answer: String,
+        price: Int
+    ) {
+        viewModel.medias = medias
+        viewModel.mediaDrafts = mediaDrafts
         viewModel.questionText = text
         viewModel.questionAnswer = answer
         viewModel.questionPrice = price
     }
 
-    func displaySubmitNewQuestion(question: QuestionsGridQuestionDraft, topic: QuestionsGridTopicDTO) {
-        delegate?.didSubmitNewQuestion(question: question, topic: topic)
+    func displayUpdateContent() {
+        interactor.updateQuestionContent(
+            text: viewModel.questionText,
+            answer: viewModel.questionAnswer,
+            price: viewModel.questionPrice
+        )
+    }
+
+    func displaySubmitNewQuestion(
+        question: QuestionsGridQuestionDraft,
+        medias: [QuestionsGridMediaDraft],
+        topic: QuestionsGridTopicDTO
+    ) {
+        delegate?.didSubmitNewQuestion(question: question, medias: medias, topic: topic)
         onClose?()
     }
 
-    func displaySubmitUpdatedQuestion(question: QuestionsGridQuestionDTO) {
-        delegate?.didSubmitUpdatedQuestion(question: question)
+    func displaySubmitUpdatedQuestion(question: QuestionsGridQuestionDTO, medias: [QuestionsGridMediaDraft]) {
+        delegate?.didSubmitUpdatedQuestion(question: question, medias: medias)
         onClose?()
     }
 
@@ -173,4 +204,8 @@ extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditor
 // MARK: - QuestionsGridQuestionEditorViewDelegate
 
 extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditorViewDelegate {
+
+    func didPickPhoto(photo: PhotosPickerItem) {
+        interactor.addPhoto(photo: photo)
+    }
 }

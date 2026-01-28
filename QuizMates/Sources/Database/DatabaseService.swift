@@ -23,14 +23,20 @@ protocol DatabaseService: Actor {
 
     func createQuestion(
         draft: QuestionsGridQuestionDraft,
+        medias: [QuestionsGridMediaDraft],
         topic: QuestionsGridTopicDTO
     ) async throws -> QuestionsGridQuestionDTO
     func readQuestions(ids: [PersistentIdentifier]) async throws -> [QuestionsGridQuestionDTO]
     func readQuestion(id: PersistentIdentifier) async throws -> QuestionsGridQuestionDTO
-    func updateQuestion(dto: QuestionsGridQuestionDTO) async throws
+    func updateQuestion(dto: QuestionsGridQuestionDTO, medias: [QuestionsGridMediaDraft]) async throws
     func deleteQuestion(dto: QuestionsGridQuestionDTO) async throws
 
+    func createMedia(
+        draft: QuestionsGridMediaDraft,
+        question: QuestionsGridQuestionDTO
+    ) async throws -> QuestionsGridMediaDTO
     func readMedias() async throws -> [QuestionsGridMediaDTO]
+    func readMedias(ids: [PersistentIdentifier]) async throws -> [QuestionsGridMediaDTO]
 }
 
 actor DatabaseActor: DatabaseService {
@@ -132,14 +138,22 @@ actor DatabaseActor: DatabaseService {
 
     func createQuestion(
         draft: QuestionsGridQuestionDraft,
+        medias: [QuestionsGridMediaDraft],
         topic: QuestionsGridTopicDTO
     ) async throws -> QuestionsGridQuestionDTO {
         guard let topic = modelContext.model(for: topic.id) as? QuestionsGridTopicModel else {
             throw DatabaseError.notFound
         }
+        let medias = medias.map { media in
+            QuestionsGridMediaModel(
+                fileName: media.fileName,
+                fileExtension: media.fileExtension,
+                createdAt: media.createdAt
+            )
+        }
         let question = QuestionsGridQuestionModel(
             text: draft.text,
-            medias: [],
+            medias: medias,
             answer: draft.answer,
             price: draft.price,
             isAnswered: draft.isAnswered
@@ -168,15 +182,21 @@ actor DatabaseActor: DatabaseService {
         }
     }
 
-    func updateQuestion(dto: QuestionsGridQuestionDTO) async throws {
+    func updateQuestion(dto: QuestionsGridQuestionDTO, medias: [QuestionsGridMediaDraft]) async throws {
         guard let question = modelContext.model(for: dto.id) as? QuestionsGridQuestionModel else {
             throw DatabaseError.notFound
         }
+        let newMedias = try readMediasAsModels(ids: dto.medias)
+        question.medias = newMedias
         question.text = dto.text
         question.answer = dto.answer
         question.price = dto.price
         question.isAnswered = dto.isAnswered
         try modelContext.save()
+
+        for media in medias {
+            let _ = try await createMedia(draft: media, question: dto)
+        }
     }
 
     func deleteQuestion(dto: QuestionsGridQuestionDTO) async throws {
@@ -185,11 +205,46 @@ actor DatabaseActor: DatabaseService {
         try modelContext.save()
     }
 
+    func createMedia(
+        draft: QuestionsGridMediaDraft,
+        question: QuestionsGridQuestionDTO
+    ) async throws -> QuestionsGridMediaDTO {
+        guard let question = modelContext.model(for: question.id) as? QuestionsGridQuestionModel else {
+            throw DatabaseError.notFound
+        }
+        let media = QuestionsGridMediaModel(
+            fileName: draft.fileName,
+            fileExtension: draft.fileExtension,
+            createdAt: draft.createdAt
+        )
+        question.medias.append(media)
+        try modelContext.save()
+        return QuestionsGridMediaDTO(from: media)
+    }
+
     func readMedias() async throws -> [QuestionsGridMediaDTO] {
         let descriptor = FetchDescriptor<QuestionsGridMediaModel>()
         let medias = try modelContext.fetch(descriptor)
         return medias.map { media in
             QuestionsGridMediaDTO(from: media)
         }
+    }
+
+    func readMedias(ids: [PersistentIdentifier]) async throws -> [QuestionsGridMediaDTO] {
+        let medias = try readMediasAsModels(ids: ids)
+        return medias.map { media in
+            QuestionsGridMediaDTO(from: media)
+        }
+    }
+
+    // MARK: - Private methods
+
+    private func readMediasAsModels(ids: [PersistentIdentifier]) throws -> [QuestionsGridMediaModel] {
+        let descriptor = FetchDescriptor<QuestionsGridMediaModel>(
+            predicate: #Predicate { object in
+                ids.contains(object.persistentModelID)
+            }
+        )
+        return try modelContext.fetch(descriptor)
     }
 }

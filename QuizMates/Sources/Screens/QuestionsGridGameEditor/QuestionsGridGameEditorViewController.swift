@@ -175,12 +175,16 @@ extension QuestionsGridGameEditorViewController: QuestionsGridTopicEditorDelegat
 
 extension QuestionsGridGameEditorViewController: QuestionsGridQuestionEditorDelegate {
 
-    func didSubmitNewQuestion(question: QuestionsGridQuestionDraft, topic: QuestionsGridTopicDTO) {
-        interactor.addNewQuestion(question: question, topic: topic)
+    func didSubmitNewQuestion(
+        question: QuestionsGridQuestionDraft,
+        medias: [QuestionsGridMediaDraft],
+        topic: QuestionsGridTopicDTO
+    ) {
+        interactor.addNewQuestion(question: question, medias: medias, topic: topic)
     }
 
-    func didSubmitUpdatedQuestion(question: QuestionsGridQuestionDTO) {
-        interactor.updateQuestion(question: question)
+    func didSubmitUpdatedQuestion(question: QuestionsGridQuestionDTO, medias: [QuestionsGridMediaDraft]) {
+        interactor.updateQuestion(question: question, medias: medias)
     }
 
     func didDeleteQuestion(question: QuestionsGridQuestionDTO) {

@@ -15,8 +15,12 @@ protocol QuestionsGridGameEditorInteractorProtocol {
     func addNewTopic(topic: QuestionsGridTopicDraft, game: QuestionsGridGameDTO)
     func updateTopic(topic: QuestionsGridTopicDTO)
     func deleteTopic(topic: QuestionsGridTopicDTO)
-    func addNewQuestion(question: QuestionsGridQuestionDraft, topic: QuestionsGridTopicDTO)
-    func updateQuestion(question: QuestionsGridQuestionDTO)
+    func addNewQuestion(
+        question: QuestionsGridQuestionDraft,
+        medias: [QuestionsGridMediaDraft],
+        topic: QuestionsGridTopicDTO
+    )
+    func updateQuestion(question: QuestionsGridQuestionDTO, medias: [QuestionsGridMediaDraft])
     func deleteQuestion(question: QuestionsGridQuestionDTO)
     func navigateToCreateNewTopic()
     func navigateToEditTopic(topic: QuestionsGridTopicDTO?)
@@ -164,10 +168,14 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
         }
     }
 
-    func addNewQuestion(question: QuestionsGridQuestionDraft, topic: QuestionsGridTopicDTO) {
+    func addNewQuestion(
+        question: QuestionsGridQuestionDraft,
+        medias: [QuestionsGridMediaDraft],
+        topic: QuestionsGridTopicDTO
+    ) {
         Task {
             do {
-                let _ = try await databaseSevice.createQuestion(draft: question, topic: topic)
+                let _ = try await databaseSevice.createQuestion(draft: question, medias: medias, topic: topic)
                 await MainActor.run {
                     presenter.presentGameLoading()
                 }
@@ -179,10 +187,10 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
         }
     }
 
-    func updateQuestion(question: QuestionsGridQuestionDTO) {
+    func updateQuestion(question: QuestionsGridQuestionDTO, medias: [QuestionsGridMediaDraft]) {
         Task {
             do {
-                try await databaseSevice.updateQuestion(dto: question)
+                try await databaseSevice.updateQuestion(dto: question, medias: medias)
                 await MainActor.run {
                     presenter.presentGameLoading()
                 }

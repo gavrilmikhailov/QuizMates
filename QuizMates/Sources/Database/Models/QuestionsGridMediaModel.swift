@@ -14,9 +14,9 @@ class QuestionsGridMediaModel {
     var fileExtension: String
     var createdAt: Date
 
-    init(fileName: String, fileExtension: String) {
+    init(fileName: String, fileExtension: String, createdAt: Date) {
         self.fileName = fileName
         self.fileExtension = fileExtension
-        self.createdAt = .now
+        self.createdAt = createdAt
     }
 }
