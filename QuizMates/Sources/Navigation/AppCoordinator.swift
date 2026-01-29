@@ -86,12 +86,20 @@ final class AppCoordinator: BaseCoordinator {
             resolver.resolve(QuestionsGridQuestionEditorViewController.self, argument: topic)!
         }
         view.delegate = delegate
+        let nav = UINavigationController(rootViewController: view)
 
         view.onClose = { [weak self] in
             self?.router.dismissView(animated: true, completion: nil)
         }
+        view.onOpenPhotoPreview = { [weak self, weak nav] mode in
+            self?.showPhotoPreview(mode: mode, nav: nav)
+        }
 
-        let nav = UINavigationController(rootViewController: view)
         router.presentView(nav, animated: true, completion: nil)
+    }
+
+    private func showPhotoPreview(mode: QuestionsGridPhotoPreviewMode, nav: UINavigationController?) {
+        let view = resolver.resolve(QuestionsGridPhotoPreviewViewController.self, argument: mode)!
+        nav?.pushViewController(view, animated: true)
     }
 }

@@ -44,6 +44,7 @@ final class QuestionsGridQuestionEditorViewController: UIHostingController<Quest
     // MARK: - Internal properties
 
     var onClose: (() -> Void)?
+    var onOpenPhotoPreview: ((QuestionsGridPhotoPreviewMode) -> Void)?
     weak var delegate: QuestionsGridQuestionEditorDelegate?
 
     // MARK: - Private properties
@@ -209,6 +210,14 @@ extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditor
 
     func didPickPhoto(photo: PhotosPickerItem) {
         interactor.addPhoto(photo: photo)
+    }
+
+    func didTapPhoto(media: QuestionsGridMediaDTO) {
+        onOpenPhotoPreview?(.media(media))
+    }
+
+    func didTapPhoto(draft: QuestionsGridMediaDraft) {
+        onOpenPhotoPreview?(.mediaDraft(draft))
     }
 
     func didDeleteMedia(index: Int) {

@@ -11,17 +11,23 @@ import SwiftUI
 @MainActor
 protocol QuestionsGridQuestionEditorViewDelegate: AnyObject {
     func didPickPhoto(photo: PhotosPickerItem)
+    func didTapPhoto(media: QuestionsGridMediaDTO)
+    func didTapPhoto(draft: QuestionsGridMediaDraft)
     func didDeleteMedia(index: Int)
     func didDeleteMediaDraft(index: Int)
 }
 
 struct QuestionsGridQuestionEditorView: View {
     @Bindable var viewModel: QuestionsGridQuestionEditorViewModel
+
     @State private var isEditingQuestionText: Bool = false
     @State private var isEditingQuestionAnswer: Bool = false
-    @State private var selectedItem: PhotosPickerItem?
+
     @FocusState private var isFocusedQuestionText: Bool
     @FocusState private var isFocusedQuestionAnswer: Bool
+
+    @State private var selectedItem: PhotosPickerItem?
+
     weak var delegate: QuestionsGridQuestionEditorViewDelegate?
 
     private let priceValues = Array(stride(from: 50, through: 2000, by: 50))
@@ -50,9 +56,11 @@ struct QuestionsGridQuestionEditorView: View {
             HStack(alignment: .center, spacing: 8) {
                 ForEach(Array(viewModel.medias.enumerated()), id: \.element.id) { index, element in
                     QuestionsGridQuestionEditorThumbnailView(
-                        fileName: element.fileName,
-                        fileExtension: element.fileExtension,
+                        url: element.localURL,
                         size: CGSize(width: 100, height: 100),
+                        onSelect: {
+                            delegate?.didTapPhoto(media: element)
+                        },
                         onDelete: {
                             delegate?.didDeleteMedia(index: index)
                         }
@@ -60,9 +68,11 @@ struct QuestionsGridQuestionEditorView: View {
                 }
                 ForEach(Array(viewModel.mediaDrafts.enumerated()), id: \.element.id) { index, element in
                     QuestionsGridQuestionEditorThumbnailView(
-                        fileName: element.fileName,
-                        fileExtension: element.fileExtension,
+                        url: element.localURL,
                         size: CGSize(width: 100, height: 100),
+                        onSelect: {
+                            delegate?.didTapPhoto(draft: element)
+                        },
                         onDelete: {
                             delegate?.didDeleteMedia(index: index)
                         }
@@ -163,45 +173,43 @@ struct QuestionsGridQuestionEditorView: View {
 }
 
 private struct QuestionsGridQuestionEditorThumbnailView: View {
-    let fileName: String
-    let fileExtension: String
+    let url: URL
     let size: CGSize
+    let onSelect: () -> Void
     let onDelete: () -> Void
 
     var body: some View {
-        if let image = loadImage() {
-            Button(
-                action: {
-                    
-                },
-                label: {
-                    Image(uiImage: image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: size.width, height: size.height)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                }
-            )
-            .buttonStyle(.plain)
-            .contextMenu {
-                Button(
-                    role: .destructive,
-                    action: onDelete,
-                    label: {
-                        Label("Удалить", systemImage: "trash")
+        Button(
+            action: onSelect,
+            label: {
+                AsyncImage(
+                    url: url,
+                    content: { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: size.width, height: size.height)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    },
+                    placeholder: {
+                        Color.clear
+                            .frame(width: size.width, height: size.height)
+                            .overlay {
+                                ProgressView()
+                            }
                     }
                 )
             }
-        } else {
-            ProgressView()
+        )
+        .buttonStyle(.plain)
+        .contextMenu {
+            Button(
+                role: .destructive,
+                action: onDelete,
+                label: {
+                    Label("Удалить", systemImage: "trash")
+                }
+            )
         }
-    }
-
-    @MainActor
-    private func loadImage() -> UIImage? {
-        let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let mediaFolder = directory.appendingPathComponent("Media", isDirectory: true)
-        let path = mediaFolder.appending(path: "\(fileName).\(fileExtension)").path()
-        return UIImage(contentsOfFile: path)
     }
 }

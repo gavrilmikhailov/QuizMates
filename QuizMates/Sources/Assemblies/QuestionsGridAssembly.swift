@@ -157,6 +157,20 @@ final class QuestionsGridAssembly: Assembly {
                 interactor.view = view
                 return view
             }
+            // Photo preview
+            container.register(QuestionsGridPhotoPreviewViewController.self) { (resolver: Resolver, mode: QuestionsGridPhotoPreviewMode) in
+                let url = switch mode {
+                case .media(let dto):
+                    dto.localURL
+                case .mediaDraft(let draft):
+                    draft.localURL
+                }
+                let view = QuestionsGridPhotoPreviewViewController(
+                    mode: mode,
+                    rootView: QuestionsGridPhotoPreviewView(url: url)
+                )
+                return view
+            }
         }
     }
 }
