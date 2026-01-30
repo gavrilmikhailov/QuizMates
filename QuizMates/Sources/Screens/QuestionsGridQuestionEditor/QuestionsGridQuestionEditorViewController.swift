@@ -228,3 +228,12 @@ extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditor
         interactor.deleteMediaDraft(index: index)
     }
 }
+
+// MARK: - QuestionsGridPhotoPreviewDelegate
+
+extension QuestionsGridQuestionEditorViewController: QuestionsGridPhotoPreviewDelegate {
+
+    func didDeletePhoto(mode: QuestionsGridPhotoPreviewMode) {
+        interactor.deletePhoto(mode: mode)
+    }
+}

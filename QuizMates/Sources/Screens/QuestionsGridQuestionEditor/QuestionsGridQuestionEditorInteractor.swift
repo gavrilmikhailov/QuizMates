@@ -15,6 +15,7 @@ protocol QuestionsGridQuestionEditorInteractorProtocol {
     func addPhoto(photo: PhotosPickerItem)
     func deleteMedia(index: Int)
     func deleteMediaDraft(index: Int)
+    func deletePhoto(mode: QuestionsGridPhotoPreviewMode)
     func submitQuestion(text: String, answer: String, price: Int)
     func deleteQuestion()
 }
@@ -127,6 +128,17 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
     func deleteMediaDraft(index: Int) {
         mediaDrafts.remove(at: index)
         view?.displayUpdateContent()
+    }
+
+    func deletePhoto(mode: QuestionsGridPhotoPreviewMode) {
+        switch mode {
+        case .media(let dto):
+            medias.removeAll { $0.id == dto.id }
+            view?.displayUpdateContent()
+        case .mediaDraft(let draft):
+            mediaDrafts.removeAll { $0.id == draft.id }
+            view?.displayUpdateContent()
+        }
     }
 
     func submitQuestion(text: String, answer: String, price: Int) {

@@ -91,15 +91,23 @@ final class AppCoordinator: BaseCoordinator {
         view.onClose = { [weak self] in
             self?.router.dismissView(animated: true, completion: nil)
         }
-        view.onOpenPhotoPreview = { [weak self, weak nav] mode in
-            self?.showPhotoPreview(mode: mode, nav: nav)
+        view.onOpenPhotoPreview = { [weak self, weak view, weak nav] mode in
+            self?.showPhotoPreview(mode: mode, nav: nav, delegate: view)
         }
 
         router.presentView(nav, animated: true, completion: nil)
     }
 
-    private func showPhotoPreview(mode: QuestionsGridPhotoPreviewMode, nav: UINavigationController?) {
+    private func showPhotoPreview(
+        mode: QuestionsGridPhotoPreviewMode,
+        nav: UINavigationController?,
+        delegate: QuestionsGridPhotoPreviewDelegate?
+    ) {
         let view = resolver.resolve(QuestionsGridPhotoPreviewViewController.self, argument: mode)!
+        view.delegate = delegate
+        view.onClose = { [weak nav] in
+            nav?.popViewController(animated: true)
+        }
         nav?.pushViewController(view, animated: true)
     }
 }
