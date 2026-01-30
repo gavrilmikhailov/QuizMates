@@ -10,13 +10,16 @@ import SwiftUI
 
 struct QuestionsGridMediaPreviewView: View {
     let url: URL
-    let isVideo: Bool
+    let type: String
 
     var body: some View {
-        if isVideo {
-            QuestionsGridVideoPreviewView(url: url)
-        } else {
+        switch type {
+        case "photo":
             QuestionsGridPhotoPreviewView(url: url)
+        case "video", "audio":
+            QuestionsGridVideoPreviewView(url: url)
+        default:
+            EmptyView()
         }
     }
 }

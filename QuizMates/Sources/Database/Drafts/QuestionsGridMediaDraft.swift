@@ -11,7 +11,7 @@ struct QuestionsGridMediaDraft: Sendable, Identifiable {
     let id: UUID
     let fileName: String
     let fileExtension: String
-    let isVideo: Bool
+    let type: String
     let createdAt: Date
 
     var localURL: URL {

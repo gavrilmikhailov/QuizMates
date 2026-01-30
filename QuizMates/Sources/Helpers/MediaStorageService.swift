@@ -12,6 +12,7 @@ import UIKit
 protocol MediaStorageService: Actor {
     func savePhoto(data: Data, for draft: QuestionsGridMediaDraft) throws
     func saveVideo(videoFile: VideoFile, for draft: QuestionsGridMediaDraft) throws
+    func saveAudio(url: URL, for draft: QuestionsGridMediaDraft) throws
     func remove(item: QuestionsGridMediaDTO)
     func removeOrphanedItems() async
 }
@@ -40,6 +41,10 @@ actor MediaStorageActor: MediaStorageService {
 
     func saveVideo(videoFile: VideoFile, for draft: QuestionsGridMediaDraft) throws {
         try FileManager.default.moveItem(at: videoFile.url, to: draft.localURL)
+    }
+
+    func saveAudio(url: URL, for draft: QuestionsGridMediaDraft) throws {
+        try FileManager.default.copyItem(at: url, to: draft.localURL)
     }
 
     func remove(item: QuestionsGridMediaDTO) {

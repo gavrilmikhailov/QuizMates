@@ -13,6 +13,7 @@ protocol QuestionsGridQuestionEditorInteractorProtocol {
     func loadQuestionContent(isInitial: Bool)
     func updateQuestionContent(text: String, answer: String, price: Int)
     func addMediaItems(items: [PhotosPickerItem])
+    func addMediaItems(audios: [URL])
     func deleteMedia(dto: QuestionsGridMediaDTO)
     func deleteMediaDraft(draft: QuestionsGridMediaDraft)
     func submitQuestion(text: String, answer: String, price: Int)
@@ -118,7 +119,7 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
                                     id: UUID(),
                                     fileName: UUID().uuidString,
                                     fileExtension: fileExtension,
-                                    isVideo: isVideo,
+                                    type: "video",
                                     createdAt: .now
                                 )
                                 try await self.mediaStorageService.saveVideo(videoFile: videoFile, for: draft)
@@ -135,7 +136,7 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
                                     id: UUID(),
                                     fileName: UUID().uuidString,
                                     fileExtension: fileExtension,
-                                    isVideo: isVideo,
+                                    type: "photo",
                                     createdAt: .now
                                 )
                                 try await self.mediaStorageService.savePhoto(data: data, for: draft)
@@ -154,6 +155,34 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
                             self.view?.displayUpdateContent()
                         }
                     }
+                }
+            }
+        }
+    }
+
+    func addMediaItems(audios: [URL]) {
+        Task {
+            for url in audios {
+                guard url.startAccessingSecurityScopedResource() else {
+                    continue
+                }
+                let draft = QuestionsGridMediaDraft(
+                    id: UUID(),
+                    fileName: UUID().uuidString,
+                    fileExtension: url.pathExtension,
+                    type: "audio",
+                    createdAt: .now
+                )
+                do {
+                    try await mediaStorageService.saveAudio(url: url, for: draft)
+                } catch {
+                    print(error.localizedDescription)
+                }
+                url.stopAccessingSecurityScopedResource()
+
+                await MainActor.run {
+                    self.mediaDrafts.append(draft)
+                    self.view?.displayUpdateContent()
                 }
             }
         }

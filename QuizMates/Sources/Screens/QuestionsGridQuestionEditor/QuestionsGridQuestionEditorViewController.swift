@@ -220,6 +220,10 @@ extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditor
         interactor.addMediaItems(items: items)
     }
 
+    func didPickMediaItems(audios: [URL]) {
+        interactor.addMediaItems(audios: audios)
+    }
+
     func didTapMedia(media: QuestionsGridMediaDTO) {
         onOpenMediaPreview?(.media(media))
     }

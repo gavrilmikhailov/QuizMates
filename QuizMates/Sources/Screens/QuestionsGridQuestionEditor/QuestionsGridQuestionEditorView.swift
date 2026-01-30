@@ -11,6 +11,7 @@ import SwiftUI
 @MainActor
 protocol QuestionsGridQuestionEditorViewDelegate: AnyObject {
     func didPickMediaItems(items: [PhotosPickerItem])
+    func didPickMediaItems(audios: [URL])
     func didTapMedia(media: QuestionsGridMediaDTO)
     func didTapMedia(draft: QuestionsGridMediaDraft)
     func didDeleteMedia(dto: QuestionsGridMediaDTO)
@@ -26,6 +27,8 @@ struct QuestionsGridQuestionEditorView: View {
     @FocusState private var isFocusedQuestionText: Bool
     @FocusState private var isFocusedQuestionAnswer: Bool
 
+    @State private var isFileImporterPresented = false
+
     weak var delegate: QuestionsGridQuestionEditorViewDelegate?
 
     private let priceValues = Array(stride(from: 50, through: 2000, by: 50))
@@ -35,6 +38,8 @@ struct QuestionsGridQuestionEditorView: View {
             photosView
                 .padding(top: 16, leading: 0, bottom: 0, trailing: 0)
             photoPickerView
+                .padding(top: 16, leading: 16, bottom: 0, trailing: 16)
+            audioPickerView
                 .padding(top: 16, leading: 16, bottom: 0, trailing: 16)
             questionTextView
                 .padding(top: 16, leading: 16, bottom: 0, trailing: 16)
@@ -55,7 +60,7 @@ struct QuestionsGridQuestionEditorView: View {
                 ForEach(Array(viewModel.medias.enumerated()), id: \.element.id) { index, element in
                     QuestionsGridQuestionEditorThumbnailView(
                         url: element.localURL,
-                        isVideo: element.isVideo,
+                        type: element.type,
                         size: CGSize(width: 100, height: 100),
                         onSelect: {
                             delegate?.didTapMedia(media: element)
@@ -68,7 +73,7 @@ struct QuestionsGridQuestionEditorView: View {
                 ForEach(Array(viewModel.mediaDrafts.enumerated()), id: \.element.id) { index, element in
                     QuestionsGridQuestionEditorThumbnailView(
                         url: element.localURL,
-                        isVideo: element.isVideo,
+                        type: element.type,
                         size: CGSize(width: 100, height: 100),
                         onSelect: {
                             delegate?.didTapMedia(draft: element)
@@ -91,11 +96,35 @@ struct QuestionsGridQuestionEditorView: View {
                 selectionBehavior: .ordered,
                 matching: .any(of: [.images, .videos])
             ) {
-                Label("Добавить медиа", systemImage: "plus.circle.fill")
-                    .font(.title2)
+                Label("Добавить фото или видео", systemImage: "plus.circle.fill")
+                    .font(.title3)
             }
             .onChange(of: viewModel.photoPickerItems) { _, items in
                 delegate?.didPickMediaItems(items: items)
+            }
+            Spacer(minLength: 0)
+        }
+    }
+
+    private var audioPickerView: some View {
+        HStack(alignment: .center, spacing: 0) {
+            Button(
+                action: {
+                    isFileImporterPresented = true
+                },
+                label: {
+                    Label("Добавить аудио", systemImage: "plus.circle.fill")
+                        .font(.title3)
+                }
+            )
+            .fileImporter(
+                isPresented: $isFileImporterPresented,
+                allowedContentTypes: [.audio],
+                allowsMultipleSelection: true
+            ) { result in
+                if case .success(let urls) = result {
+                    delegate?.didPickMediaItems(audios: urls)
+                }
             }
             Spacer(minLength: 0)
         }
@@ -176,18 +205,38 @@ struct QuestionsGridQuestionEditorView: View {
 
 private struct QuestionsGridQuestionEditorThumbnailView: View {
     let url: URL
-    let isVideo: Bool
+    let type: String
     let size: CGSize
     let onSelect: () -> Void
     let onDelete: () -> Void
 
     @State private var videoThumbnail: UIImage?
+    @State private var audioThumbnail: UIImage?
 
     var body: some View {
         Button(
             action: onSelect,
             label: {
-                if isVideo {
+                switch type {
+                case "photo":
+                    AsyncImage(
+                        url: url,
+                        content: { image in
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: size.width, height: size.height)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                        },
+                        placeholder: {
+                            Color.clear
+                                .frame(width: size.width, height: size.height)
+                                .overlay {
+                                    ProgressView()
+                                }
+                        }
+                    )
+                case "video":
                     if let videoThumbnail {
                         Image(uiImage: videoThumbnail)
                             .resizable()
@@ -206,24 +255,23 @@ private struct QuestionsGridQuestionEditorThumbnailView: View {
                                 ProgressView()
                             }
                     }
-                } else {
-                    AsyncImage(
-                        url: url,
-                        content: { image in
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: size.width, height: size.height)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                        },
-                        placeholder: {
-                            Color.clear
-                                .frame(width: size.width, height: size.height)
-                                .overlay {
-                                    ProgressView()
-                                }
-                        }
-                    )
+                case "audio":
+                    if let audioThumbnail {
+                        Image(uiImage: audioThumbnail)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: size.width, height: size.height)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    } else {
+                        Color.clear
+                            .frame(width: size.width, height: size.height)
+                            .overlay {
+                                ProgressView()
+                            }
+                    }
+                default:
+                    Color.clear
+                        .frame(width: size.width, height: size.height)
                 }
             }
         )
@@ -238,10 +286,17 @@ private struct QuestionsGridQuestionEditorThumbnailView: View {
             )
         }
         .onAppear {
-            if isVideo {
+            switch type {
+            case "video":
                 Task {
                     videoThumbnail = await generateVideoThumbnail(for: url)
                 }
+            case "audio":
+                Task {
+                    audioThumbnail = generateAudioThumbnail()
+                }
+            default:
+                break
             }
         }
     }
@@ -259,6 +314,16 @@ private struct QuestionsGridQuestionEditorThumbnailView: View {
         } catch {
             print("Couldn't generate video thumbnail: \(error)")
             return UIImage(systemName: "video.slash")
+        }
+    }
+
+    private func generateAudioThumbnail() -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 100, height: 100))
+        return renderer.image { ctx in
+            UIColor.systemGray6.setFill()
+            ctx.fill(CGRect(x: 0, y: 0, width: 100, height: 100))
+            let icon = UIImage(systemName: "music.mic")?.withTintColor(.systemPurple)
+            icon?.draw(in: CGRect(x: 25, y: 25, width: 50, height: 50))
         }
     }
 }

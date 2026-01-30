@@ -165,15 +165,15 @@ final class QuestionsGridAssembly: Assembly {
                 case .mediaDraft(let draft):
                     draft.localURL
                 }
-                let isVideo = switch mode {
+                let type = switch mode {
                 case .media(let dto):
-                    dto.isVideo
+                    dto.type
                 case .mediaDraft(let draft):
-                    draft.isVideo
+                    draft.type
                 }
                 let view = QuestionsGridMediaPreviewViewController(
                     mode: mode,
-                    rootView: QuestionsGridMediaPreviewView(url: url, isVideo: isVideo)
+                    rootView: QuestionsGridMediaPreviewView(url: url, type: type)
                 )
                 return view
             }
