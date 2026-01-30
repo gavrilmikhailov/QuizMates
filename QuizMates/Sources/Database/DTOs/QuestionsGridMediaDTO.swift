@@ -12,12 +12,14 @@ struct QuestionsGridMediaDTO: Sendable, Identifiable {
     let id: PersistentIdentifier
     let fileName: String
     let fileExtension: String
+    let isVideo: Bool
     let createdAt: Date
 
     init(from model: QuestionsGridMediaModel) {
         id = model.id
         fileName = model.fileName
         fileExtension = model.fileExtension
+        isVideo = model.isVideo
         createdAt = model.createdAt
     }
 

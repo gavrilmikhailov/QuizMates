@@ -12,11 +12,13 @@ import SwiftData
 class QuestionsGridMediaModel {
     var fileName: String
     var fileExtension: String
+    var isVideo: Bool
     var createdAt: Date
 
-    init(fileName: String, fileExtension: String, createdAt: Date) {
+    init(fileName: String, fileExtension: String, isVideo: Bool, createdAt: Date) {
         self.fileName = fileName
         self.fileExtension = fileExtension
+        self.isVideo = isVideo
         self.createdAt = createdAt
     }
 }

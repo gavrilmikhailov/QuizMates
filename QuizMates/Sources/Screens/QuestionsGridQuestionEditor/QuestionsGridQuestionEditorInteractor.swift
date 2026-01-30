@@ -106,11 +106,13 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
                     guard let fileExtension = item.supportedContentTypes.first?.preferredFilenameExtension else {
                         continue
                     }
+                    let isVideo = item.supportedContentTypes.contains { $0.conforms(to: .movie) }
                     print("Did pick media with file extension: \(fileExtension)")
                     let draft = QuestionsGridMediaDraft(
                         id: UUID(),
                         fileName: UUID().uuidString,
                         fileExtension: fileExtension,
+                        isVideo: isVideo,
                         createdAt: .now
                     )
                     try await mediaStorageService.saveImage(data: data, for: draft)

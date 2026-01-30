@@ -148,6 +148,7 @@ actor DatabaseActor: DatabaseService {
             QuestionsGridMediaModel(
                 fileName: media.fileName,
                 fileExtension: media.fileExtension,
+                isVideo: media.isVideo,
                 createdAt: media.createdAt
             )
         }
@@ -215,6 +216,7 @@ actor DatabaseActor: DatabaseService {
         let media = QuestionsGridMediaModel(
             fileName: draft.fileName,
             fileExtension: draft.fileExtension,
+            isVideo: draft.isVideo,
             createdAt: draft.createdAt
         )
         question.medias.append(media)

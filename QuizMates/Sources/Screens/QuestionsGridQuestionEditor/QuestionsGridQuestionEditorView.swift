@@ -26,8 +26,6 @@ struct QuestionsGridQuestionEditorView: View {
     @FocusState private var isFocusedQuestionText: Bool
     @FocusState private var isFocusedQuestionAnswer: Bool
 
-    @State private var photoPickerItems: [PhotosPickerItem] = []
-
     weak var delegate: QuestionsGridQuestionEditorViewDelegate?
 
     private let priceValues = Array(stride(from: 50, through: 2000, by: 50))
@@ -57,6 +55,7 @@ struct QuestionsGridQuestionEditorView: View {
                 ForEach(Array(viewModel.medias.enumerated()), id: \.element.id) { index, element in
                     QuestionsGridQuestionEditorThumbnailView(
                         url: element.localURL,
+                        isVideo: element.isVideo,
                         size: CGSize(width: 100, height: 100),
                         onSelect: {
                             delegate?.didTapPhoto(media: element)
@@ -69,6 +68,7 @@ struct QuestionsGridQuestionEditorView: View {
                 ForEach(Array(viewModel.mediaDrafts.enumerated()), id: \.element.id) { index, element in
                     QuestionsGridQuestionEditorThumbnailView(
                         url: element.localURL,
+                        isVideo: element.isVideo,
                         size: CGSize(width: 100, height: 100),
                         onSelect: {
                             delegate?.didTapPhoto(draft: element)
@@ -86,11 +86,15 @@ struct QuestionsGridQuestionEditorView: View {
 
     private var photoPickerView: some View {
         HStack(alignment: .center, spacing: 0) {
-            PhotosPicker(selection: $photoPickerItems, matching: .images) {
+            PhotosPicker(
+                selection: $viewModel.photoPickerItems,
+                selectionBehavior: .ordered,
+                matching: .any(of: [.images, .videos])
+            ) {
                 Label("Добавить фото", systemImage: "plus.circle.fill")
                     .font(.title2)
             }
-            .onChange(of: photoPickerItems) { _, items in
+            .onChange(of: viewModel.photoPickerItems) { _, items in
                 delegate?.didPickMediaItems(items: items)
             }
             Spacer(minLength: 0)
@@ -172,31 +176,50 @@ struct QuestionsGridQuestionEditorView: View {
 
 private struct QuestionsGridQuestionEditorThumbnailView: View {
     let url: URL
+    let isVideo: Bool
     let size: CGSize
     let onSelect: () -> Void
     let onDelete: () -> Void
+
+    @State private var videoThumbnail: UIImage?
 
     var body: some View {
         Button(
             action: onSelect,
             label: {
-                AsyncImage(
-                    url: url,
-                    content: { image in
-                        image
+                if isVideo {
+                    if let videoThumbnail {
+                        Image(uiImage: videoThumbnail)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(width: size.width, height: size.height)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
-                    },
-                    placeholder: {
+                    } else {
                         Color.clear
                             .frame(width: size.width, height: size.height)
                             .overlay {
                                 ProgressView()
                             }
                     }
-                )
+                } else {
+                    AsyncImage(
+                        url: url,
+                        content: { image in
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: size.width, height: size.height)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                        },
+                        placeholder: {
+                            Color.clear
+                                .frame(width: size.width, height: size.height)
+                                .overlay {
+                                    ProgressView()
+                                }
+                        }
+                    )
+                }
             }
         )
         .buttonStyle(.plain)
@@ -208,6 +231,29 @@ private struct QuestionsGridQuestionEditorThumbnailView: View {
                     Label("Удалить", systemImage: "trash")
                 }
             )
+        }
+        .onAppear {
+            if isVideo {
+                Task {
+                    videoThumbnail = await generateVideoThumbnail(for: url)
+                }
+            }
+        }
+    }
+
+    private func generateVideoThumbnail(for url: URL) async -> UIImage? {
+        let asset = AVAsset(url: url)
+        let generator = AVAssetImageGenerator(asset: asset)
+
+        generator.appliesPreferredTrackTransform = true
+
+        do {
+            let time = CMTime(seconds: 1, preferredTimescale: 600)
+            let cgImage = try await generator.image(at: time).image
+            return UIImage(cgImage: cgImage)
+        } catch {
+            print("Couldn't generate video thumbnail: \(error)")
+            return UIImage(systemName: "video.slash")
         }
     }
 }

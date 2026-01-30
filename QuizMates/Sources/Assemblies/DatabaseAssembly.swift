@@ -14,7 +14,14 @@ final class DatabaseAssembly: Assembly {
 
     func assemble(container: Container) {
         container.register(ModelContainer.self) { _ in
-            let schema = Schema([QuestionsGridGameModel.self, QuestionsGridTopicModel.self])
+            let schema = Schema(
+                [
+                    QuestionsGridGameModel.self,
+                    QuestionsGridTopicModel.self,
+                    QuestionsGridQuestionModel.self,
+                    QuestionsGridMediaModel.self
+                ]
+            )
             let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
             return try! ModelContainer(for: schema, configurations: [config])
         }

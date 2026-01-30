@@ -167,6 +167,7 @@ extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditor
         viewModel.questionText = text
         viewModel.questionAnswer = answer
         viewModel.questionPrice = price
+        viewModel.photoPickerItems = []
     }
 
     func displayUpdateContent() {
