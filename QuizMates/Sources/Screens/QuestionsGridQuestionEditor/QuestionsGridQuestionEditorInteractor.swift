@@ -101,31 +101,41 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
 
     func addMediaItems(items: [PhotosPickerItem]) {
         Task {
-            for item in items {
-                do {
-                    guard let data = try await item.loadTransferable(type: Data.self) else {
-                        continue
+            await withTaskGroup(of: QuestionsGridMediaDraft?.self) { group in
+                for item in items {
+                    group.addTask {
+                        do {
+                            guard let data = try await item.loadTransferable(type: Data.self) else {
+                                return nil
+                            }
+                            guard let fileExtension = item.supportedContentTypes.first?.preferredFilenameExtension else {
+                                return nil
+                            }
+                            let isVideo = item.supportedContentTypes.contains { $0.conforms(to: .movie) }
+                            print("Did pick media with file extension: \(fileExtension)")
+                            let draft = QuestionsGridMediaDraft(
+                                id: UUID(),
+                                fileName: UUID().uuidString,
+                                fileExtension: fileExtension,
+                                isVideo: isVideo,
+                                createdAt: .now
+                            )
+                            try await self.mediaStorageService.saveImage(data: data, for: draft)
+                            return draft
+                        } catch {
+                            print(error.localizedDescription)
+                            return nil
+                        }
                     }
-                    guard let fileExtension = item.supportedContentTypes.first?.preferredFilenameExtension else {
-                        continue
-                    }
-                    let isVideo = item.supportedContentTypes.contains { $0.conforms(to: .movie) }
-                    print("Did pick media with file extension: \(fileExtension)")
-                    let draft = QuestionsGridMediaDraft(
-                        id: UUID(),
-                        fileName: UUID().uuidString,
-                        fileExtension: fileExtension,
-                        isVideo: isVideo,
-                        createdAt: .now
-                    )
-                    try await mediaStorageService.saveImage(data: data, for: draft)
-                    mediaDrafts.append(draft)
-                } catch {
-                    print(error.localizedDescription)
                 }
-            }
-            await MainActor.run {
-                view?.displayUpdateContent()
+                for await result in group {
+                    if let draft = result {
+                        await MainActor.run {
+                            self.mediaDrafts.append(draft)
+                            self.view?.displayUpdateContent()
+                        }
+                    }
+                }
             }
         }
     }
