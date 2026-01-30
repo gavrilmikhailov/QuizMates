@@ -22,6 +22,7 @@ protocol QuestionsGridQuestionEditorDelegate: AnyObject {
 @MainActor
 protocol QuestionsGridQuestionEditorViewControllerProtocol: AnyObject {
     func displayQuestionContent(
+        isInitial: Bool,
         medias: [QuestionsGridMediaDTO],
         mediaDrafts: [QuestionsGridMediaDraft],
         text: String,
@@ -44,7 +45,7 @@ final class QuestionsGridQuestionEditorViewController: UIHostingController<Quest
     // MARK: - Internal properties
 
     var onClose: (() -> Void)?
-    var onOpenPhotoPreview: ((QuestionsGridPhotoPreviewMode) -> Void)?
+    var onOpenMediaPreview: ((QuestionsGridMediaPreviewMode) -> Void)?
     weak var delegate: QuestionsGridQuestionEditorDelegate?
 
     // MARK: - Private properties
@@ -76,7 +77,7 @@ final class QuestionsGridQuestionEditorViewController: UIHostingController<Quest
     override func viewDidLoad() {
         super.viewDidLoad()
         configureAppearance()
-        interactor.loadQuestionContent()
+        interactor.loadQuestionContent(isInitial: true)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -91,7 +92,8 @@ final class QuestionsGridQuestionEditorViewController: UIHostingController<Quest
     }
 
     private func setupNavigationBar() {
-        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.prefersLargeTitles = isNew
+        title = isNew ? "Новый вопрос" : ""
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .close,
             target: self,
@@ -112,7 +114,6 @@ final class QuestionsGridQuestionEditorViewController: UIHostingController<Quest
         } else {
             navigationItem.rightBarButtonItems = [saveButton, deleteButton]
         }
-        title = "Новый вопрос"
     }
 
     @objc
@@ -154,15 +155,21 @@ final class QuestionsGridQuestionEditorViewController: UIHostingController<Quest
 extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditorViewControllerProtocol {
 
     func displayQuestionContent(
+        isInitial: Bool,
         medias: [QuestionsGridMediaDTO],
         mediaDrafts: [QuestionsGridMediaDraft],
         text: String,
         answer: String,
         price: Int
     ) {
-        withAnimation {
+        if isInitial {
             viewModel.medias = medias
             viewModel.mediaDrafts = mediaDrafts
+        } else {
+            withAnimation {
+                viewModel.medias = medias
+                viewModel.mediaDrafts = mediaDrafts
+            }
         }
         viewModel.questionText = text
         viewModel.questionAnswer = answer
@@ -213,12 +220,12 @@ extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditor
         interactor.addMediaItems(items: items)
     }
 
-    func didTapPhoto(media: QuestionsGridMediaDTO) {
-        onOpenPhotoPreview?(.media(media))
+    func didTapMedia(media: QuestionsGridMediaDTO) {
+        onOpenMediaPreview?(.media(media))
     }
 
-    func didTapPhoto(draft: QuestionsGridMediaDraft) {
-        onOpenPhotoPreview?(.mediaDraft(draft))
+    func didTapMedia(draft: QuestionsGridMediaDraft) {
+        onOpenMediaPreview?(.mediaDraft(draft))
     }
 
     func didDeleteMedia(dto: QuestionsGridMediaDTO) {
@@ -230,11 +237,11 @@ extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditor
     }
 }
 
-// MARK: - QuestionsGridPhotoPreviewDelegate
+// MARK: - QuestionsGridMediaPreviewDelegate
 
-extension QuestionsGridQuestionEditorViewController: QuestionsGridPhotoPreviewDelegate {
+extension QuestionsGridQuestionEditorViewController: QuestionsGridMediaPreviewDelegate {
 
-    func didDeletePhoto(mode: QuestionsGridPhotoPreviewMode) {
+    func didDeleteMedia(mode: QuestionsGridMediaPreviewMode) {
         switch mode {
         case .media(let dto):
             interactor.deleteMedia(dto: dto)

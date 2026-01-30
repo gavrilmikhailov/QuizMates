@@ -10,7 +10,7 @@ import SwiftUI
 
 @MainActor
 protocol QuestionsGridQuestionEditorInteractorProtocol {
-    func loadQuestionContent()
+    func loadQuestionContent(isInitial: Bool)
     func updateQuestionContent(text: String, answer: String, price: Int)
     func addMediaItems(items: [PhotosPickerItem])
     func deleteMedia(dto: QuestionsGridMediaDTO)
@@ -51,12 +51,13 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
 
     // MARK: - QuestionsGridQuestionEditorInteractorProtocol
 
-    func loadQuestionContent() {
+    func loadQuestionContent(isInitial: Bool) {
         switch mode {
         case .createNewQuestion(let draft):
             medias = []
             mediaDrafts = []
             view?.displayQuestionContent(
+                isInitial: isInitial,
                 medias: medias,
                 mediaDrafts: mediaDrafts,
                 text: draft.text,
@@ -70,6 +71,7 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
                     mediaDrafts = []
                     await MainActor.run {
                         view?.displayQuestionContent(
+                            isInitial: isInitial,
                             medias: medias,
                             mediaDrafts: mediaDrafts,
                             text: dto.text,
@@ -88,6 +90,7 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
 
     func updateQuestionContent(text: String, answer: String, price: Int) {
         view?.displayQuestionContent(
+            isInitial: false,
             medias: medias,
             mediaDrafts: mediaDrafts,
             text: text,

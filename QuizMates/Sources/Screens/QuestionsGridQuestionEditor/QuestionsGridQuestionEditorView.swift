@@ -11,8 +11,8 @@ import SwiftUI
 @MainActor
 protocol QuestionsGridQuestionEditorViewDelegate: AnyObject {
     func didPickMediaItems(items: [PhotosPickerItem])
-    func didTapPhoto(media: QuestionsGridMediaDTO)
-    func didTapPhoto(draft: QuestionsGridMediaDraft)
+    func didTapMedia(media: QuestionsGridMediaDTO)
+    func didTapMedia(draft: QuestionsGridMediaDraft)
     func didDeleteMedia(dto: QuestionsGridMediaDTO)
     func didDeleteMediaDraft(draft: QuestionsGridMediaDraft)
 }
@@ -58,7 +58,7 @@ struct QuestionsGridQuestionEditorView: View {
                         isVideo: element.isVideo,
                         size: CGSize(width: 100, height: 100),
                         onSelect: {
-                            delegate?.didTapPhoto(media: element)
+                            delegate?.didTapMedia(media: element)
                         },
                         onDelete: {
                             delegate?.didDeleteMedia(dto: element)
@@ -71,7 +71,7 @@ struct QuestionsGridQuestionEditorView: View {
                         isVideo: element.isVideo,
                         size: CGSize(width: 100, height: 100),
                         onSelect: {
-                            delegate?.didTapPhoto(draft: element)
+                            delegate?.didTapMedia(draft: element)
                         },
                         onDelete: {
                             delegate?.didDeleteMediaDraft(draft: element)
@@ -91,7 +91,7 @@ struct QuestionsGridQuestionEditorView: View {
                 selectionBehavior: .ordered,
                 matching: .any(of: [.images, .videos])
             ) {
-                Label("Добавить фото", systemImage: "plus.circle.fill")
+                Label("Добавить медиа", systemImage: "plus.circle.fill")
                     .font(.title2)
             }
             .onChange(of: viewModel.photoPickerItems) { _, items in
@@ -194,6 +194,11 @@ private struct QuestionsGridQuestionEditorThumbnailView: View {
                             .aspectRatio(contentMode: .fill)
                             .frame(width: size.width, height: size.height)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .overlay {
+                                Image(systemName: "video")
+                                    .font(.title)
+                                    .foregroundColor(.white)
+                            }
                     } else {
                         Color.clear
                             .frame(width: size.width, height: size.height)

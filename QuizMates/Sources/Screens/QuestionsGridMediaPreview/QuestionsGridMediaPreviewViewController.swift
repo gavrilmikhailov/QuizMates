@@ -1,5 +1,5 @@
 //
-//  QuestionsGridPhotoPreviewViewController.swift
+//  QuestionsGridMediaPreviewViewController.swift
 //  QuizMates
 //
 //  Created by Gavriil Mikhailov on 29.01.2026.
@@ -8,24 +8,24 @@
 import SwiftUI
 
 @MainActor
-protocol QuestionsGridPhotoPreviewDelegate: AnyObject {
-    func didDeletePhoto(mode: QuestionsGridPhotoPreviewMode)
+protocol QuestionsGridMediaPreviewDelegate: AnyObject {
+    func didDeleteMedia(mode: QuestionsGridMediaPreviewMode)
 }
 
-final class QuestionsGridPhotoPreviewViewController: UIHostingController<QuestionsGridPhotoPreviewView> {
+final class QuestionsGridMediaPreviewViewController: UIHostingController<QuestionsGridMediaPreviewView> {
 
     // MARK: - Internal properties
 
     var onClose: (() -> Void)?
-    weak var delegate: QuestionsGridPhotoPreviewDelegate?
+    weak var delegate: QuestionsGridMediaPreviewDelegate?
 
     // MARK: - Private properties
 
-    private let mode: QuestionsGridPhotoPreviewMode
+    private let mode: QuestionsGridMediaPreviewMode
 
     // MARK: - Initializer
 
-    init(mode: QuestionsGridPhotoPreviewMode, rootView: QuestionsGridPhotoPreviewView) {
+    init(mode: QuestionsGridMediaPreviewMode, rootView: QuestionsGridMediaPreviewView) {
         self.mode = mode
         super.init(rootView: rootView)
     }
@@ -60,7 +60,7 @@ final class QuestionsGridPhotoPreviewViewController: UIHostingController<Questio
             action: #selector(deleteButtonTapped)
         )
         navigationItem.rightBarButtonItem = deleteButton
-        title = "Новый вопрос"
+        title = ""
     }
 
     @objc
@@ -72,7 +72,7 @@ final class QuestionsGridPhotoPreviewViewController: UIHostingController<Questio
         )
 
         let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [unowned self] _ in
-            self.delegate?.didDeletePhoto(mode: self.mode)
+            self.delegate?.didDeleteMedia(mode: self.mode)
             self.onClose?()
         }
         let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)

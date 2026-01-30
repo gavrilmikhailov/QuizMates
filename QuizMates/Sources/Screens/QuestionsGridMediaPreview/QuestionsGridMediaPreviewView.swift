@@ -1,13 +1,54 @@
 //
-//  QuestionsGridPhotoPreviewView.swift
+//  QuestionsGridMediaPreviewView.swift
 //  QuizMates
 //
 //  Created by Gavriil Mikhailov on 29.01.2026.
 //
 
+import AVKit
 import SwiftUI
 
-struct QuestionsGridPhotoPreviewView: View {
+struct QuestionsGridMediaPreviewView: View {
+    let url: URL
+    let isVideo: Bool
+
+    var body: some View {
+        if isVideo {
+            QuestionsGridVideoPreviewView(url: url)
+        } else {
+            QuestionsGridPhotoPreviewView(url: url)
+        }
+    }
+}
+
+private struct QuestionsGridVideoPreviewView: View {
+    let url: URL
+    @State private var player: AVPlayer?
+
+    var body: some View {
+        VideoPlayer(player: player)
+            .ignoresSafeArea()
+            .onAppear {
+                setupAndPlayVideo()
+            }
+            .onDisappear {
+                player?.pause()
+            }
+    }
+
+    private func setupAndPlayVideo() {
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("Ошибка настройки аудио сессии: \(error)")
+        }
+        player = AVPlayer(url: url)
+        player?.play()
+    }
+}
+
+private struct QuestionsGridPhotoPreviewView: View {
     let url: URL
 
     @State private var uiImage: UIImage? = nil
@@ -36,11 +77,11 @@ struct QuestionsGridPhotoPreviewView: View {
             }
         }
         .task {
-            await loadImage()
+            await loadPhoto()
         }
     }
 
-    private func loadImage() async {
+    private func loadPhoto() async {
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
             if let image = UIImage(data: data) {

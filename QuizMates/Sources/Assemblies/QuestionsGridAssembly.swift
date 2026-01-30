@@ -158,16 +158,22 @@ final class QuestionsGridAssembly: Assembly {
                 return view
             }
             // Photo preview
-            container.register(QuestionsGridPhotoPreviewViewController.self) { (resolver: Resolver, mode: QuestionsGridPhotoPreviewMode) in
+            container.register(QuestionsGridMediaPreviewViewController.self) { (resolver: Resolver, mode: QuestionsGridMediaPreviewMode) in
                 let url = switch mode {
                 case .media(let dto):
                     dto.localURL
                 case .mediaDraft(let draft):
                     draft.localURL
                 }
-                let view = QuestionsGridPhotoPreviewViewController(
+                let isVideo = switch mode {
+                case .media(let dto):
+                    dto.isVideo
+                case .mediaDraft(let draft):
+                    draft.isVideo
+                }
+                let view = QuestionsGridMediaPreviewViewController(
                     mode: mode,
-                    rootView: QuestionsGridPhotoPreviewView(url: url)
+                    rootView: QuestionsGridMediaPreviewView(url: url, isVideo: isVideo)
                 )
                 return view
             }
