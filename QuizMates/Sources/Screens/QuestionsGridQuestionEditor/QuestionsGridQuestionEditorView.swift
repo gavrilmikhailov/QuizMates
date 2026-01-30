@@ -13,8 +13,8 @@ protocol QuestionsGridQuestionEditorViewDelegate: AnyObject {
     func didPickPhoto(photo: PhotosPickerItem)
     func didTapPhoto(media: QuestionsGridMediaDTO)
     func didTapPhoto(draft: QuestionsGridMediaDraft)
-    func didDeleteMedia(index: Int)
-    func didDeleteMediaDraft(index: Int)
+    func didDeleteMedia(dto: QuestionsGridMediaDTO)
+    func didDeleteMediaDraft(draft: QuestionsGridMediaDraft)
 }
 
 struct QuestionsGridQuestionEditorView: View {
@@ -62,7 +62,7 @@ struct QuestionsGridQuestionEditorView: View {
                             delegate?.didTapPhoto(media: element)
                         },
                         onDelete: {
-                            delegate?.didDeleteMedia(index: index)
+                            delegate?.didDeleteMedia(dto: element)
                         }
                     )
                 }
@@ -74,7 +74,7 @@ struct QuestionsGridQuestionEditorView: View {
                             delegate?.didTapPhoto(draft: element)
                         },
                         onDelete: {
-                            delegate?.didDeleteMedia(index: index)
+                            delegate?.didDeleteMediaDraft(draft: element)
                         }
                     )
                 }

@@ -13,9 +13,8 @@ protocol QuestionsGridQuestionEditorInteractorProtocol {
     func loadQuestionContent()
     func updateQuestionContent(text: String, answer: String, price: Int)
     func addPhoto(photo: PhotosPickerItem)
-    func deleteMedia(index: Int)
-    func deleteMediaDraft(index: Int)
-    func deletePhoto(mode: QuestionsGridPhotoPreviewMode)
+    func deleteMedia(dto: QuestionsGridMediaDTO)
+    func deleteMediaDraft(draft: QuestionsGridMediaDraft)
     func submitQuestion(text: String, answer: String, price: Int)
     func deleteQuestion()
 }
@@ -103,10 +102,14 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
                 guard let data = try await photo.loadTransferable(type: Data.self) else {
                     return
                 }
+                guard let fileExtension = photo.supportedContentTypes.first?.preferredFilenameExtension else {
+                    return
+                }
+                print("Did pick media with file extension: \(fileExtension)")
                 let draft = QuestionsGridMediaDraft(
                     id: UUID(),
                     fileName: UUID().uuidString,
-                    fileExtension: "png",
+                    fileExtension: fileExtension,
                     createdAt: .now
                 )
                 try await mediaStorageService.saveImage(data: data, for: draft)
@@ -120,25 +123,14 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
         }
     }
 
-    func deleteMedia(index: Int) {
-        medias.remove(at: index)
-        view?.displayUpdateContent()
-    }
-    
-    func deleteMediaDraft(index: Int) {
-        mediaDrafts.remove(at: index)
+    func deleteMedia(dto: QuestionsGridMediaDTO) {
+        medias.removeAll { $0.id == dto.id }
         view?.displayUpdateContent()
     }
 
-    func deletePhoto(mode: QuestionsGridPhotoPreviewMode) {
-        switch mode {
-        case .media(let dto):
-            medias.removeAll { $0.id == dto.id }
-            view?.displayUpdateContent()
-        case .mediaDraft(let draft):
-            mediaDrafts.removeAll { $0.id == draft.id }
-            view?.displayUpdateContent()
-        }
+    func deleteMediaDraft(draft: QuestionsGridMediaDraft) {
+        mediaDrafts.removeAll { $0.id == draft.id }
+        view?.displayUpdateContent()
     }
 
     func submitQuestion(text: String, answer: String, price: Int) {

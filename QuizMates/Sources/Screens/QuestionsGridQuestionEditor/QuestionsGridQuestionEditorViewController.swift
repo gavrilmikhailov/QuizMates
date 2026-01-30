@@ -220,12 +220,12 @@ extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditor
         onOpenPhotoPreview?(.mediaDraft(draft))
     }
 
-    func didDeleteMedia(index: Int) {
-        interactor.deleteMedia(index: index)
+    func didDeleteMedia(dto: QuestionsGridMediaDTO) {
+        interactor.deleteMedia(dto: dto)
     }
 
-    func didDeleteMediaDraft(index: Int) {
-        interactor.deleteMediaDraft(index: index)
+    func didDeleteMediaDraft(draft: QuestionsGridMediaDraft) {
+        interactor.deleteMediaDraft(draft: draft)
     }
 }
 
@@ -234,6 +234,11 @@ extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditor
 extension QuestionsGridQuestionEditorViewController: QuestionsGridPhotoPreviewDelegate {
 
     func didDeletePhoto(mode: QuestionsGridPhotoPreviewMode) {
-        interactor.deletePhoto(mode: mode)
+        switch mode {
+        case .media(let dto):
+            interactor.deleteMedia(dto: dto)
+        case .mediaDraft(let draft):
+            interactor.deleteMediaDraft(draft: draft)
+        }
     }
 }
