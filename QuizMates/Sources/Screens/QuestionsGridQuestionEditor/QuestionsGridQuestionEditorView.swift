@@ -10,7 +10,7 @@ import SwiftUI
 
 @MainActor
 protocol QuestionsGridQuestionEditorViewDelegate: AnyObject {
-    func didPickPhoto(photo: PhotosPickerItem)
+    func didPickMediaItems(items: [PhotosPickerItem])
     func didTapPhoto(media: QuestionsGridMediaDTO)
     func didTapPhoto(draft: QuestionsGridMediaDraft)
     func didDeleteMedia(dto: QuestionsGridMediaDTO)
@@ -26,7 +26,7 @@ struct QuestionsGridQuestionEditorView: View {
     @FocusState private var isFocusedQuestionText: Bool
     @FocusState private var isFocusedQuestionAnswer: Bool
 
-    @State private var selectedItem: PhotosPickerItem?
+    @State private var photoPickerItems: [PhotosPickerItem] = []
 
     weak var delegate: QuestionsGridQuestionEditorViewDelegate?
 
@@ -86,14 +86,12 @@ struct QuestionsGridQuestionEditorView: View {
 
     private var photoPickerView: some View {
         HStack(alignment: .center, spacing: 0) {
-            PhotosPicker(selection: $selectedItem, matching: .images) {
+            PhotosPicker(selection: $photoPickerItems, matching: .images) {
                 Label("Добавить фото", systemImage: "plus.circle.fill")
                     .font(.title2)
             }
-            .onChange(of: selectedItem) { _, newItem in
-                if let newItem {
-                    delegate?.didPickPhoto(photo: newItem)
-                }
+            .onChange(of: photoPickerItems) { _, items in
+                delegate?.didPickMediaItems(items: items)
             }
             Spacer(minLength: 0)
         }

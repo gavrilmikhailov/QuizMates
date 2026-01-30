@@ -208,8 +208,8 @@ extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditor
 
 extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditorViewDelegate {
 
-    func didPickPhoto(photo: PhotosPickerItem) {
-        interactor.addPhoto(photo: photo)
+    func didPickMediaItems(items: [PhotosPickerItem]) {
+        interactor.addMediaItems(items: items)
     }
 
     func didTapPhoto(media: QuestionsGridMediaDTO) {

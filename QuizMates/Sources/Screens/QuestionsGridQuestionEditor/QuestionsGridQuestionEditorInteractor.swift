@@ -12,7 +12,7 @@ import SwiftUI
 protocol QuestionsGridQuestionEditorInteractorProtocol {
     func loadQuestionContent()
     func updateQuestionContent(text: String, answer: String, price: Int)
-    func addPhoto(photo: PhotosPickerItem)
+    func addMediaItems(items: [PhotosPickerItem])
     func deleteMedia(dto: QuestionsGridMediaDTO)
     func deleteMediaDraft(draft: QuestionsGridMediaDraft)
     func submitQuestion(text: String, answer: String, price: Int)
@@ -96,29 +96,31 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
         )
     }
 
-    func addPhoto(photo: PhotosPickerItem) {
+    func addMediaItems(items: [PhotosPickerItem]) {
         Task {
-            do {
-                guard let data = try await photo.loadTransferable(type: Data.self) else {
-                    return
+            for item in items {
+                do {
+                    guard let data = try await item.loadTransferable(type: Data.self) else {
+                        continue
+                    }
+                    guard let fileExtension = item.supportedContentTypes.first?.preferredFilenameExtension else {
+                        continue
+                    }
+                    print("Did pick media with file extension: \(fileExtension)")
+                    let draft = QuestionsGridMediaDraft(
+                        id: UUID(),
+                        fileName: UUID().uuidString,
+                        fileExtension: fileExtension,
+                        createdAt: .now
+                    )
+                    try await mediaStorageService.saveImage(data: data, for: draft)
+                    mediaDrafts.append(draft)
+                } catch {
+                    print(error.localizedDescription)
                 }
-                guard let fileExtension = photo.supportedContentTypes.first?.preferredFilenameExtension else {
-                    return
-                }
-                print("Did pick media with file extension: \(fileExtension)")
-                let draft = QuestionsGridMediaDraft(
-                    id: UUID(),
-                    fileName: UUID().uuidString,
-                    fileExtension: fileExtension,
-                    createdAt: .now
-                )
-                try await mediaStorageService.saveImage(data: data, for: draft)
-                mediaDrafts.append(draft)
-                await MainActor.run {
-                    view?.displayUpdateContent()
-                }
-            } catch {
-                print(error.localizedDescription)
+            }
+            await MainActor.run {
+                view?.displayUpdateContent()
             }
         }
     }
