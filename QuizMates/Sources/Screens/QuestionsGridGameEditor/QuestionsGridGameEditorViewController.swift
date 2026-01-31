@@ -210,3 +210,20 @@ extension QuestionsGridGameEditorViewController: QuestionsGridQuestionEditorDele
         interactor.deleteQuestion(question: question)
     }
 }
+
+// MARK: - QuestionsGridPlayerEditorDelegate
+
+extension QuestionsGridGameEditorViewController: QuestionsGridPlayerEditorDelegate {
+
+    func didSubmitNewPlayer(player: QuestionsGridPlayerDraft, game: QuestionsGridGameDTO) {
+        interactor.addNewPlayer(player: player, game: game)
+    }
+
+    func didSubmitUpdatedPlayer(player: QuestionsGridPlayerDTO) {
+        interactor.updatePlayer(player: player)
+    }
+
+    func didDeletePlayer(player: QuestionsGridPlayerDTO) {
+        interactor.deletePlayer(player: player)
+    }
+}

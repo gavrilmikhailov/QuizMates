@@ -43,6 +43,8 @@ protocol DatabaseService: Actor {
         game: QuestionsGridGameDTO
     ) async throws -> QuestionsGridPlayerDTO
     func readPlayers(ids: [PersistentIdentifier]) async throws -> [QuestionsGridPlayerDTO]
+    func updatePlayer(dto: QuestionsGridPlayerDTO) async throws
+    func deletePlayer(dto: QuestionsGridPlayerDTO) async throws
 }
 
 actor DatabaseActor: DatabaseService {
@@ -253,6 +255,7 @@ actor DatabaseActor: DatabaseService {
             throw DatabaseError.notFound
         }
         let player = QuestionsGridPlayerModel(
+            emoji: draft.emoji,
             name: draft.name,
             order: draft.order,
             score: draft.score
@@ -273,6 +276,23 @@ actor DatabaseActor: DatabaseService {
             .map { player in
                 QuestionsGridPlayerDTO(from: player)
             }
+    }
+
+    func updatePlayer(dto: QuestionsGridPlayerDTO) async throws {
+        guard let player = modelContext.model(for: dto.id) as? QuestionsGridPlayerModel else {
+            throw DatabaseError.notFound
+        }
+        player.emoji = dto.emoji
+        player.name = dto.name
+        player.order = dto.order
+        player.score = dto.score
+        try modelContext.save()
+    }
+
+    func deletePlayer(dto: QuestionsGridPlayerDTO) async throws {
+        let player = modelContext.model(for: dto.id)
+        modelContext.delete(player)
+        try modelContext.save()
     }
 
     // MARK: - Private methods

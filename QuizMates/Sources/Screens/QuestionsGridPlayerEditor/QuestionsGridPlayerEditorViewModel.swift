@@ -9,4 +9,11 @@ import Observation
 
 @Observable
 final class QuestionsGridPlayerEditorViewModel {
+    var emoji: String
+    var name: String
+
+    init(emoji: String = "", name: String = "") {
+        self.emoji = emoji
+        self.name = name
+    }
 }

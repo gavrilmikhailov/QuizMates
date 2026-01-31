@@ -179,23 +179,33 @@ final class QuestionsGridAssembly: Assembly {
             }
             // New player
             container.register(QuestionsGridPlayerEditorViewController.self) { (resolver: Resolver, game: QuestionsGridGameDTO) in
+                let mode: QuestionsGridPlayerEditorMode = .createNewPlayer(
+                    QuestionsGridPlayerDraft(emoji: "", name: "", order: 0)
+                )
+                let interactor = QuestionsGridPlayerEditorInteractor(game: game, mode: mode)
                 let viewModel = QuestionsGridPlayerEditorViewModel()
                 let view = QuestionsGridPlayerEditorViewController(
+                    interactor: interactor,
                     viewModel: viewModel,
-                    mode: .createNewPlayer(QuestionsGridPlayerDraft(name: "", order: 0)),
+                    mode: mode,
                     rootView: QuestionsGridPlayerEditorView(viewModel: viewModel)
                 )
+                interactor.view = view
                 view.rootView.delegate = view
                 return view
             }
             // Edit player
             container.register(QuestionsGridPlayerEditorViewController.self) { (resolver: Resolver, game: QuestionsGridGameDTO, player: QuestionsGridPlayerDTO) in
+                let mode: QuestionsGridPlayerEditorMode = .editExistingPlayer(player)
+                let interactor = QuestionsGridPlayerEditorInteractor(game: game, mode: mode)
                 let viewModel = QuestionsGridPlayerEditorViewModel()
                 let view = QuestionsGridPlayerEditorViewController(
+                    interactor: interactor,
                     viewModel: viewModel,
-                    mode: .editExistingPlayer(player),
+                    mode: mode,
                     rootView: QuestionsGridPlayerEditorView(viewModel: viewModel)
                 )
+                interactor.view = view
                 view.rootView.delegate = view
                 return view
             }

@@ -117,7 +117,7 @@ final class AppCoordinator: BaseCoordinator {
     private func showEditPlayer(
         game: QuestionsGridGameDTO,
         player: QuestionsGridPlayerDTO?,
-        delegate: UIViewController?
+        delegate: QuestionsGridPlayerEditorDelegate?
     ) {
         let view: QuestionsGridPlayerEditorViewController = if let player {
             resolver.resolve(QuestionsGridPlayerEditorViewController.self, arguments: game, player)!
@@ -125,6 +125,12 @@ final class AppCoordinator: BaseCoordinator {
             resolver.resolve(QuestionsGridPlayerEditorViewController.self, argument: game)!
         }
 
-        router.presentView(view, animated: true, completion: nil)
+        view.delegate = delegate
+        view.onClose = { [weak self] in
+            self?.router.dismissView(animated: true, completion: nil)
+        }
+
+        let nav = UINavigationController(rootViewController: view)
+        router.presentView(nav, animated: true, completion: nil)
     }
 }

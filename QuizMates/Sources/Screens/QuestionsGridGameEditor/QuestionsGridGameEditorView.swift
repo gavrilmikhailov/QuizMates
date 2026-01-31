@@ -170,7 +170,15 @@ struct QuestionsGridGameEditorView: View {
     }
 
     private var gamePlayersView: some View {
-        EmptyView()
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(viewModel.players) { player in
+                HStack(alignment: .center, spacing: 0) {
+                    Text(player.emoji)
+                    Text(player.name)
+                    Spacer()
+                }
+            }
+        }
     }
 
     private var gamePlayersEmptyView: some View {

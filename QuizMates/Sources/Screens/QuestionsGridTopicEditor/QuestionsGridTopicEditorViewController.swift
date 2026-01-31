@@ -75,7 +75,8 @@ final class QuestionsGridTopicEditorViewController: UIHostingController<Question
     }
 
     private func setupNavigationBar() {
-        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.prefersLargeTitles = isNew
+        title = isNew ? "Новая тема" : ""
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .close,
             target: self,
@@ -96,7 +97,6 @@ final class QuestionsGridTopicEditorViewController: UIHostingController<Question
         } else {
             navigationItem.rightBarButtonItems = [saveButton, deleteButton]
         }
-        title = "Новая тема"
     }
 
     @objc

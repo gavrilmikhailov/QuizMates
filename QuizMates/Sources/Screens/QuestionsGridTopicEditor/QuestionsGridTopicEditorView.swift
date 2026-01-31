@@ -13,7 +13,6 @@ protocol QuestionsGridTopicEditorViewDelegate: AnyObject {
 
 struct QuestionsGridTopicEditorView: View {
     @Bindable var viewModel: QuestionsGridTopicEditorViewModel
-    @State private var isEditing: Bool = false
     @FocusState private var isFocused: Bool
     weak var delegate: QuestionsGridTopicEditorViewDelegate?
 
@@ -49,7 +48,6 @@ struct QuestionsGridTopicEditorView: View {
     private func toggleNameEditing(isOn: Bool) {
         if isOn {
             withAnimation(.spring()) {
-                isEditing = true
                 isFocused = true
             }
             Task {
@@ -63,7 +61,6 @@ struct QuestionsGridTopicEditorView: View {
             }
         } else {
             withAnimation(.spring()) {
-                isEditing = false
                 isFocused = false
             }
         }

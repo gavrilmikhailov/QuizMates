@@ -22,6 +22,11 @@ protocol QuestionsGridGameEditorInteractorProtocol {
     )
     func updateQuestion(question: QuestionsGridQuestionDTO, medias: [QuestionsGridMediaDraft])
     func deleteQuestion(question: QuestionsGridQuestionDTO)
+
+    func addNewPlayer(player: QuestionsGridPlayerDraft, game: QuestionsGridGameDTO)
+    func updatePlayer(player: QuestionsGridPlayerDTO)
+    func deletePlayer(player: QuestionsGridPlayerDTO)
+
     func navigateToCreateNewTopic()
     func navigateToEditTopic(topic: QuestionsGridTopicDTO?)
     func navigateToCreateNewQuestion(topic: QuestionsGridTopicDTO)
@@ -209,6 +214,51 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
         Task {
             do {
                 try await databaseSevice.deleteQuestion(dto: question)
+                await MainActor.run {
+                    presenter.presentGameLoading()
+                }
+            } catch {
+                await MainActor.run {
+                    presenter.presentError(text: error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    func addNewPlayer(player: QuestionsGridPlayerDraft, game: QuestionsGridGameDTO) {
+        Task {
+            do {
+                let _ = try await databaseSevice.createPlayer(draft: player, game: game)
+                await MainActor.run {
+                    presenter.presentGameLoading()
+                }
+            } catch {
+                await MainActor.run {
+                    presenter.presentError(text: error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    func updatePlayer(player: QuestionsGridPlayerDTO) {
+        Task {
+            do {
+                try await databaseSevice.updatePlayer(dto: player)
+                await MainActor.run {
+                    presenter.presentGameLoading()
+                }
+            } catch {
+                await MainActor.run {
+                    presenter.presentError(text: error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    func deletePlayer(player: QuestionsGridPlayerDTO) {
+        Task {
+            do {
+                try await databaseSevice.deletePlayer(dto: player)
                 await MainActor.run {
                     presenter.presentGameLoading()
                 }
