@@ -39,6 +39,8 @@ struct QuestionsGridQuestionEditorView: View {
                 .padding(top: 16, leading: 0, bottom: 0, trailing: 0)
             photoPickerView
                 .padding(top: 16, leading: 16, bottom: 0, trailing: 16)
+            videoPickerView
+                .padding(top: 16, leading: 16, bottom: 0, trailing: 16)
             audioPickerView
                 .padding(top: 16, leading: 16, bottom: 0, trailing: 16)
             questionTextView
@@ -94,10 +96,33 @@ struct QuestionsGridQuestionEditorView: View {
             PhotosPicker(
                 selection: $viewModel.photoPickerItems,
                 selectionBehavior: .ordered,
-                matching: .any(of: [.images, .videos])
+                matching: .any(of: [.images])
             ) {
-                Label("Добавить фото или видео", systemImage: "plus.circle.fill")
-                    .font(.title3)
+                HStack(alignment: .center, spacing: 12) {
+                    Image(systemName: "photo.badge.plus")
+                    Text("Добавить фото")
+                        .font(.title3)
+                }
+            }
+            .onChange(of: viewModel.photoPickerItems) { _, items in
+                delegate?.didPickMediaItems(items: items)
+            }
+            Spacer(minLength: 0)
+        }
+    }
+
+    private var videoPickerView: some View {
+        HStack(alignment: .center, spacing: 0) {
+            PhotosPicker(
+                selection: $viewModel.photoPickerItems,
+                selectionBehavior: .ordered,
+                matching: .any(of: [.videos])
+            ) {
+                HStack(alignment: .center, spacing: 12) {
+                    Image(systemName: "video.badge.plus")
+                    Text("Добавить видео")
+                        .font(.title3)
+                }
             }
             .onChange(of: viewModel.photoPickerItems) { _, items in
                 delegate?.didPickMediaItems(items: items)
@@ -113,8 +138,11 @@ struct QuestionsGridQuestionEditorView: View {
                     isFileImporterPresented = true
                 },
                 label: {
-                    Label("Добавить аудио", systemImage: "plus.circle.fill")
-                        .font(.title3)
+                    HStack(alignment: .center, spacing: 12) {
+                        Image(systemName: "microphone.badge.plus")
+                        Text("Добавить аудио")
+                            .font(.title3)
+                    }
                 }
             )
             .fileImporter(
