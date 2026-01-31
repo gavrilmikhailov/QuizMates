@@ -19,7 +19,8 @@ final class DatabaseAssembly: Assembly {
                     QuestionsGridGameModel.self,
                     QuestionsGridTopicModel.self,
                     QuestionsGridQuestionModel.self,
-                    QuestionsGridMediaModel.self
+                    QuestionsGridMediaModel.self,
+                    QuestionsGridPlayerModel.self
                 ]
             )
             let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)

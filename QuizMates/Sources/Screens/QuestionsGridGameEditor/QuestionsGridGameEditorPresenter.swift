@@ -10,10 +10,12 @@ protocol QuestionsGridGameEditorPresenterProtocol {
     func presentGameLoading()
     func presentGameContent(
         game: QuestionsGridGameDTO,
-        topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])]
+        topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])],
+        players: [QuestionsGridPlayerDTO]
     )
     func presentNavigateToEditTopic(topic: QuestionsGridTopicDTO?, game: QuestionsGridGameDTO)
     func presentNavigateToEditQuestion(question: QuestionsGridQuestionDTO?, topic: QuestionsGridTopicDTO)
+    func presentNavigateToEditPlayer(player: QuestionsGridPlayerDTO?, game: QuestionsGridGameDTO)
     func presentError(text: String)
 }
 
@@ -32,7 +34,8 @@ final class QuestionsGridGameEditorPresenter: QuestionsGridGameEditorPresenterPr
 
     func presentGameContent(
         game: QuestionsGridGameDTO,
-        topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])]
+        topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])],
+        players: [QuestionsGridPlayerDTO]
     ) {
         let sortedTopics = topics
             .sorted { lhs, rhs in
@@ -41,7 +44,8 @@ final class QuestionsGridGameEditorPresenter: QuestionsGridGameEditorPresenterPr
             .map { topic, questions in
                 return (topic, questions.sorted { $0.price < $1.price })
             }
-        view?.displayGameContent(game: game, topics: sortedTopics)
+        let sortedPlayers = players.sorted { $0.order < $1.order }
+        view?.displayGameContent(game: game, topics: sortedTopics, players: sortedPlayers)
     }
 
     func presentNavigateToEditTopic(topic: QuestionsGridTopicDTO?, game: QuestionsGridGameDTO) {
@@ -50,6 +54,10 @@ final class QuestionsGridGameEditorPresenter: QuestionsGridGameEditorPresenterPr
 
     func presentNavigateToEditQuestion(question: QuestionsGridQuestionDTO?, topic: QuestionsGridTopicDTO) {
         view?.displayNavigateToEditQuestion(question: question, topic: topic)
+    }
+
+    func presentNavigateToEditPlayer(player: QuestionsGridPlayerDTO?, game: QuestionsGridGameDTO) {
+        view?.displayNavigateToEditPlayer(player: player, game: game)
     }
 
     func presentError(text: String) {

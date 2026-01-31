@@ -26,6 +26,7 @@ protocol QuestionsGridGameEditorInteractorProtocol {
     func navigateToEditTopic(topic: QuestionsGridTopicDTO?)
     func navigateToCreateNewQuestion(topic: QuestionsGridTopicDTO)
     func navigateToEditQuestion(question: QuestionsGridQuestionDTO, topic: QuestionsGridTopicDTO)
+    func navigateToEditPlayer(player: QuestionsGridPlayerDTO?)
 }
 
 @MainActor
@@ -87,8 +88,9 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
                     let topicQuestions = try await databaseSevice.readQuestions(ids: topic.questions)
                     content.append((topic, topicQuestions))
                 }
+                let players = try await databaseSevice.readPlayers(ids: game.players)
                 await MainActor.run {
-                    presenter.presentGameContent(game: game, topics: content)
+                    presenter.presentGameContent(game: game, topics: content, players: players)
                 }
             } catch {
                 await MainActor.run {
@@ -107,7 +109,8 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
             id: game.id,
             name: name,
             createdAt: game.createdAt,
-            topics: game.topics
+            topics: game.topics,
+            players: game.players
         )
         Task {
             do {
@@ -237,6 +240,13 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
 
     func navigateToEditQuestion(question: QuestionsGridQuestionDTO, topic: QuestionsGridTopicDTO) {
         presenter.presentNavigateToEditQuestion(question: question, topic: topic)
+    }
+
+    func navigateToEditPlayer(player: QuestionsGridPlayerDTO?) {
+        guard let game else {
+            return
+        }
+        presenter.presentNavigateToEditPlayer(player: player, game: game)
     }
 
     // MARK: - Private methods

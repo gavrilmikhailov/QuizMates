@@ -177,6 +177,28 @@ final class QuestionsGridAssembly: Assembly {
                 )
                 return view
             }
+            // New player
+            container.register(QuestionsGridPlayerEditorViewController.self) { (resolver: Resolver, game: QuestionsGridGameDTO) in
+                let viewModel = QuestionsGridPlayerEditorViewModel()
+                let view = QuestionsGridPlayerEditorViewController(
+                    viewModel: viewModel,
+                    mode: .createNewPlayer(QuestionsGridPlayerDraft(name: "", order: 0)),
+                    rootView: QuestionsGridPlayerEditorView(viewModel: viewModel)
+                )
+                view.rootView.delegate = view
+                return view
+            }
+            // Edit player
+            container.register(QuestionsGridPlayerEditorViewController.self) { (resolver: Resolver, game: QuestionsGridGameDTO, player: QuestionsGridPlayerDTO) in
+                let viewModel = QuestionsGridPlayerEditorViewModel()
+                let view = QuestionsGridPlayerEditorViewController(
+                    viewModel: viewModel,
+                    mode: .editExistingPlayer(player),
+                    rootView: QuestionsGridPlayerEditorView(viewModel: viewModel)
+                )
+                view.rootView.delegate = view
+                return view
+            }
         }
     }
 }

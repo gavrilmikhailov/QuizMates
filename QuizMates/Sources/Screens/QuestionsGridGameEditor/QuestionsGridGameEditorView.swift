@@ -16,6 +16,7 @@ protocol QuestionsGridGameEditorViewDelegate: AnyObject {
     func didTapCreateNewQuestion(topic: QuestionsGridTopicDTO)
     func didTapEditQuestion(question: QuestionsGridQuestionDTO, topic: QuestionsGridTopicDTO)
     func didTapDeleteQuestion(question: QuestionsGridQuestionDTO)
+    func didTapCreateNewPlayer()
 }
 
 struct QuestionsGridGameEditorView: View {
@@ -35,7 +36,14 @@ struct QuestionsGridGameEditorView: View {
                 gameTopicsView
                     .padding(top: 24, leading: 16, bottom: 0, trailing: 16)
             } else {
-                emptyView
+                gameTopicsEmptyView
+                    .padding(top: 40)
+            }
+            if !viewModel.players.isEmpty {
+                gamePlayersView
+                    .padding(top: 24, leading: 16, bottom: 0, trailing: 16)
+            } else {
+                gamePlayersEmptyView
                     .padding(top: 40)
             }
         }
@@ -140,13 +148,13 @@ struct QuestionsGridGameEditorView: View {
         }
     }
 
-    private var emptyView: some View {
+    private var gameTopicsEmptyView: some View {
         ContentUnavailableView(
             label: {
                 Label("Нет тем", systemImage: "folder.badge.questionmark")
             },
             description: {
-                Text("Вы еще не создали ни одной темы для вопросов")
+                Text("Вы еще не добавили ни одной темы для вопросов")
             },
             actions: {
                 Button(
@@ -155,6 +163,31 @@ struct QuestionsGridGameEditorView: View {
                     },
                     label: {
                         Label("Добавить новую тему", systemImage: "plus")
+                    }
+                )
+            }
+        )
+    }
+
+    private var gamePlayersView: some View {
+        EmptyView()
+    }
+
+    private var gamePlayersEmptyView: some View {
+        ContentUnavailableView(
+            label: {
+                Label("Нет игроков", systemImage: "person.crop.circle.badge.questionmark")
+            },
+            description: {
+                Text("Вы еще не добавили ни одного игрока")
+            },
+            actions: {
+                Button(
+                    action: {
+                        delegate?.didTapCreateNewPlayer()
+                    },
+                    label: {
+                        Label("Добавить нового игрока", systemImage: "plus")
                     }
                 )
             }

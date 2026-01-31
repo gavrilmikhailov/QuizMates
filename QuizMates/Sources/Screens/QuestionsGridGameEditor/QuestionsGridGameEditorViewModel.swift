@@ -11,4 +11,5 @@ import Observation
 final class QuestionsGridGameEditorViewModel {
     var name: String = ""
     var topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])] = []
+    var players: [QuestionsGridPlayerDTO] = []
 }

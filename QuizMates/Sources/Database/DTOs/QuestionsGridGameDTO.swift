@@ -13,17 +13,20 @@ struct QuestionsGridGameDTO: Sendable, Identifiable {
     let name: String
     let createdAt: Date
     let topics: [PersistentIdentifier]
+    let players: [PersistentIdentifier]
 
     init(
         id: PersistentIdentifier,
         name: String,
         createdAt: Date,
-        topics: [PersistentIdentifier]
+        topics: [PersistentIdentifier],
+        players: [PersistentIdentifier]
     ) {
         self.id = id
         self.name = name
         self.createdAt = createdAt
         self.topics = topics
+        self.players = players
     }
 
     init(from model: QuestionsGridGameModel) {
@@ -31,5 +34,6 @@ struct QuestionsGridGameDTO: Sendable, Identifiable {
         name = model.name
         createdAt = model.createdAt
         topics = model.topics.map(\.id)
+        players = model.players.map(\.id)
     }
 }

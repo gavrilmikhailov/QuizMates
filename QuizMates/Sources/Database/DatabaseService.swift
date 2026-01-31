@@ -37,6 +37,12 @@ protocol DatabaseService: Actor {
     ) async throws -> QuestionsGridMediaDTO
     func readMedias() async throws -> [QuestionsGridMediaDTO]
     func readMedias(ids: [PersistentIdentifier]) async throws -> [QuestionsGridMediaDTO]
+
+    func createPlayer(
+        draft: QuestionsGridPlayerDraft,
+        game: QuestionsGridGameDTO
+    ) async throws -> QuestionsGridPlayerDTO
+    func readPlayers(ids: [PersistentIdentifier]) async throws -> [QuestionsGridPlayerDTO]
 }
 
 actor DatabaseActor: DatabaseService {
@@ -71,7 +77,7 @@ actor DatabaseActor: DatabaseService {
     }
 
     func createGame(draft: QuestionsGridGameDraft) throws -> QuestionsGridGameDTO {
-        let game = QuestionsGridGameModel(name: draft.name, topics: [], createdAt: draft.createdAt)
+        let game = QuestionsGridGameModel(name: draft.name, topics: [], players: [], createdAt: draft.createdAt)
         modelContext.insert(game)
         try modelContext.save()
         return QuestionsGridGameDTO(from: game)
@@ -237,6 +243,36 @@ actor DatabaseActor: DatabaseService {
         return medias.map { media in
             QuestionsGridMediaDTO(from: media)
         }
+    }
+
+    func createPlayer(
+        draft: QuestionsGridPlayerDraft,
+        game: QuestionsGridGameDTO
+    ) async throws -> QuestionsGridPlayerDTO {
+        guard let game = modelContext.model(for: game.id) as? QuestionsGridGameModel else {
+            throw DatabaseError.notFound
+        }
+        let player = QuestionsGridPlayerModel(
+            name: draft.name,
+            order: draft.order,
+            score: draft.score
+        )
+        game.players.append(player)
+        try modelContext.save()
+        return QuestionsGridPlayerDTO(from: player)
+    }
+
+    func readPlayers(ids: [PersistentIdentifier]) async throws -> [QuestionsGridPlayerDTO] {
+        let descriptor = FetchDescriptor<QuestionsGridPlayerModel>(
+            predicate: #Predicate { object in
+                ids.contains(object.persistentModelID)
+            }
+        )
+        return try modelContext
+            .fetch(descriptor)
+            .map { player in
+                QuestionsGridPlayerDTO(from: player)
+            }
     }
 
     // MARK: - Private methods

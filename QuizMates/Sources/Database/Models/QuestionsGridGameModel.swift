@@ -16,9 +16,13 @@ final class QuestionsGridGameModel {
     @Relationship(deleteRule: .cascade, inverse: \QuestionsGridTopicModel.game)
     var topics: [QuestionsGridTopicModel]
 
-    init(name: String, topics: [QuestionsGridTopicModel], createdAt: Date) {
+    @Relationship(deleteRule: .cascade, inverse: \QuestionsGridPlayerModel.game)
+    var players: [QuestionsGridPlayerModel]
+
+    init(name: String, topics: [QuestionsGridTopicModel], players: [QuestionsGridPlayerModel], createdAt: Date) {
         self.name = name
         self.topics = topics
+        self.players = players
         self.createdAt = createdAt
     }
 }

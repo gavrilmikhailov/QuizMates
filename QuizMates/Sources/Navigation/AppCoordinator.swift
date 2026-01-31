@@ -51,6 +51,9 @@ final class AppCoordinator: BaseCoordinator {
         view.onEditQuestion = { [weak self, weak view] question, topic in
             self?.showEditQuestion(question: question, topic: topic, delegate: view)
         }
+        view.onEditPlayer = { [weak self, weak view] player, game in
+            self?.showEditPlayer(game: game, player: player, delegate: view)
+        }
 
         router.pushView(view, animated: true, hideBottomBar: true)
     }
@@ -109,5 +112,19 @@ final class AppCoordinator: BaseCoordinator {
             nav?.popViewController(animated: true)
         }
         nav?.pushViewController(view, animated: true)
+    }
+
+    private func showEditPlayer(
+        game: QuestionsGridGameDTO,
+        player: QuestionsGridPlayerDTO?,
+        delegate: UIViewController?
+    ) {
+        let view: QuestionsGridPlayerEditorViewController = if let player {
+            resolver.resolve(QuestionsGridPlayerEditorViewController.self, arguments: game, player)!
+        } else {
+            resolver.resolve(QuestionsGridPlayerEditorViewController.self, argument: game)!
+        }
+
+        router.presentView(view, animated: true, completion: nil)
     }
 }

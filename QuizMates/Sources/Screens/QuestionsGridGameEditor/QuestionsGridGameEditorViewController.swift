@@ -10,9 +10,14 @@ import SwiftUI
 @MainActor
 protocol QuestionsGridGameEditorViewControllerProtocol: AnyObject {
     func displayGameLoading()
-    func displayGameContent(game: QuestionsGridGameDTO, topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])])
+    func displayGameContent(
+        game: QuestionsGridGameDTO,
+        topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])],
+        players: [QuestionsGridPlayerDTO]
+    )
     func displayNavigateToEditTopic(topic: QuestionsGridTopicDTO?, game: QuestionsGridGameDTO)
     func displayNavigateToEditQuestion(question: QuestionsGridQuestionDTO?, topic: QuestionsGridTopicDTO)
+    func displayNavigateToEditPlayer(player: QuestionsGridPlayerDTO?, game: QuestionsGridGameDTO)
     func displayError(text: String)
 }
 
@@ -22,6 +27,7 @@ final class QuestionsGridGameEditorViewController: UIHostingController<Questions
 
     var onEditTopic: ((QuestionsGridTopicDTO?, QuestionsGridGameDTO) -> Void)?
     var onEditQuestion: ((QuestionsGridQuestionDTO?, QuestionsGridTopicDTO) -> Void)?
+    var onEditPlayer: ((QuestionsGridPlayerDTO?, QuestionsGridGameDTO) -> Void)?
 
     // MARK: - Private properties
 
@@ -72,16 +78,14 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewCont
         interactor.loadGameContent()
     }
 
-    func displayGameContent(game: QuestionsGridGameDTO, topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])]) {
+    func displayGameContent(
+        game: QuestionsGridGameDTO,
+        topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])],
+        players: [QuestionsGridPlayerDTO]
+    ) {
         viewModel.name = game.name
         viewModel.topics = topics
-    }
-
-    func displayError(text: String) {
-        let alert = UIAlertController(title: "Ошибка", message: text, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
-        alert.addAction(okAction)
-        present(alert, animated: true, completion: nil)
+        viewModel.players = players
     }
 
     func displayNavigateToEditTopic(topic: QuestionsGridTopicDTO?, game: QuestionsGridGameDTO) {
@@ -90,6 +94,17 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewCont
 
     func displayNavigateToEditQuestion(question: QuestionsGridQuestionDTO?, topic: QuestionsGridTopicDTO) {
         onEditQuestion?(question, topic)
+    }
+
+    func displayNavigateToEditPlayer(player: QuestionsGridPlayerDTO?, game: QuestionsGridGameDTO) {
+        onEditPlayer?(player, game)
+    }
+
+    func displayError(text: String) {
+        let alert = UIAlertController(title: "Ошибка", message: text, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        alert.addAction(okAction)
+        present(alert, animated: true, completion: nil)
     }
 }
 
@@ -151,6 +166,10 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewDele
         alert.addAction(deleteAction)
 
         present(alert, animated: true, completion: nil)
+    }
+
+    func didTapCreateNewPlayer() {
+        interactor.navigateToEditPlayer(player: nil)
     }
 }
 
