@@ -34,20 +34,31 @@ final class QuestionsGridPlayerEditorInteractor: QuestionsGridPlayerEditorIntera
     // MARK: - QuestionsGridPlayerEditorInteractorProtocol
 
     func loadPlayerContent() {
+        switch mode {
+        case .createNewPlayer(let draft):
+            view?.displayContent(emoji: draft.emoji, name: draft.name)
+        case .editExistingPlayer(let dto):
+            view?.displayContent(emoji: dto.emoji, name: dto.name)
+        }
     }
 
     func submitPlayer(emoji: String, name: String) {
         switch mode {
         case .createNewPlayer(let draft):
-            let newDraft = QuestionsGridPlayerDraft(emoji: emoji, name: name, order: 0)
+            let newDraft = QuestionsGridPlayerDraft(
+                emoji: emoji,
+                name: name,
+                score: draft.score,
+                createdAt: draft.createdAt
+            )
             view?.displaySumbitNewPlayer(player: newDraft, game: game)
         case .editExistingPlayer(let dto):
             let newDTO = QuestionsGridPlayerDTO(
                 id: dto.id,
                 emoji: emoji,
                 name: name,
-                order: dto.order,
-                score: dto.score
+                score: dto.score,
+                createdAt: dto.createdAt
             )
             view?.displaySumbitUpdatedPlayer(player: newDTO)
         }

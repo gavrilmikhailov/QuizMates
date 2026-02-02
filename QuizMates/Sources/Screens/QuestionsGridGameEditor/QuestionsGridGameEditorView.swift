@@ -17,6 +17,7 @@ protocol QuestionsGridGameEditorViewDelegate: AnyObject {
     func didTapEditQuestion(question: QuestionsGridQuestionDTO, topic: QuestionsGridTopicDTO)
     func didTapDeleteQuestion(question: QuestionsGridQuestionDTO)
     func didTapCreateNewPlayer()
+    func didTapEditPlayer(player: QuestionsGridPlayerDTO)
 }
 
 struct QuestionsGridGameEditorView: View {
@@ -171,13 +172,41 @@ struct QuestionsGridGameEditorView: View {
 
     private var gamePlayersView: some View {
         VStack(alignment: .leading, spacing: 0) {
+            Text("Игроки:")
+                .font(.title3)
+                .foregroundStyle(.primary)
+                .padding(leading: 16, bottom: 8, trailing: 16)
             ForEach(viewModel.players) { player in
-                HStack(alignment: .center, spacing: 0) {
-                    Text(player.emoji)
-                    Text(player.name)
-                    Spacer()
-                }
+                Button(
+                    action: {
+                        delegate?.didTapEditPlayer(player: player)
+                    },
+                    label: {
+                        HStack(alignment: .center, spacing: 4) {
+                            Text(player.emoji)
+                            Text(player.name)
+                                .font(.title3)
+                            Spacer()
+                        }
+                        .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+                    }
+                )
+                .contentShape(Rectangle())
+                .buttonStyle(.plain)
             }
+            Button(
+                action: {
+                    delegate?.didTapCreateNewPlayer()
+                },
+                label: {
+                    HStack(alignment: .center, spacing: 12) {
+                        Image(systemName: "person.badge.plus")
+                        Text("Добавить игрока")
+                            .font(.title3)
+                    }
+                }
+            )
+            .padding(leading: 16, bottom: 8, trailing: 16)
         }
     }
 

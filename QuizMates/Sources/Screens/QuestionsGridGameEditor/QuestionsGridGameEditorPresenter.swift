@@ -44,7 +44,7 @@ final class QuestionsGridGameEditorPresenter: QuestionsGridGameEditorPresenterPr
             .map { topic, questions in
                 return (topic, questions.sorted { $0.price < $1.price })
             }
-        let sortedPlayers = players.sorted { $0.order < $1.order }
+        let sortedPlayers = players.sorted { $0.createdAt < $1.createdAt }
         view?.displayGameContent(game: game, topics: sortedTopics, players: sortedPlayers)
     }
 

@@ -5,28 +5,29 @@
 //  Created by Gavriil Mikhailov on 31.01.2026.
 //
 
+import Foundation
 import SwiftData
 
 struct QuestionsGridPlayerDTO: Sendable, Identifiable {
     let id: PersistentIdentifier
     let emoji: String
     let name: String
-    let order: Int
     let score: Int
+    let createdAt: Date
 
-    init(id: PersistentIdentifier, emoji: String, name: String, order: Int, score: Int) {
+    init(id: PersistentIdentifier, emoji: String, name: String, score: Int, createdAt: Date) {
         self.id = id
         self.emoji = emoji
         self.name = name
-        self.order = order
         self.score = score
+        self.createdAt = createdAt
     }
 
     init(from model: QuestionsGridPlayerModel) {
         id = model.id
         emoji = model.emoji
         name = model.name
-        order = model.order
         score = model.score
+        createdAt = model.createdAt
     }
 }

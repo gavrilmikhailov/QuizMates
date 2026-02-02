@@ -12,15 +12,15 @@ import SwiftData
 final class QuestionsGridPlayerModel {
     var emoji: String
     var name: String
-    var order: Int
     var score: Int
+    var createdAt: Date
 
     var game: QuestionsGridGameModel?
 
-    init(emoji: String, name: String, order: Int, score: Int) {
+    init(emoji: String, name: String, score: Int, createdAt: Date) {
         self.emoji = emoji
         self.name = name
-        self.order = order
         self.score = score
+        self.createdAt = createdAt
     }
 }

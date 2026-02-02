@@ -257,8 +257,8 @@ actor DatabaseActor: DatabaseService {
         let player = QuestionsGridPlayerModel(
             emoji: draft.emoji,
             name: draft.name,
-            order: draft.order,
-            score: draft.score
+            score: draft.score,
+            createdAt: draft.createdAt
         )
         game.players.append(player)
         try modelContext.save()
@@ -284,7 +284,6 @@ actor DatabaseActor: DatabaseService {
         }
         player.emoji = dto.emoji
         player.name = dto.name
-        player.order = dto.order
         player.score = dto.score
         try modelContext.save()
     }

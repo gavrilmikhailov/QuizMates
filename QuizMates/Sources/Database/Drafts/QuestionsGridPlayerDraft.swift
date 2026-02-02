@@ -5,16 +5,18 @@
 //  Created by Gavriil Mikhailov on 31.01.2026.
 //
 
+import Foundation
+
 struct QuestionsGridPlayerDraft: Sendable {
     let emoji: String
     let name: String
-    let order: Int
     let score: Int
+    let createdAt: Date
 
-    init(emoji: String, name: String, order: Int, score: Int = 0) {
+    init(emoji: String, name: String, score: Int = 0, createdAt: Date) {
         self.emoji = emoji
         self.name = name
-        self.order = order
         self.score = score
+        self.createdAt = createdAt
     }
 }

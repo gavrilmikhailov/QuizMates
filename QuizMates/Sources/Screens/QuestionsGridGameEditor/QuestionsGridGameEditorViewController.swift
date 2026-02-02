@@ -171,6 +171,10 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewDele
     func didTapCreateNewPlayer() {
         interactor.navigateToEditPlayer(player: nil)
     }
+
+    func didTapEditPlayer(player: QuestionsGridPlayerDTO) {
+        interactor.navigateToEditPlayer(player: player)
+    }
 }
 
 // MARK: - QuestionsGridTopicEditorDelegate

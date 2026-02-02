@@ -16,6 +16,7 @@ protocol QuestionsGridPlayerEditorDelegate: AnyObject {
 
 @MainActor
 protocol QuestionsGridPlayerEditorViewControllerProtocol: AnyObject {
+    func displayContent(emoji: String, name: String)
     func displaySumbitNewPlayer(player: QuestionsGridPlayerDraft, game: QuestionsGridGameDTO)
     func displaySumbitUpdatedPlayer(player: QuestionsGridPlayerDTO)
     func displayDeletePlayer(player: QuestionsGridPlayerDTO)
@@ -97,7 +98,7 @@ final class QuestionsGridPlayerEditorViewController: UIHostingController<Questio
             title = nil
             navigationController?.navigationBar.prefersLargeTitles = false
             navigationItem.leftBarButtonItem = closeButton
-            navigationItem.rightBarButtonItems = [deleteButton, saveButton]
+            navigationItem.rightBarButtonItems = [saveButton, deleteButton]
         }
     }
 
@@ -133,6 +134,11 @@ final class QuestionsGridPlayerEditorViewController: UIHostingController<Questio
 // MARK: - QuestionsGridPlayerEditorViewControllerProtocol
 
 extension QuestionsGridPlayerEditorViewController: QuestionsGridPlayerEditorViewControllerProtocol {
+
+    func displayContent(emoji: String, name: String) {
+        viewModel.emoji = emoji
+        viewModel.name = name
+    }
 
     func displaySumbitNewPlayer(player: QuestionsGridPlayerDraft, game: QuestionsGridGameDTO) {
         delegate?.didSubmitNewPlayer(player: player, game: game)

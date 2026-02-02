@@ -180,7 +180,7 @@ final class QuestionsGridAssembly: Assembly {
             // New player
             container.register(QuestionsGridPlayerEditorViewController.self) { (resolver: Resolver, game: QuestionsGridGameDTO) in
                 let mode: QuestionsGridPlayerEditorMode = .createNewPlayer(
-                    QuestionsGridPlayerDraft(emoji: "", name: "", order: 0)
+                    QuestionsGridPlayerDraft(emoji: "", name: "", createdAt: .now)
                 )
                 let interactor = QuestionsGridPlayerEditorInteractor(game: game, mode: mode)
                 let viewModel = QuestionsGridPlayerEditorViewModel()
