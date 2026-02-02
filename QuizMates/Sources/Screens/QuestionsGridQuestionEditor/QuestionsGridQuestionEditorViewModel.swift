@@ -17,6 +17,7 @@ final class QuestionsGridQuestionEditorViewModel {
     var questionAnswer: String
     var questionPrice: Int
     var photoPickerItems: [PhotosPickerItem]
+    var videoPickerItems: [PhotosPickerItem]
 
     init(
         medias: [QuestionsGridMediaDTO] = [],
@@ -24,7 +25,8 @@ final class QuestionsGridQuestionEditorViewModel {
         questionText: String = "",
         questionAnswer: String = "",
         questionPrice: Int = 50,
-        photoPickerItems: [PhotosPickerItem] = []
+        photoPickerItems: [PhotosPickerItem] = [],
+        videoPickerItems: [PhotosPickerItem] = []
     ) {
         self.medias = medias
         self.mediaDrafts = mediaDrafts
@@ -32,5 +34,6 @@ final class QuestionsGridQuestionEditorViewModel {
         self.questionAnswer = questionAnswer
         self.questionPrice = questionPrice
         self.photoPickerItems = photoPickerItems
+        self.videoPickerItems = videoPickerItems
     }
 }

@@ -59,7 +59,7 @@ struct QuestionsGridQuestionEditorView: View {
     private var photosView: some View {
         ScrollView(.horizontal) {
             HStack(alignment: .center, spacing: 8) {
-                ForEach(Array(viewModel.medias.enumerated()), id: \.element.id) { index, element in
+                ForEach(viewModel.medias) { element in
                     QuestionsGridQuestionEditorThumbnailView(
                         url: element.localURL,
                         type: element.type,
@@ -72,7 +72,7 @@ struct QuestionsGridQuestionEditorView: View {
                         }
                     )
                 }
-                ForEach(Array(viewModel.mediaDrafts.enumerated()), id: \.element.id) { index, element in
+                ForEach(viewModel.mediaDrafts) { element in
                     QuestionsGridQuestionEditorThumbnailView(
                         url: element.localURL,
                         type: element.type,
@@ -114,7 +114,7 @@ struct QuestionsGridQuestionEditorView: View {
     private var videoPickerView: some View {
         HStack(alignment: .center, spacing: 0) {
             PhotosPicker(
-                selection: $viewModel.photoPickerItems,
+                selection: $viewModel.videoPickerItems,
                 selectionBehavior: .ordered,
                 matching: .any(of: [.videos])
             ) {
@@ -124,7 +124,7 @@ struct QuestionsGridQuestionEditorView: View {
                         .font(.title3)
                 }
             }
-            .onChange(of: viewModel.photoPickerItems) { _, items in
+            .onChange(of: viewModel.videoPickerItems) { _, items in
                 delegate?.didPickMediaItems(items: items)
             }
             Spacer(minLength: 0)
