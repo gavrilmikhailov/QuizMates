@@ -18,6 +18,7 @@ protocol QuestionsGridGameEditorViewControllerProtocol: AnyObject {
     func displayNavigateToEditTopic(topic: QuestionsGridTopicDTO?, game: QuestionsGridGameDTO)
     func displayNavigateToEditQuestion(question: QuestionsGridQuestionDTO?, topic: QuestionsGridTopicDTO)
     func displayNavigateToEditPlayer(player: QuestionsGridPlayerDTO?, game: QuestionsGridGameDTO)
+    func displayNavigateToGameProcess(game: QuestionsGridGameDTO)
     func displayError(text: String)
 }
 
@@ -28,6 +29,7 @@ final class QuestionsGridGameEditorViewController: UIHostingController<Questions
     var onEditTopic: ((QuestionsGridTopicDTO?, QuestionsGridGameDTO) -> Void)?
     var onEditQuestion: ((QuestionsGridQuestionDTO?, QuestionsGridTopicDTO) -> Void)?
     var onEditPlayer: ((QuestionsGridPlayerDTO?, QuestionsGridGameDTO) -> Void)?
+    var onOpenGameProcess: ((QuestionsGridGameDTO) -> Void)?
 
     // MARK: - Private properties
 
@@ -98,6 +100,10 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewCont
 
     func displayNavigateToEditPlayer(player: QuestionsGridPlayerDTO?, game: QuestionsGridGameDTO) {
         onEditPlayer?(player, game)
+    }
+
+    func displayNavigateToGameProcess(game: QuestionsGridGameDTO) {
+        onOpenGameProcess?(game)
     }
 
     func displayError(text: String) {
@@ -174,6 +180,10 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewDele
 
     func didTapEditPlayer(player: QuestionsGridPlayerDTO) {
         interactor.navigateToEditPlayer(player: player)
+    }
+
+    func didTapStartGame() {
+        interactor.navigateToGameProcess()
     }
 }
 

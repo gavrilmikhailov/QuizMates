@@ -18,6 +18,7 @@ protocol QuestionsGridGameEditorViewDelegate: AnyObject {
     func didTapDeleteQuestion(question: QuestionsGridQuestionDTO)
     func didTapCreateNewPlayer()
     func didTapEditPlayer(player: QuestionsGridPlayerDTO)
+    func didTapStartGame()
 }
 
 struct QuestionsGridGameEditorView: View {
@@ -47,6 +48,9 @@ struct QuestionsGridGameEditorView: View {
                 gamePlayersEmptyView
                     .padding(top: 40)
             }
+
+            startGameView
+                .padding(top: 24, leading: 16, bottom: 0, trailing: 16)
         }
         .contentShape(Rectangle())
         .onTapGesture {
@@ -175,7 +179,8 @@ struct QuestionsGridGameEditorView: View {
             Text("Игроки:")
                 .font(.title3)
                 .foregroundStyle(.primary)
-                .padding(leading: 16, bottom: 8, trailing: 16)
+                .fontWeight(.bold)
+                .padding(bottom: 16)
             ForEach(viewModel.players) { player in
                 Button(
                     action: {
@@ -188,7 +193,7 @@ struct QuestionsGridGameEditorView: View {
                                 .font(.title3)
                             Spacer()
                         }
-                        .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+                        .padding(top: 4, bottom: 4)
                     }
                 )
                 .contentShape(Rectangle())
@@ -206,8 +211,26 @@ struct QuestionsGridGameEditorView: View {
                     }
                 }
             )
-            .padding(leading: 16, bottom: 8, trailing: 16)
+            .padding(top: 16, bottom: 0)
         }
+    }
+
+    private var startGameView: some View {
+        Button(
+            action: {
+                delegate?.didTapStartGame()
+            },
+            label: {
+                HStack(alignment: .center, spacing: 12) {
+                    Image(systemName: "play.fill")
+                    Text("Начать игру")
+                        .font(.title3)
+                }
+                .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+            }
+        )
+        .buttonStyle(.borderedProminent)
+        .disabled(viewModel.players.isEmpty || viewModel.topics.isEmpty)
     }
 
     private var gamePlayersEmptyView: some View {

@@ -54,6 +54,9 @@ final class AppCoordinator: BaseCoordinator {
         view.onEditPlayer = { [weak self, weak view] player, game in
             self?.showEditPlayer(game: game, player: player, delegate: view)
         }
+        view.onOpenGameProcess = { [weak self] game in
+            self?.showGameProcess(game: game)
+        }
 
         router.pushView(view, animated: true, hideBottomBar: true)
     }
@@ -131,6 +134,18 @@ final class AppCoordinator: BaseCoordinator {
         }
 
         let nav = UINavigationController(rootViewController: view)
+        router.presentView(nav, animated: true, completion: nil)
+    }
+
+    private func showGameProcess(game: QuestionsGridGameDTO) {
+        let view = resolver.resolve(QuestionsGridGameProcessViewController.self, argument: game)!
+
+        view.onClose = { [weak self] in
+            self?.router.dismissView(animated: true, completion: nil)
+        }
+
+        let nav = UINavigationController(rootViewController: view)
+        nav.modalPresentationStyle = .fullScreen
         router.presentView(nav, animated: true, completion: nil)
     }
 }

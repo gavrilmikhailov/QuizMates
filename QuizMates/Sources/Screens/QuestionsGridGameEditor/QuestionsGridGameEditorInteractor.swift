@@ -32,6 +32,8 @@ protocol QuestionsGridGameEditorInteractorProtocol {
     func navigateToCreateNewQuestion(topic: QuestionsGridTopicDTO)
     func navigateToEditQuestion(question: QuestionsGridQuestionDTO, topic: QuestionsGridTopicDTO)
     func navigateToEditPlayer(player: QuestionsGridPlayerDTO?)
+
+    func navigateToGameProcess()
 }
 
 @MainActor
@@ -297,6 +299,13 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
             return
         }
         presenter.presentNavigateToEditPlayer(player: player, game: game)
+    }
+
+    func navigateToGameProcess() {
+        guard let game else {
+            return
+        }
+        presenter.presentNavigateToGameProcess(game: game)
     }
 
     // MARK: - Private methods

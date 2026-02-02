@@ -16,6 +16,7 @@ protocol QuestionsGridGameEditorPresenterProtocol {
     func presentNavigateToEditTopic(topic: QuestionsGridTopicDTO?, game: QuestionsGridGameDTO)
     func presentNavigateToEditQuestion(question: QuestionsGridQuestionDTO?, topic: QuestionsGridTopicDTO)
     func presentNavigateToEditPlayer(player: QuestionsGridPlayerDTO?, game: QuestionsGridGameDTO)
+    func presentNavigateToGameProcess(game: QuestionsGridGameDTO)
     func presentError(text: String)
 }
 
@@ -58,6 +59,10 @@ final class QuestionsGridGameEditorPresenter: QuestionsGridGameEditorPresenterPr
 
     func presentNavigateToEditPlayer(player: QuestionsGridPlayerDTO?, game: QuestionsGridGameDTO) {
         view?.displayNavigateToEditPlayer(player: player, game: game)
+    }
+
+    func presentNavigateToGameProcess(game: QuestionsGridGameDTO) {
+        view?.displayNavigateToGameProcess(game: game)
     }
 
     func presentError(text: String) {

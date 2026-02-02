@@ -209,6 +209,19 @@ final class QuestionsGridAssembly: Assembly {
                 view.rootView.delegate = view
                 return view
             }
+            // Game process
+            container.register(QuestionsGridGameProcessViewController.self) { (resolver: Resolver, game: QuestionsGridGameDTO) in
+                let viewModel = QuestionsGridGameProcessViewModel()
+                let interactor = QuestionsGridGameProcessInteractor(game: game)
+                let view = QuestionsGridGameProcessViewController(
+                    interactor: interactor,
+                    viewModel: viewModel,
+                    rootView: QuestionsGridGameProcessView(viewModel: viewModel)
+                )
+                interactor.view = view
+                view.rootView.delegate = view
+                return view
+            }
         }
     }
 }
