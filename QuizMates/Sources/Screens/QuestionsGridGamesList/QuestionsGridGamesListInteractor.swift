@@ -9,7 +9,6 @@ import Foundation
 
 @MainActor
 protocol QuestionsGridGamesListInteractorProtocol: AnyObject {
-    func deleteOrphanedFiles()
     func fetchGames()
     func deleteGame(dto: QuestionsGridGameDTO)
 }
@@ -21,28 +20,19 @@ final class QuestionsGridGamesListInteractor: QuestionsGridGamesListInteractorPr
 
     private let presenter: QuestionsGridGamesListPresenterProtocol
     private let databaseService: DatabaseService
-    private let mediaStorageService: MediaStorageService
     private var games: [QuestionsGridGameDTO] = []
 
     // MARK: - Initializer
 
     init(
         presenter: QuestionsGridGamesListPresenterProtocol,
-        databaseService: DatabaseService,
-        mediaStorageService: MediaStorageService
+        databaseService: DatabaseService
     ) {
         self.presenter = presenter
         self.databaseService = databaseService
-        self.mediaStorageService = mediaStorageService
     }
 
     // MARK: - QuestionsGridGamesListInteractorProtocol
-
-    func deleteOrphanedFiles() {
-        Task {
-            await mediaStorageService.removeOrphanedItems()
-        }
-    }
 
     func fetchGames() {
         Task {

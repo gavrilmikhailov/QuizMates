@@ -15,12 +15,16 @@ final class QuestionsGridMediaModel {
     var type: String?
     var createdAt: Date?
 
+    @Attribute(.externalStorage)
+    var data: Data?
+
     var question: QuestionsGridQuestionModel?
 
-    init(fileName: String, fileExtension: String, type: String, createdAt: Date) {
+    init(fileName: String, fileExtension: String, type: String, data: Data, createdAt: Date) {
         self.fileName = fileName
         self.fileExtension = fileExtension
         self.type = type
+        self.data = data
         self.createdAt = createdAt
     }
 }

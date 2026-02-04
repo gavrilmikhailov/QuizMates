@@ -45,7 +45,6 @@ final class QuestionsGridGamesListViewController: UIHostingController<QuestionsG
     override func viewDidLoad() {
         super.viewDidLoad()
         configureAppearance()
-        interactor.deleteOrphanedFiles()
     }
 
     override func viewWillAppear(_ animated: Bool) {

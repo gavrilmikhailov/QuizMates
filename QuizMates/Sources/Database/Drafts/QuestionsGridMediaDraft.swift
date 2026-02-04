@@ -12,19 +12,22 @@ struct QuestionsGridMediaDraft: Sendable, Identifiable {
     let fileName: String
     let fileExtension: String
     let type: String
+    let data: Data
     let createdAt: Date
 
-    var localURL: URL {
-        let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let mediaFolder = directory.appendingPathComponent("Media", isDirectory: true)
+    func getTemporaryUrl() -> URL? {
+        let tempDir = FileManager.default.temporaryDirectory
+        let tempFileUrl = tempDir.appendingPathComponent("\(UUID().uuidString).\(fileExtension)")
 
-        // Создаем папку, если её нет
-        try? FileManager.default.createDirectory(at: mediaFolder, withIntermediateDirectories: true)
-
-        return mediaFolder.appendingPathComponent("\(fileName).\(fileExtension)")
-    }
-
-    func cleanUp() {
-        try? FileManager.default.removeItem(at: localURL)
+        if FileManager.default.fileExists(atPath: tempFileUrl.path) {
+            return tempFileUrl
+        }
+        do {
+            try data.write(to: tempFileUrl)
+            return tempFileUrl
+        } catch {
+            print("Ошибка сохранения временного файла: \(error)")
+            return nil
+        }
     }
 }

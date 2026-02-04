@@ -61,7 +61,7 @@ struct QuestionsGridQuestionEditorView: View {
             HStack(alignment: .center, spacing: 8) {
                 ForEach(viewModel.medias) { element in
                     QuestionsGridQuestionEditorThumbnailView(
-                        url: element.localURL,
+                        url: element.getTemporaryUrl(),
                         type: element.type,
                         size: CGSize(width: 100, height: 100),
                         onSelect: {
@@ -74,7 +74,7 @@ struct QuestionsGridQuestionEditorView: View {
                 }
                 ForEach(viewModel.mediaDrafts) { element in
                     QuestionsGridQuestionEditorThumbnailView(
-                        url: element.localURL,
+                        url: element.getTemporaryUrl(),
                         type: element.type,
                         size: CGSize(width: 100, height: 100),
                         onSelect: {
@@ -232,7 +232,7 @@ struct QuestionsGridQuestionEditorView: View {
 }
 
 private struct QuestionsGridQuestionEditorThumbnailView: View {
-    let url: URL
+    let url: URL?
     let type: String
     let size: CGSize
     let onSelect: () -> Void
@@ -316,8 +316,10 @@ private struct QuestionsGridQuestionEditorThumbnailView: View {
         .onAppear {
             switch type {
             case "video":
-                Task {
-                    videoThumbnail = await generateVideoThumbnail(for: url)
+                if let url {
+                    Task {
+                        videoThumbnail = await generateVideoThumbnail(for: url)
+                    }
                 }
             case "audio":
                 Task {

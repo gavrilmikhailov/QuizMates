@@ -30,7 +30,6 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
     // MARK: - Private properties
 
     private let databaseService: DatabaseService
-    private let mediaStorageService: MediaStorageService
     private let topic: QuestionsGridTopicDTO
     private let mode: QuestionsGridQuestionEditorMode
     private var medias: [QuestionsGridMediaDTO] = []
@@ -40,12 +39,10 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
 
     init(
         databaseService: DatabaseService,
-        mediaStorageService: MediaStorageService,
         topic: QuestionsGridTopicDTO,
         mode: QuestionsGridQuestionEditorMode
     ) {
         self.databaseService = databaseService
-        self.mediaStorageService = mediaStorageService
         self.topic = topic
         self.mode = mode
     }
@@ -106,7 +103,7 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
                 do {
                     let isVideo = item.supportedContentTypes.contains { $0.conforms(to: .movie) }
                     if isVideo {
-                        guard let videoFile = try await item.loadTransferable(type: VideoFile.self) else {
+                        guard let videoFile = try await item.loadTransferable(type: Data.self) else {
                             continue
                         }
                         guard let fileExtension = item.supportedContentTypes.first?.preferredFilenameExtension else {
@@ -118,9 +115,9 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
                             fileName: UUID().uuidString,
                             fileExtension: fileExtension,
                             type: "video",
+                            data: videoFile,
                             createdAt: .now
                         )
-                        try await self.mediaStorageService.saveVideo(videoFile: videoFile, for: draft)
                         await MainActor.run {
                             self.mediaDrafts.append(draft)
                             self.view?.displayUpdateContent()
@@ -138,9 +135,9 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
                             fileName: UUID().uuidString,
                             fileExtension: fileExtension,
                             type: "photo",
+                            data: data,
                             createdAt: .now
                         )
-                        try await self.mediaStorageService.savePhoto(data: data, for: draft)
                         await MainActor.run {
                             self.mediaDrafts.append(draft)
                             self.view?.displayUpdateContent()
@@ -160,24 +157,23 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
                 guard url.startAccessingSecurityScopedResource() else {
                     continue
                 }
-                let draft = QuestionsGridMediaDraft(
-                    id: UUID(),
-                    fileName: UUID().uuidString,
-                    fileExtension: url.pathExtension,
-                    type: "audio",
-                    createdAt: .now
-                )
                 do {
-                    try await mediaStorageService.saveAudio(url: url, for: draft)
+                    let draft = QuestionsGridMediaDraft(
+                        id: UUID(),
+                        fileName: UUID().uuidString,
+                        fileExtension: url.pathExtension,
+                        type: "audio",
+                        data: try Data(contentsOf: url),
+                        createdAt: .now
+                    )
+                    await MainActor.run {
+                        self.mediaDrafts.append(draft)
+                        self.view?.displayUpdateContent()
+                    }
                 } catch {
                     print(error.localizedDescription)
                 }
                 url.stopAccessingSecurityScopedResource()
-
-                await MainActor.run {
-                    self.mediaDrafts.append(draft)
-                    self.view?.displayUpdateContent()
-                }
             }
         }
     }

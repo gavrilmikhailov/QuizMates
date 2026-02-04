@@ -16,12 +16,10 @@ final class QuestionsGridAssembly: Assembly {
         MainActor.assumeIsolated {
             container.register(QuestionsGridGamesListViewController.self) { resolver in
                 let databaseService = resolver.resolve(DatabaseService.self)!
-                let mediaStorageService = resolver.resolve(MediaStorageService.self)!
                 let presenter = QuestionsGridGamesListPresenter()
                 let interactor = QuestionsGridGamesListInteractor(
                     presenter: presenter,
-                    databaseService: databaseService,
-                    mediaStorageService: mediaStorageService
+                    databaseService: databaseService
                 )
                 let viewModel = QuestionsGridGamesListViewModel()
                 let view = QuestionsGridGamesListViewController(
@@ -112,10 +110,8 @@ final class QuestionsGridAssembly: Assembly {
             // New Question
             container.register(QuestionsGridQuestionEditorViewController.self) { (resolver: Resolver, topic: QuestionsGridTopicDTO) in
                 let databaseService = resolver.resolve(DatabaseService.self)!
-                let mediaStorageService = resolver.resolve(MediaStorageService.self)!
                 let interactor = QuestionsGridQuestionEditorInteractor(
                     databaseService: databaseService,
-                    mediaStorageService: mediaStorageService,
                     topic: topic,
                     mode: .createNewQuestion(
                         QuestionsGridQuestionDraft(text: "", answer: "", price: 50, isAnswered: false)
@@ -135,10 +131,8 @@ final class QuestionsGridAssembly: Assembly {
             // Edit Question
             container.register(QuestionsGridQuestionEditorViewController.self) { (resolver: Resolver, topic: QuestionsGridTopicDTO, question: QuestionsGridQuestionDTO) in
                 let databaseService = resolver.resolve(DatabaseService.self)!
-                let mediaStorageService = resolver.resolve(MediaStorageService.self)!
                 let interactor = QuestionsGridQuestionEditorInteractor(
                     databaseService: databaseService,
-                    mediaStorageService: mediaStorageService,
                     topic: topic,
                     mode: .editExistingQuestion(question)
                 )
@@ -161,9 +155,9 @@ final class QuestionsGridAssembly: Assembly {
             container.register(QuestionsGridMediaPreviewViewController.self) { (resolver: Resolver, mode: QuestionsGridMediaPreviewMode) in
                 let url = switch mode {
                 case .media(let dto):
-                    dto.localURL
+                    dto.getTemporaryUrl()
                 case .mediaDraft(let draft):
-                    draft.localURL
+                    draft.getTemporaryUrl()
                 }
                 let type = switch mode {
                 case .media(let dto):

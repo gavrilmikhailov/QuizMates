@@ -9,16 +9,20 @@ import AVKit
 import SwiftUI
 
 struct QuestionsGridMediaPreviewView: View {
-    let url: URL
+    let url: URL?
     let type: String
 
     var body: some View {
-        switch type {
-        case "photo":
-            QuestionsGridPhotoPreviewView(url: url)
-        case "video", "audio":
-            QuestionsGridVideoPreviewView(url: url)
-        default:
+        if let url {
+            switch type {
+            case "photo":
+                QuestionsGridPhotoPreviewView(url: url)
+            case "video", "audio":
+                QuestionsGridVideoPreviewView(url: url)
+            default:
+                EmptyView()
+            }
+        } else {
             EmptyView()
         }
     }
