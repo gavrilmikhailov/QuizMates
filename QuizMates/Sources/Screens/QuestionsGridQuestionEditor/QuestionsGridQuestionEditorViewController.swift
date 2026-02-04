@@ -45,7 +45,7 @@ final class QuestionsGridQuestionEditorViewController: UIHostingController<Quest
     // MARK: - Internal properties
 
     var onClose: (() -> Void)?
-    var onOpenMediaPreview: ((QuestionsGridMediaPreviewMode) -> Void)?
+    var onOpenMediaPreview: ((QuestionsGridMediaPreviewConfiguration) -> Void)?
     weak var delegate: QuestionsGridQuestionEditorDelegate?
 
     // MARK: - Private properties
@@ -226,19 +226,27 @@ extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditor
     }
 
     func didTapMedia(media: QuestionsGridMediaDTO) {
-        onOpenMediaPreview?(.media(media))
+        let configuration = QuestionsGridMediaPreviewConfiguration(
+            fileName: media.fileName,
+            fileExtension: media.fileExtension,
+            type: media.type,
+            data: media.data
+        )
+        onOpenMediaPreview?(configuration)
     }
 
     func didTapMedia(draft: QuestionsGridMediaDraft) {
-        onOpenMediaPreview?(.mediaDraft(draft))
+        let configuration = QuestionsGridMediaPreviewConfiguration(
+            fileName: draft.fileName,
+            fileExtension: draft.fileExtension,
+            type: draft.type,
+            data: draft.data
+        )
+        onOpenMediaPreview?(configuration)
     }
 
-    func didDeleteMedia(dto: QuestionsGridMediaDTO) {
-        interactor.deleteMedia(dto: dto)
-    }
-
-    func didDeleteMediaDraft(draft: QuestionsGridMediaDraft) {
-        interactor.deleteMediaDraft(draft: draft)
+    func didTapDeleteMedia(fileName: String) {
+        interactor.deleteMedia(fileName: fileName)
     }
 }
 
@@ -246,12 +254,7 @@ extension QuestionsGridQuestionEditorViewController: QuestionsGridQuestionEditor
 
 extension QuestionsGridQuestionEditorViewController: QuestionsGridMediaPreviewDelegate {
 
-    func didDeleteMedia(mode: QuestionsGridMediaPreviewMode) {
-        switch mode {
-        case .media(let dto):
-            interactor.deleteMedia(dto: dto)
-        case .mediaDraft(let draft):
-            interactor.deleteMediaDraft(draft: draft)
-        }
+    func didDeleteMedia(fileName: String) {
+        interactor.deleteMedia(fileName: fileName)
     }
 }

@@ -97,19 +97,19 @@ final class AppCoordinator: BaseCoordinator {
         view.onClose = { [weak self] in
             self?.router.dismissView(animated: true, completion: nil)
         }
-        view.onOpenMediaPreview = { [weak self, weak view, weak nav] mode in
-            self?.showPhotoPreview(mode: mode, nav: nav, delegate: view)
+        view.onOpenMediaPreview = { [weak self, weak view, weak nav] configuration in
+            self?.showPhotoPreview(configuration: configuration, nav: nav, delegate: view)
         }
 
         router.presentView(nav, animated: true, completion: nil)
     }
 
     private func showPhotoPreview(
-        mode: QuestionsGridMediaPreviewMode,
+        configuration: QuestionsGridMediaPreviewConfiguration,
         nav: UINavigationController?,
         delegate: QuestionsGridMediaPreviewDelegate?
     ) {
-        let view = resolver.resolve(QuestionsGridMediaPreviewViewController.self, argument: mode)!
+        let view = resolver.resolve(QuestionsGridMediaPreviewViewController.self, argument: configuration)!
         view.delegate = delegate
         view.onClose = { [weak nav] in
             nav?.popViewController(animated: true)

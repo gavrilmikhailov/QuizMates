@@ -14,6 +14,7 @@ struct QuestionsGridMediaDTO: Sendable, Identifiable {
     let fileExtension: String
     let type: String
     let data: Data
+    let thumbnailData: Data
     let createdAt: Date
 
     init(from model: QuestionsGridMediaModel) {
@@ -22,22 +23,7 @@ struct QuestionsGridMediaDTO: Sendable, Identifiable {
         fileExtension = model.fileExtension ?? ""
         type = model.type ?? ""
         data = model.data ?? Data()
+        thumbnailData = model.thumbnailData ?? Data()
         createdAt = model.createdAt ?? .now
-    }
-
-    func getTemporaryUrl() -> URL? {
-        let tempDir = FileManager.default.temporaryDirectory
-        let tempFileUrl = tempDir.appendingPathComponent("\(UUID().uuidString).\(fileExtension)")
-
-        if FileManager.default.fileExists(atPath: tempFileUrl.path) {
-            return tempFileUrl
-        }
-        do {
-            try data.write(to: tempFileUrl)
-            return tempFileUrl
-        } catch {
-            print("Ошибка сохранения временного файла: \(error)")
-            return nil
-        }
     }
 }

@@ -14,8 +14,7 @@ protocol QuestionsGridQuestionEditorInteractorProtocol {
     func updateQuestionContent(text: String, answer: String, price: Int)
     func addMediaItems(items: [PhotosPickerItem])
     func addMediaItems(audios: [URL])
-    func deleteMedia(dto: QuestionsGridMediaDTO)
-    func deleteMediaDraft(draft: QuestionsGridMediaDraft)
+    func deleteMedia(fileName: String)
     func submitQuestion(text: String, answer: String, price: Int)
     func deleteQuestion()
 }
@@ -103,10 +102,13 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
                 do {
                     let isVideo = item.supportedContentTypes.contains { $0.conforms(to: .movie) }
                     if isVideo {
-                        guard let videoFile = try await item.loadTransferable(type: Data.self) else {
+                        guard let data = try await item.loadTransferable(type: Data.self) else {
                             continue
                         }
                         guard let fileExtension = item.supportedContentTypes.first?.preferredFilenameExtension else {
+                            continue
+                        }
+                        guard let thumbnailData = QuizMatesAsset.videoPlaceholder.image.jpegData(compressionQuality: 1) else {
                             continue
                         }
                         print("Did pick video with file extension: \(fileExtension)")
@@ -115,7 +117,8 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
                             fileName: UUID().uuidString,
                             fileExtension: fileExtension,
                             type: "video",
-                            data: videoFile,
+                            data: data,
+                            thumbnailData: thumbnailData,
                             createdAt: .now
                         )
                         await MainActor.run {
@@ -136,6 +139,7 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
                             fileExtension: fileExtension,
                             type: "photo",
                             data: data,
+                            thumbnailData: UIImage(data: data)?.jpegThumbnailData() ?? Data(),
                             createdAt: .now
                         )
                         await MainActor.run {
@@ -157,6 +161,9 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
                 guard url.startAccessingSecurityScopedResource() else {
                     continue
                 }
+                guard let thumbnailData = QuizMatesAsset.audioPlaceholder.image.jpegData(compressionQuality: 1) else {
+                    continue
+                }
                 do {
                     let draft = QuestionsGridMediaDraft(
                         id: UUID(),
@@ -164,6 +171,7 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
                         fileExtension: url.pathExtension,
                         type: "audio",
                         data: try Data(contentsOf: url),
+                        thumbnailData: thumbnailData,
                         createdAt: .now
                     )
                     await MainActor.run {
@@ -178,13 +186,9 @@ final class QuestionsGridQuestionEditorInteractor: QuestionsGridQuestionEditorIn
         }
     }
 
-    func deleteMedia(dto: QuestionsGridMediaDTO) {
-        medias.removeAll { $0.id == dto.id }
-        view?.displayUpdateContent()
-    }
-
-    func deleteMediaDraft(draft: QuestionsGridMediaDraft) {
-        mediaDrafts.removeAll { $0.id == draft.id }
+    func deleteMedia(fileName: String) {
+        medias.removeAll { $0.fileName == fileName }
+        mediaDrafts.removeAll { $0.fileName == fileName }
         view?.displayUpdateContent()
     }
 

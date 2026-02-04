@@ -9,7 +9,7 @@ import SwiftUI
 
 @MainActor
 protocol QuestionsGridMediaPreviewDelegate: AnyObject {
-    func didDeleteMedia(mode: QuestionsGridMediaPreviewMode)
+    func didDeleteMedia(fileName: String)
 }
 
 final class QuestionsGridMediaPreviewViewController: UIHostingController<QuestionsGridMediaPreviewView> {
@@ -21,12 +21,12 @@ final class QuestionsGridMediaPreviewViewController: UIHostingController<Questio
 
     // MARK: - Private properties
 
-    private let mode: QuestionsGridMediaPreviewMode
+    private let fileName: String
 
     // MARK: - Initializer
 
-    init(mode: QuestionsGridMediaPreviewMode, rootView: QuestionsGridMediaPreviewView) {
-        self.mode = mode
+    init(fileName: String, rootView: QuestionsGridMediaPreviewView) {
+        self.fileName = fileName
         super.init(rootView: rootView)
     }
 
@@ -72,7 +72,7 @@ final class QuestionsGridMediaPreviewViewController: UIHostingController<Questio
         )
 
         let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [unowned self] _ in
-            self.delegate?.didDeleteMedia(mode: self.mode)
+            self.delegate?.didDeleteMedia(fileName: self.fileName)
             self.onClose?()
         }
         let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)

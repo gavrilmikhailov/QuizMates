@@ -24,7 +24,7 @@ final class QuestionsGridQuestionEditorViewModel {
         mediaDrafts: [QuestionsGridMediaDraft] = [],
         questionText: String = "",
         questionAnswer: String = "",
-        questionPrice: Int = 50,
+        questionPrice: Int = 100,
         photoPickerItems: [PhotosPickerItem] = [],
         videoPickerItems: [PhotosPickerItem] = []
     ) {

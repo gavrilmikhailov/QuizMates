@@ -14,8 +14,7 @@ protocol QuestionsGridQuestionEditorViewDelegate: AnyObject {
     func didPickMediaItems(audios: [URL])
     func didTapMedia(media: QuestionsGridMediaDTO)
     func didTapMedia(draft: QuestionsGridMediaDraft)
-    func didDeleteMedia(dto: QuestionsGridMediaDTO)
-    func didDeleteMediaDraft(draft: QuestionsGridMediaDraft)
+    func didTapDeleteMedia(fileName: String)
 }
 
 struct QuestionsGridQuestionEditorView: View {
@@ -31,7 +30,7 @@ struct QuestionsGridQuestionEditorView: View {
 
     weak var delegate: QuestionsGridQuestionEditorViewDelegate?
 
-    private let priceValues = Array(stride(from: 50, through: 2000, by: 50))
+    private let priceValues = Array(stride(from: 100, through: 1200, by: 100))
 
     var body: some View {
         ScrollView(.vertical) {
@@ -61,27 +60,27 @@ struct QuestionsGridQuestionEditorView: View {
             HStack(alignment: .center, spacing: 8) {
                 ForEach(viewModel.medias) { element in
                     QuestionsGridQuestionEditorThumbnailView(
-                        url: element.getTemporaryUrl(),
+                        data: element.thumbnailData,
                         type: element.type,
                         size: CGSize(width: 100, height: 100),
                         onSelect: {
                             delegate?.didTapMedia(media: element)
                         },
                         onDelete: {
-                            delegate?.didDeleteMedia(dto: element)
+                            delegate?.didTapDeleteMedia(fileName: element.fileName)
                         }
                     )
                 }
                 ForEach(viewModel.mediaDrafts) { element in
                     QuestionsGridQuestionEditorThumbnailView(
-                        url: element.getTemporaryUrl(),
+                        data: element.thumbnailData,
                         type: element.type,
                         size: CGSize(width: 100, height: 100),
                         onSelect: {
                             delegate?.didTapMedia(draft: element)
                         },
                         onDelete: {
-                            delegate?.didDeleteMediaDraft(draft: element)
+                            delegate?.didTapDeleteMedia(fileName: element.fileName)
                         }
                     )
                 }
@@ -232,7 +231,7 @@ struct QuestionsGridQuestionEditorView: View {
 }
 
 private struct QuestionsGridQuestionEditorThumbnailView: View {
-    let url: URL?
+    let data: Data?
     let type: String
     let size: CGSize
     let onSelect: () -> Void
@@ -245,61 +244,18 @@ private struct QuestionsGridQuestionEditorThumbnailView: View {
         Button(
             action: onSelect,
             label: {
-                switch type {
-                case "photo":
-                    AsyncImage(
-                        url: url,
-                        content: { image in
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: size.width, height: size.height)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                        },
-                        placeholder: {
-                            Color.clear
-                                .frame(width: size.width, height: size.height)
-                                .overlay {
-                                    ProgressView()
-                                }
-                        }
-                    )
-                case "video":
-                    if let videoThumbnail {
-                        Image(uiImage: videoThumbnail)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: size.width, height: size.height)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .overlay {
-                                Image(systemName: "video")
-                                    .font(.title)
-                                    .foregroundColor(.white)
-                            }
-                    } else {
-                        Color.clear
-                            .frame(width: size.width, height: size.height)
-                            .overlay {
-                                ProgressView()
-                            }
-                    }
-                case "audio":
-                    if let audioThumbnail {
-                        Image(uiImage: audioThumbnail)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: size.width, height: size.height)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                    } else {
-                        Color.clear
-                            .frame(width: size.width, height: size.height)
-                            .overlay {
-                                ProgressView()
-                            }
-                    }
-                default:
+                if let data, let image = UIImage(data: data) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: size.width, height: size.height)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                } else {
                     Color.clear
                         .frame(width: size.width, height: size.height)
+                        .overlay {
+                            Image(systemName: "questionmark.circle.fill")
+                        }
                 }
             }
         )
@@ -312,48 +268,6 @@ private struct QuestionsGridQuestionEditorThumbnailView: View {
                     Label("Удалить", systemImage: "trash")
                 }
             )
-        }
-        .onAppear {
-            switch type {
-            case "video":
-                if let url {
-                    Task {
-                        videoThumbnail = await generateVideoThumbnail(for: url)
-                    }
-                }
-            case "audio":
-                Task {
-                    audioThumbnail = generateAudioThumbnail()
-                }
-            default:
-                break
-            }
-        }
-    }
-
-    private func generateVideoThumbnail(for url: URL) async -> UIImage? {
-        let asset = AVAsset(url: url)
-        let generator = AVAssetImageGenerator(asset: asset)
-
-        generator.appliesPreferredTrackTransform = true
-
-        do {
-            let time = CMTime(seconds: 1, preferredTimescale: 600)
-            let cgImage = try await generator.image(at: time).image
-            return UIImage(cgImage: cgImage)
-        } catch {
-            print("Couldn't generate video thumbnail: \(error)")
-            return UIImage(systemName: "video.slash")
-        }
-    }
-
-    private func generateAudioThumbnail() -> UIImage {
-        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 100, height: 100))
-        return renderer.image { ctx in
-            UIColor.systemGray6.setFill()
-            ctx.fill(CGRect(x: 0, y: 0, width: 100, height: 100))
-            let icon = UIImage(systemName: "music.mic")?.withTintColor(.systemPurple)
-            icon?.draw(in: CGRect(x: 25, y: 25, width: 50, height: 50))
         }
     }
 }

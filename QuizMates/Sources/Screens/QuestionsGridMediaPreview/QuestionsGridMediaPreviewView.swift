@@ -9,20 +9,17 @@ import AVKit
 import SwiftUI
 
 struct QuestionsGridMediaPreviewView: View {
-    let url: URL?
-    let type: String
+    let configuration: QuestionsGridMediaPreviewConfiguration
 
     var body: some View {
-        if let url {
-            switch type {
-            case "photo":
-                QuestionsGridPhotoPreviewView(url: url)
-            case "video", "audio":
+        switch configuration.type {
+        case "photo":
+            QuestionsGridPhotoPreviewView(data: configuration.data)
+        case "video", "audio":
+            if let url = configuration.getTemporaryUrl() {
                 QuestionsGridVideoPreviewView(url: url)
-            default:
-                EmptyView()
             }
-        } else {
+        default:
             EmptyView()
         }
     }
@@ -56,23 +53,14 @@ private struct QuestionsGridVideoPreviewView: View {
 }
 
 private struct QuestionsGridPhotoPreviewView: View {
-    let url: URL
-
-    @State private var uiImage: UIImage? = nil
-    @State private var isLoading = true
-    @State private var error: Error? = nil
+    let data: Data
 
     var body: some View {
         ZStack {
             Color.black.edgesIgnoringSafeArea(.all)
-
-            if let uiImage = uiImage {
+            if let uiImage = UIImage(data: data) {
                 ZoomableImageView(image: uiImage)
                     .edgesIgnoringSafeArea(.all)
-            } else if isLoading {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    .scaleEffect(1.5)
             } else {
                 VStack(spacing: 8) {
                     Image(systemName: "exclamationmark.triangle")
@@ -81,28 +69,6 @@ private struct QuestionsGridPhotoPreviewView: View {
                     Text("Не удалось загрузить изображение")
                         .foregroundColor(.gray)
                 }
-            }
-        }
-        .task {
-            await loadPhoto()
-        }
-    }
-
-    private func loadPhoto() async {
-        do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            if let image = UIImage(data: data) {
-                await MainActor.run {
-                    self.uiImage = image
-                    self.isLoading = false
-                }
-            } else {
-                throw URLError(.badServerResponse)
-            }
-        } catch {
-            await MainActor.run {
-                self.error = error
-                self.isLoading = false
             }
         }
     }

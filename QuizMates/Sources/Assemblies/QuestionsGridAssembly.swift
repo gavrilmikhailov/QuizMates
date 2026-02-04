@@ -114,7 +114,7 @@ final class QuestionsGridAssembly: Assembly {
                     databaseService: databaseService,
                     topic: topic,
                     mode: .createNewQuestion(
-                        QuestionsGridQuestionDraft(text: "", answer: "", price: 50, isAnswered: false)
+                        QuestionsGridQuestionDraft(text: "", answer: "", price: 100, isAnswered: false)
                     )
                 )
                 let viewModel = QuestionsGridQuestionEditorViewModel()
@@ -152,22 +152,10 @@ final class QuestionsGridAssembly: Assembly {
                 return view
             }
             // Photo preview
-            container.register(QuestionsGridMediaPreviewViewController.self) { (resolver: Resolver, mode: QuestionsGridMediaPreviewMode) in
-                let url = switch mode {
-                case .media(let dto):
-                    dto.getTemporaryUrl()
-                case .mediaDraft(let draft):
-                    draft.getTemporaryUrl()
-                }
-                let type = switch mode {
-                case .media(let dto):
-                    dto.type
-                case .mediaDraft(let draft):
-                    draft.type
-                }
+            container.register(QuestionsGridMediaPreviewViewController.self) { (resolver: Resolver, configuration: QuestionsGridMediaPreviewConfiguration) in
                 let view = QuestionsGridMediaPreviewViewController(
-                    mode: mode,
-                    rootView: QuestionsGridMediaPreviewView(url: url, type: type)
+                    fileName: configuration.fileName,
+                    rootView: QuestionsGridMediaPreviewView(configuration: configuration)
                 )
                 return view
             }

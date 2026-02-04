@@ -149,6 +149,7 @@ actor DatabaseActor: DatabaseService {
                 fileExtension: media.fileExtension,
                 type: media.type,
                 data: media.data,
+                thumbnailData: media.thumbnailData,
                 createdAt: media.createdAt
             )
         }
@@ -218,6 +219,7 @@ actor DatabaseActor: DatabaseService {
             fileExtension: draft.fileExtension,
             type: draft.type,
             data: draft.data,
+            thumbnailData: draft.thumbnailData,
             createdAt: draft.createdAt
         )
         question.medias?.append(media)
