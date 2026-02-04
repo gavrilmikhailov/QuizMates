@@ -139,13 +139,22 @@ final class AppCoordinator: BaseCoordinator {
 
     private func showGameProcess(game: QuestionsGridGameDTO) {
         let view = resolver.resolve(QuestionsGridGameProcessViewController.self, argument: game)!
+        let nav = UINavigationController(rootViewController: view)
+        nav.modalPresentationStyle = .fullScreen
 
         view.onClose = { [weak self] in
             self?.router.dismissView(animated: true, completion: nil)
         }
+        view.onOpenQuestion = { [weak self, weak nav] question in
+            self?.showGameProcessQuestion(question: question, nav: nav)
+        }
 
-        let nav = UINavigationController(rootViewController: view)
-        nav.modalPresentationStyle = .fullScreen
         router.presentView(nav, animated: true, completion: nil)
+    }
+
+    private func showGameProcessQuestion(question: QuestionsGridQuestionDTO, nav: UINavigationController?) {
+        let view = resolver.resolve(QuestionsGridGameProcessQuestionViewController.self, argument: question)!
+
+        nav?.present(view, animated: true)
     }
 }

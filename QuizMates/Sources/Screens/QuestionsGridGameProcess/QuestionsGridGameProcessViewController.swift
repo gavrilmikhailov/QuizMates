@@ -23,6 +23,7 @@ final class QuestionsGridGameProcessViewController: UIHostingController<Question
     // MARK: - Internal properties
 
     var onClose: (() -> Void)?
+    var onOpenQuestion: ((QuestionsGridQuestionDTO) -> Void)?
 
     // MARK: - Private properties
 
@@ -106,4 +107,8 @@ extension QuestionsGridGameProcessViewController: QuestionsGridGameProcessViewCo
 // MARK: - QuestionsGridGameProcessViewDelegate
 
 extension QuestionsGridGameProcessViewController: QuestionsGridGameProcessViewDelegate {
+
+    func didTapQuestion(dto: QuestionsGridQuestionDTO) {
+        onOpenQuestion?(dto)
+    }
 }

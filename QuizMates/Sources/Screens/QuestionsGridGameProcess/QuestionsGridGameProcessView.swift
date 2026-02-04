@@ -9,6 +9,7 @@ import SwiftUI
 
 @MainActor
 protocol QuestionsGridGameProcessViewDelegate: AnyObject {
+    func didTapQuestion(dto: QuestionsGridQuestionDTO)
 }
 
 struct QuestionsGridGameProcessView: View {
@@ -53,6 +54,7 @@ struct QuestionsGridGameProcessView: View {
     private func makeQuestionView(_ question: QuestionsGridQuestionDTO) -> some View {
         Button(
             action: {
+                delegate?.didTapQuestion(dto: question)
             },
             label: {
                 Color.blue
