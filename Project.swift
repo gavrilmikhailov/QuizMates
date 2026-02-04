@@ -1,7 +1,7 @@
 import ProjectDescription
 
 let versionNumber = "1.0"
-let buildNumber = "1"
+let buildNumber = "2"
 let teamId = "6PWFL227LZ"
 let deploymentTarget = "17.0"
 let bundleId = "gmikay.quiz.mates"
@@ -63,7 +63,8 @@ let project = Project(
                         ]
                     ),
                     "CFBundlePackageType": "APPL",
-                    "UIBackgroundModes": .array([.string("remote-notification")])
+                    "UIBackgroundModes": .array([.string("remote-notification")]),
+                    "ITSAppUsesNonExemptEncryption": .boolean(false)
                 ]
             ),
             sources: .paths(["QuizMates/Sources/**"]),
