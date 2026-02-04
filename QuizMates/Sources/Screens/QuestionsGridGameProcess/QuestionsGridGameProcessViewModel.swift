@@ -9,4 +9,7 @@ import Observation
 
 @Observable
 final class QuestionsGridGameProcessViewModel {
+    var prices: [Int] = []
+    var topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])] = []
+    var players: [QuestionsGridPlayerDTO] = []
 }

@@ -10,14 +10,14 @@ import SwiftData
 
 @Model
 final class QuestionsGridGameModel {
-    var name: String
-    var createdAt: Date
+    var name: String?
+    var createdAt: Date?
 
     @Relationship(deleteRule: .cascade, inverse: \QuestionsGridTopicModel.game)
-    var topics: [QuestionsGridTopicModel]
+    var topics: [QuestionsGridTopicModel]? = []
 
     @Relationship(deleteRule: .cascade, inverse: \QuestionsGridPlayerModel.game)
-    var players: [QuestionsGridPlayerModel]
+    var players: [QuestionsGridPlayerModel]? = []
 
     init(name: String, topics: [QuestionsGridTopicModel], players: [QuestionsGridPlayerModel], createdAt: Date) {
         self.name = name

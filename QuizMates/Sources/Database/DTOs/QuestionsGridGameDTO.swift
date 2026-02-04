@@ -31,9 +31,9 @@ struct QuestionsGridGameDTO: Sendable, Identifiable {
 
     init(from model: QuestionsGridGameModel) {
         id = model.id
-        name = model.name
-        createdAt = model.createdAt
-        topics = model.topics.map(\.id)
-        players = model.players.map(\.id)
+        name = model.name ?? ""
+        createdAt = model.createdAt ?? .now
+        topics = model.topics?.map(\.id) ?? []
+        players = model.players?.map(\.id) ?? []
     }
 }

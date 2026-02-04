@@ -9,7 +9,13 @@ import SwiftUI
 
 @MainActor
 protocol QuestionsGridGameProcessViewControllerProtocol: AnyObject {
-    func displayGameContent(title: String)
+    func displayGameContent(
+        title: String,
+        topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])],
+        prices: [Int],
+        players: [QuestionsGridPlayerDTO]
+    )
+    func displayError(text: String)
 }
 
 final class QuestionsGridGameProcessViewController: UIHostingController<QuestionsGridGameProcessView> {
@@ -77,8 +83,23 @@ final class QuestionsGridGameProcessViewController: UIHostingController<Question
 
 extension QuestionsGridGameProcessViewController: QuestionsGridGameProcessViewControllerProtocol {
 
-    func displayGameContent(title: String) {
+    func displayGameContent(
+        title: String,
+        topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])],
+        prices: [Int],
+        players: [QuestionsGridPlayerDTO]
+    ) {
         self.title = title
+        viewModel.prices = prices
+        viewModel.topics = topics
+        viewModel.players = players
+    }
+
+    func displayError(text: String) {
+        let alert = UIAlertController(title: "Ошибка", message: text, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        alert.addAction(okAction)
+        present(alert, animated: true, completion: nil)
     }
 }
 

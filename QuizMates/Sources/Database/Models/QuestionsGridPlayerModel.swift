@@ -10,10 +10,10 @@ import SwiftData
 
 @Model
 final class QuestionsGridPlayerModel {
-    var emoji: String
-    var name: String
-    var score: Int
-    var createdAt: Date
+    var emoji: String?
+    var name: String?
+    var score: Int?
+    var createdAt: Date?
 
     var game: QuestionsGridGameModel?
 

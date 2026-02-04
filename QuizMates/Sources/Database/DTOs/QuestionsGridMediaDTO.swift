@@ -17,10 +17,10 @@ struct QuestionsGridMediaDTO: Sendable, Identifiable {
 
     init(from model: QuestionsGridMediaModel) {
         id = model.id
-        fileName = model.fileName
-        fileExtension = model.fileExtension
-        type = model.type
-        createdAt = model.createdAt
+        fileName = model.fileName ?? ""
+        fileExtension = model.fileExtension ?? ""
+        type = model.type ?? ""
+        createdAt = model.createdAt ?? .now
     }
 
     var localURL: URL {

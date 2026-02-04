@@ -28,8 +28,8 @@ struct QuestionsGridTopicDTO: Sendable, Identifiable {
 
     init(from model: QuestionsGridTopicModel) {
         id = model.id
-        name = model.name
-        createdAt = model.createdAt
-        questions = model.questions.map(\.id)
+        name = model.name ?? ""
+        createdAt = model.createdAt ?? .now
+        questions = model.questions?.map(\.id) ?? []
     }
 }

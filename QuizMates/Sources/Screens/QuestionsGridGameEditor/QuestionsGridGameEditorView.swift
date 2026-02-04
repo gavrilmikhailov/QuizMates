@@ -94,62 +94,73 @@ struct QuestionsGridGameEditorView: View {
 
     @ViewBuilder
     private var gameTopicsView: some View {
-        Grid {
-            ForEach(viewModel.topics, id: \.0.id) { tuple in
-                GridRow {
-                    Button(
-                        action: {
-                            delegate?.didTapEditTopic(topic: tuple.0)
-                        },
-                        label: {
-                            Text(tuple.0.name)
-                        }
-                    )
-                    .contextMenu {
-                        Button(role: .destructive) {
-                            delegate?.didTapDeleteTopic(topic: tuple.0)
-                        } label: {
-                            Label("Удалить", systemImage: "trash")
-                        }
-                    }
-                    ForEach(tuple.1, id: \.id) { question in
+        ScrollView(.horizontal) {
+            Grid {
+                ForEach(viewModel.topics, id: \.0.id) { tuple in
+                    GridRow {
                         Button(
                             action: {
-                                delegate?.didTapEditQuestion(question: question, topic: tuple.0)
+                                delegate?.didTapEditTopic(topic: tuple.0)
                             },
                             label: {
-                                Text(question.price.description)
+                                Text(tuple.0.name)
                             }
                         )
                         .contextMenu {
                             Button(role: .destructive) {
-                                delegate?.didTapDeleteQuestion(question: question)
+                                delegate?.didTapDeleteTopic(topic: tuple.0)
                             } label: {
                                 Label("Удалить", systemImage: "trash")
                             }
                         }
+                        ForEach(tuple.1, id: \.id) { question in
+                            Button(
+                                action: {
+                                    delegate?.didTapEditQuestion(question: question, topic: tuple.0)
+                                },
+                                label: {
+                                    Text(question.price.description)
+                                }
+                            )
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    delegate?.didTapDeleteQuestion(question: question)
+                                } label: {
+                                    Label("Удалить", systemImage: "trash")
+                                }
+                            }
+                        }
+                        Button(
+                            action: {
+                                delegate?.didTapCreateNewQuestion(topic: tuple.0)
+                            },
+                            label: {
+                                HStack {
+                                    Image(systemName: "plus")
+                                    Text("Новый вопрос")
+                                        .multilineTextAlignment(.leading)
+                                }
+                            }
+                        )
                     }
+                    Divider()
+                }
+                GridRow {
                     Button(
                         action: {
-                            delegate?.didTapCreateNewQuestion(topic: tuple.0)
+                            delegate?.didTapCreateNewTopic()
                         },
                         label: {
-                            Label("Новый вопрос", systemImage: "plus")
+                            HStack {
+                                Image(systemName: "plus")
+                                Text("Новая тема")
+                                    .multilineTextAlignment(.leading)
+                            }
                         }
                     )
                 }
-                Divider()
             }
-            GridRow {
-                Button(
-                    action: {
-                        delegate?.didTapCreateNewTopic()
-                    },
-                    label: {
-                        Label("Новая тема", systemImage: "plus")
-                    }
-                )
-            }
+            .padding(top: 8, bottom: 8)
         }
     }
 

@@ -34,10 +34,10 @@ struct QuestionsGridQuestionDTO: Sendable, Identifiable {
 
     init(from model: QuestionsGridQuestionModel) {
         id = model.id
-        medias = model.medias.map(\.id)
-        text = model.text
-        answer = model.answer
-        price = model.price
-        isAnswered = model.isAnswered
+        medias = model.medias?.map(\.id) ?? []
+        text = model.text ?? ""
+        answer = model.answer ?? ""
+        price = model.price ?? 0
+        isAnswered = model.isAnswered ?? false
     }
 }

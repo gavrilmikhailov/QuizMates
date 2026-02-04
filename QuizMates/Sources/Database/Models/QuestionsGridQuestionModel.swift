@@ -9,14 +9,14 @@ import SwiftData
 
 @Model
 final class QuestionsGridQuestionModel {
-    var text: String
+    var text: String?
+    var answer: String?
+    var price: Int?
+    var isAnswered: Bool?
 
-    @Relationship(deleteRule: .cascade)
-    var medias: [QuestionsGridMediaModel]
+    @Relationship(deleteRule: .cascade, inverse: \QuestionsGridMediaModel.question)
+    var medias: [QuestionsGridMediaModel]? = []
 
-    var answer: String
-    var price: Int
-    var isAnswered: Bool
     var topic: QuestionsGridTopicModel?
 
     init(text: String, medias: [QuestionsGridMediaModel], answer: String, price: Int, isAnswered: Bool) {

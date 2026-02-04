@@ -211,8 +211,9 @@ final class QuestionsGridAssembly: Assembly {
             }
             // Game process
             container.register(QuestionsGridGameProcessViewController.self) { (resolver: Resolver, game: QuestionsGridGameDTO) in
+                let databaseService = resolver.resolve(DatabaseService.self)!
                 let viewModel = QuestionsGridGameProcessViewModel()
-                let interactor = QuestionsGridGameProcessInteractor(game: game)
+                let interactor = QuestionsGridGameProcessInteractor(databaseSevice: databaseService, game: game)
                 let view = QuestionsGridGameProcessViewController(
                     interactor: interactor,
                     viewModel: viewModel,

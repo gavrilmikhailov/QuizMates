@@ -9,11 +9,13 @@ import Foundation
 import SwiftData
 
 @Model
-class QuestionsGridMediaModel {
-    var fileName: String
-    var fileExtension: String
-    var type: String
-    var createdAt: Date
+final class QuestionsGridMediaModel {
+    var fileName: String?
+    var fileExtension: String?
+    var type: String?
+    var createdAt: Date?
+
+    var question: QuestionsGridQuestionModel?
 
     init(fileName: String, fileExtension: String, type: String, createdAt: Date) {
         self.fileName = fileName

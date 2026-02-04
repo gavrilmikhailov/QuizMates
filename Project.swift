@@ -5,7 +5,7 @@ let buildNumber = "1"
 let teamId = "6PWFL227LZ"
 let deploymentTarget = "17.0"
 let bundleId = "gmikay.quiz.mates"
-let name = "Quiz Games"
+let name = "Quiz Mates"
 let swiftVersion = "6.2.3"
 
 let project = Project(
@@ -61,7 +61,9 @@ let project = Project(
                             .string("UIInterfaceOrientationLandscapeLeft"),
                             .string("UIInterfaceOrientationLandscapeRight")
                         ]
-                    )
+                    ),
+                    "CFBundlePackageType": "APPL",
+                    "UIBackgroundModes": .array([.string("remote-notification")])
                 ]
             ),
             sources: .paths(["QuizMates/Sources/**"]),
@@ -73,6 +75,13 @@ let project = Project(
                     collectedDataTypes: [],
                     accessedApiTypes: []
                 )
+            ),
+            entitlements: .dictionary(
+                [
+                    "aps-environment" : .string("development"),
+                    "com.apple.developer.icloud-container-identifiers": .array([.string("iCloud.gmikay.quiz.mates")]),
+                    "com.apple.developer.icloud-services": .array([.string("CloudKit")])
+                ]
             ),
             dependencies: [
                 .external(name: "Swinject", condition: nil)

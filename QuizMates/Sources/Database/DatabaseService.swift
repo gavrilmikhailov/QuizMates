@@ -47,19 +47,10 @@ protocol DatabaseService: Actor {
     func deletePlayer(dto: QuestionsGridPlayerDTO) async throws
 }
 
+@ModelActor
 actor DatabaseActor: DatabaseService {
 
-    // MARK: - Private properties
-
-    private let modelContainer: ModelContainer
-    private let modelContext: ModelContext
-
-    // MARK: - Initializer
-
-    init(container: ModelContainer) {
-        self.modelContainer = container
-        self.modelContext = ModelContext(container)
-    }
+    // MARK: - DatabaseService
 
     func readGames() throws -> [QuestionsGridGameDTO] {
         let descriptor = FetchDescriptor<QuestionsGridGameModel>(
@@ -105,7 +96,7 @@ actor DatabaseActor: DatabaseService {
             throw DatabaseError.notFound
         }
         let topic = QuestionsGridTopicModel(name: draft.name, createdAt: draft.createdAt, questions: [])
-        game.topics.append(topic)
+        game.topics?.append(topic)
         try modelContext.save()
         return QuestionsGridTopicDTO(from: topic)
     }
@@ -167,7 +158,7 @@ actor DatabaseActor: DatabaseService {
             price: draft.price,
             isAnswered: draft.isAnswered
         )
-        topic.questions.append(question)
+        topic.questions?.append(question)
         try modelContext.save()
         return QuestionsGridQuestionDTO(from: question)
     }
@@ -227,7 +218,7 @@ actor DatabaseActor: DatabaseService {
             type: draft.type,
             createdAt: draft.createdAt
         )
-        question.medias.append(media)
+        question.medias?.append(media)
         try modelContext.save()
         return QuestionsGridMediaDTO(from: media)
     }
@@ -260,7 +251,7 @@ actor DatabaseActor: DatabaseService {
             score: draft.score,
             createdAt: draft.createdAt
         )
-        game.players.append(player)
+        game.players?.append(player)
         try modelContext.save()
         return QuestionsGridPlayerDTO(from: player)
     }

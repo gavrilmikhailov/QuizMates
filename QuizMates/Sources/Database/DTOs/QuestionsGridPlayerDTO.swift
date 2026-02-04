@@ -25,9 +25,9 @@ struct QuestionsGridPlayerDTO: Sendable, Identifiable {
 
     init(from model: QuestionsGridPlayerModel) {
         id = model.id
-        emoji = model.emoji
-        name = model.name
-        score = model.score
-        createdAt = model.createdAt
+        emoji = model.emoji ?? ""
+        name = model.name ?? ""
+        score = model.score ?? 0
+        createdAt = model.createdAt ?? .now
     }
 }

@@ -5,6 +5,7 @@
 //  Created by Gavriil Mikhailov on 22.01.2026.
 //
 
+import Foundation
 import SwiftData
 @preconcurrency import Swinject
 
@@ -23,14 +24,19 @@ final class DatabaseAssembly: Assembly {
                     QuestionsGridPlayerModel.self
                 ]
             )
-            let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+            let bundleId = Bundle.main.bundleIdentifier!
+            let config = ModelConfiguration(
+                schema: schema,
+                isStoredInMemoryOnly: false,
+                cloudKitDatabase: .private("iCloud.\(bundleId)")
+            )
             return try! ModelContainer(for: schema, configurations: [config])
         }
         .inObjectScope(.container)
 
         container.register(DatabaseService.self) { resolver in
             let modelContainer = resolver.resolve(ModelContainer.self)!
-            return DatabaseActor(container: modelContainer)
+            return DatabaseActor(modelContainer: modelContainer)
         }
         .inObjectScope(.container)
     }

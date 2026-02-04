@@ -20,16 +20,43 @@ final class QuestionsGridGameProcessInteractor: QuestionsGridGameProcessInteract
     // MARK: - Private properties
 
     private let game: QuestionsGridGameDTO
+    private let databaseSevice: DatabaseService
 
     // MARK: - Interactor
 
-    init(game: QuestionsGridGameDTO) {
+    init(databaseSevice: DatabaseService, game: QuestionsGridGameDTO) {
+        self.databaseSevice = databaseSevice
         self.game = game
     }
 
     // MARK: - QuestionsGridGameProcessInteractorProtocol
 
     func loadGameContent() {
-        view?.displayGameContent(title: game.name)
+        Task {
+            do {
+                let game = try await databaseSevice.readGame(id: game.id)
+                let topics = try await databaseSevice.readTopics(ids: game.topics)
+                var content: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])] = []
+                var prices: Set<Int> = []
+                for topic in topics {
+                    let topicQuestions = try await databaseSevice.readQuestions(ids: topic.questions)
+                    prices.formUnion(topicQuestions.map(\.price))
+                    content.append((topic, topicQuestions))
+                }
+                let players = try await databaseSevice.readPlayers(ids: game.players)
+                await MainActor.run {
+                    view?.displayGameContent(
+                        title: game.name,
+                        topics: content,
+                        prices: prices.sorted(),
+                        players: players
+                    )
+                }
+            } catch {
+                await MainActor.run {
+                    view?.displayError(text: error.localizedDescription)
+                }
+            }
+        }
     }
 }
