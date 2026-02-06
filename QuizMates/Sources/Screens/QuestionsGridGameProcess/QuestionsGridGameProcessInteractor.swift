@@ -8,6 +8,7 @@
 @MainActor
 protocol QuestionsGridGameProcessInteractorProtocol {
     func loadGameContent()
+    func navigateToQuestion(topic: QuestionsGridTopicDTO, question: QuestionsGridQuestionDTO)
 }
 
 @MainActor
@@ -51,6 +52,21 @@ final class QuestionsGridGameProcessInteractor: QuestionsGridGameProcessInteract
                         prices: prices.sorted(),
                         players: players
                     )
+                }
+            } catch {
+                await MainActor.run {
+                    view?.displayError(text: error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    func navigateToQuestion(topic: QuestionsGridTopicDTO, question: QuestionsGridQuestionDTO) {
+        Task {
+            do {
+                let players = try await databaseSevice.readPlayers(ids: game.players)
+                await MainActor.run {
+                    view?.displayNavigateToQuestion(topic: topic, question: question, players: players)
                 }
             } catch {
                 await MainActor.run {

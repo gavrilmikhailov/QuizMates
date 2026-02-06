@@ -4,6 +4,7 @@
 # XCode project
 QuizMates.xcodeproj/
 QuizMates.xcworkspace/
+DeviredData
 
 # Tuist
 Derived

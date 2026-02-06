@@ -34,6 +34,8 @@ protocol QuestionsGridGameEditorInteractorProtocol {
     func navigateToEditPlayer(player: QuestionsGridPlayerDTO?)
 
     func navigateToGameProcess()
+
+    func resetGameProgress()
 }
 
 @MainActor
@@ -62,7 +64,7 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
     // MARK: - QuestionsGridGameEditorInteractorProtocol
 
     func createNewGameIfNeeded() {
-        if isNew {
+        if isNew, game == nil {
             Task {
                 do {
                     let draft = QuestionsGridGameDraft(name: generateDefaultGameName(), createdAt: .now)
@@ -96,8 +98,17 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
                     content.append((topic, topicQuestions))
                 }
                 let players = try await databaseSevice.readPlayers(ids: game.players)
+                let hasAnsweredQuestions = content.contains { tuple in
+                    tuple.1.contains(where: { $0.isAnswered })
+                }
+                let hasPlayersWithScore = players.contains(where: { $0.score != 0 })
                 await MainActor.run {
-                    presenter.presentGameContent(game: game, topics: content, players: players)
+                    presenter.presentGameContent(
+                        game: game,
+                        topics: content,
+                        players: players,
+                        hasProgress: hasAnsweredQuestions || hasPlayersWithScore
+                    )
                 }
             } catch {
                 await MainActor.run {
@@ -306,6 +317,33 @@ final class QuestionsGridGameEditorInteractor: QuestionsGridGameEditorInteractor
             return
         }
         presenter.presentNavigateToGameProcess(game: game)
+    }
+
+    func resetGameProgress() {
+        guard let gameId = game?.id else {
+            presenter.presentError(text: "Ошибка")
+            return
+        }
+        Task {
+            do {
+                let game = try await databaseSevice.readGame(id: gameId)
+                for topic in try await databaseSevice.readTopics(ids: game.topics) {
+                    for question in try await databaseSevice.readQuestions(ids: topic.questions) {
+                        try await databaseSevice.updateQuestion(dto: question, isAnswered: false)
+                    }
+                }
+                for player in try await databaseSevice.readPlayers(ids: game.players) {
+                    try await databaseSevice.updatePlayer(dto: player, score: 0)
+                }
+                await MainActor.run {
+                    presenter.presentGameLoading()
+                }
+            } catch {
+                await MainActor.run {
+                    presenter.presentError(text: error.localizedDescription)
+                }
+            }
+        }
     }
 
     // MARK: - Private methods

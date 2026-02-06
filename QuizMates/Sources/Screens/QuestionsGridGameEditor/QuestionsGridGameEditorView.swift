@@ -18,6 +18,7 @@ protocol QuestionsGridGameEditorViewDelegate: AnyObject {
     func didTapDeleteQuestion(question: QuestionsGridQuestionDTO)
     func didTapCreateNewPlayer()
     func didTapEditPlayer(player: QuestionsGridPlayerDTO)
+    func didTapResetGame()
     func didTapStartGame()
 }
 
@@ -227,21 +228,41 @@ struct QuestionsGridGameEditorView: View {
     }
 
     private var startGameView: some View {
-        Button(
-            action: {
-                delegate?.didTapStartGame()
-            },
-            label: {
-                HStack(alignment: .center, spacing: 12) {
-                    Image(systemName: "play.fill")
-                    Text("Начать игру")
-                        .font(.title3)
-                }
-                .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+        VStack(alignment: .center, spacing: 16) {
+            if viewModel.hasProgress {
+                Button(
+                    action: {
+                        delegate?.didTapResetGame()
+                    },
+                    label: {
+                        HStack(alignment: .center, spacing: 12) {
+                            Image(systemName: "repeat")
+                            Text("Сбросить прогресс")
+                                .font(.title3)
+                        }
+                        .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+                    }
+                )
+                .tint(.gray)
+                .buttonStyle(.borderedProminent)
             }
-        )
-        .buttonStyle(.borderedProminent)
-        .disabled(viewModel.players.isEmpty || viewModel.topics.isEmpty)
+            Button(
+                action: {
+                    delegate?.didTapStartGame()
+                },
+                label: {
+                    HStack(alignment: .center, spacing: 12) {
+                        Image(systemName: "play.fill")
+                        Text(viewModel.hasProgress ? "Продолжить игру" : "Начать игру")
+                            .font(.title3)
+                    }
+                    .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+                }
+            )
+            .buttonStyle(.borderedProminent)
+            .tint(.blue)
+            .disabled(viewModel.players.isEmpty || viewModel.topics.isEmpty)
+        }
     }
 
     private var gamePlayersEmptyView: some View {

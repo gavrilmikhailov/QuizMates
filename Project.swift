@@ -85,7 +85,8 @@ let project = Project(
                 ]
             ),
             dependencies: [
-                .external(name: "Swinject", condition: nil)
+                .external(name: "Swinject", condition: nil),
+                .external(name: "DeviceKit", condition: nil)
             ],
             settings: .settings(
                 base: SettingsDictionary()

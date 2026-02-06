@@ -11,7 +11,8 @@ protocol QuestionsGridGameEditorPresenterProtocol {
     func presentGameContent(
         game: QuestionsGridGameDTO,
         topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])],
-        players: [QuestionsGridPlayerDTO]
+        players: [QuestionsGridPlayerDTO],
+        hasProgress: Bool
     )
     func presentNavigateToEditTopic(topic: QuestionsGridTopicDTO?, game: QuestionsGridGameDTO)
     func presentNavigateToEditQuestion(question: QuestionsGridQuestionDTO?, topic: QuestionsGridTopicDTO)
@@ -36,7 +37,8 @@ final class QuestionsGridGameEditorPresenter: QuestionsGridGameEditorPresenterPr
     func presentGameContent(
         game: QuestionsGridGameDTO,
         topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])],
-        players: [QuestionsGridPlayerDTO]
+        players: [QuestionsGridPlayerDTO],
+        hasProgress: Bool
     ) {
         let sortedTopics = topics
             .sorted { lhs, rhs in
@@ -46,7 +48,7 @@ final class QuestionsGridGameEditorPresenter: QuestionsGridGameEditorPresenterPr
                 return (topic, questions.sorted { $0.price < $1.price })
             }
         let sortedPlayers = players.sorted { $0.createdAt < $1.createdAt }
-        view?.displayGameContent(game: game, topics: sortedTopics, players: sortedPlayers)
+        view?.displayGameContent(game: game, topics: sortedTopics, players: sortedPlayers, hasProgress: hasProgress)
     }
 
     func presentNavigateToEditTopic(topic: QuestionsGridTopicDTO?, game: QuestionsGridGameDTO) {

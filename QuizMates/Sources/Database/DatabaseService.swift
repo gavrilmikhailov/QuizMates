@@ -28,6 +28,7 @@ protocol DatabaseService: Actor {
     ) async throws -> QuestionsGridQuestionDTO
     func readQuestions(ids: [PersistentIdentifier]) async throws -> [QuestionsGridQuestionDTO]
     func readQuestion(id: PersistentIdentifier) async throws -> QuestionsGridQuestionDTO
+    func updateQuestion(dto: QuestionsGridQuestionDTO, isAnswered: Bool) async throws
     func updateQuestion(dto: QuestionsGridQuestionDTO, medias: [QuestionsGridMediaDraft]) async throws
     func deleteQuestion(dto: QuestionsGridQuestionDTO) async throws
 
@@ -44,6 +45,7 @@ protocol DatabaseService: Actor {
     ) async throws -> QuestionsGridPlayerDTO
     func readPlayers(ids: [PersistentIdentifier]) async throws -> [QuestionsGridPlayerDTO]
     func updatePlayer(dto: QuestionsGridPlayerDTO) async throws
+    func updatePlayer(dto: QuestionsGridPlayerDTO, score: Int) async throws
     func deletePlayer(dto: QuestionsGridPlayerDTO) async throws
 }
 
@@ -184,6 +186,14 @@ actor DatabaseActor: DatabaseService {
         }
     }
 
+    func updateQuestion(dto: QuestionsGridQuestionDTO, isAnswered: Bool) async throws {
+        guard let question = modelContext.model(for: dto.id) as? QuestionsGridQuestionModel else {
+            throw DatabaseError.notFound
+        }
+        question.isAnswered = isAnswered
+        try modelContext.save()
+    }
+
     func updateQuestion(dto: QuestionsGridQuestionDTO, medias: [QuestionsGridMediaDraft]) async throws {
         guard let question = modelContext.model(for: dto.id) as? QuestionsGridQuestionModel else {
             throw DatabaseError.notFound
@@ -280,6 +290,14 @@ actor DatabaseActor: DatabaseService {
         player.emoji = dto.emoji
         player.name = dto.name
         player.score = dto.score
+        try modelContext.save()
+    }
+
+    func updatePlayer(dto: QuestionsGridPlayerDTO, score: Int) async throws {
+        guard let player = modelContext.model(for: dto.id) as? QuestionsGridPlayerModel else {
+            throw DatabaseError.notFound
+        }
+        player.score = score
         try modelContext.save()
     }
 

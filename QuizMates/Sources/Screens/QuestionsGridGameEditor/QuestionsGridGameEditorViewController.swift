@@ -13,7 +13,8 @@ protocol QuestionsGridGameEditorViewControllerProtocol: AnyObject {
     func displayGameContent(
         game: QuestionsGridGameDTO,
         topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])],
-        players: [QuestionsGridPlayerDTO]
+        players: [QuestionsGridPlayerDTO],
+        hasProgress: Bool
     )
     func displayNavigateToEditTopic(topic: QuestionsGridTopicDTO?, game: QuestionsGridGameDTO)
     func displayNavigateToEditQuestion(question: QuestionsGridQuestionDTO?, topic: QuestionsGridTopicDTO)
@@ -57,12 +58,12 @@ final class QuestionsGridGameEditorViewController: UIHostingController<Questions
     override func viewDidLoad() {
         super.viewDidLoad()
         configureAppearance()
-        interactor.createNewGameIfNeeded()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.prefersLargeTitles = false
+        interactor.createNewGameIfNeeded()
     }
 
     // MARK: - Private methods
@@ -83,11 +84,13 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewCont
     func displayGameContent(
         game: QuestionsGridGameDTO,
         topics: [(QuestionsGridTopicDTO, [QuestionsGridQuestionDTO])],
-        players: [QuestionsGridPlayerDTO]
+        players: [QuestionsGridPlayerDTO],
+        hasProgress: Bool
     ) {
         viewModel.name = game.name
         viewModel.topics = topics
         viewModel.players = players
+        viewModel.hasProgress = hasProgress
     }
 
     func displayNavigateToEditTopic(topic: QuestionsGridTopicDTO?, game: QuestionsGridGameDTO) {
@@ -180,6 +183,10 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewDele
 
     func didTapEditPlayer(player: QuestionsGridPlayerDTO) {
         interactor.navigateToEditPlayer(player: player)
+    }
+
+    func didTapResetGame() {
+        interactor.resetGameProgress()
     }
 
     func didTapStartGame() {

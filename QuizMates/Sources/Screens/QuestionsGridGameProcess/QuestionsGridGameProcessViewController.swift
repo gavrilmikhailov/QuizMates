@@ -15,6 +15,11 @@ protocol QuestionsGridGameProcessViewControllerProtocol: AnyObject {
         prices: [Int],
         players: [QuestionsGridPlayerDTO]
     )
+    func displayNavigateToQuestion(
+        topic: QuestionsGridTopicDTO,
+        question: QuestionsGridQuestionDTO,
+        players: [QuestionsGridPlayerDTO]
+    )
     func displayError(text: String)
 }
 
@@ -22,8 +27,7 @@ final class QuestionsGridGameProcessViewController: UIHostingController<Question
 
     // MARK: - Internal properties
 
-    var onClose: (() -> Void)?
-    var onOpenQuestion: ((QuestionsGridQuestionDTO) -> Void)?
+    var onOpenQuestion: ((QuestionsGridTopicDTO, QuestionsGridQuestionDTO, [QuestionsGridPlayerDTO]) -> Void)?
 
     // MARK: - Private properties
 
@@ -51,12 +55,12 @@ final class QuestionsGridGameProcessViewController: UIHostingController<Question
     override func viewDidLoad() {
         super.viewDidLoad()
         configureAppearance()
-        interactor.loadGameContent()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupNavigationBar()
+        interactor.loadGameContent()
     }
 
     // MARK: - Private methods
@@ -66,17 +70,7 @@ final class QuestionsGridGameProcessViewController: UIHostingController<Question
     }
 
     private func setupNavigationBar() {
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .close,
-            target: self,
-            action: #selector(closeButtonTapped)
-        )
-    }
-
-    @objc
-    private func closeButtonTapped() {
-        onClose?()
+        navigationController?.navigationBar.prefersLargeTitles = false
     }
 }
 
@@ -90,10 +84,18 @@ extension QuestionsGridGameProcessViewController: QuestionsGridGameProcessViewCo
         prices: [Int],
         players: [QuestionsGridPlayerDTO]
     ) {
-        self.title = title
+        viewModel.title = title
         viewModel.prices = prices
         viewModel.topics = topics
         viewModel.players = players
+    }
+
+    func displayNavigateToQuestion(
+        topic: QuestionsGridTopicDTO,
+        question: QuestionsGridQuestionDTO,
+        players: [QuestionsGridPlayerDTO]
+    ) {
+        onOpenQuestion?(topic, question, players)
     }
 
     func displayError(text: String) {
@@ -108,7 +110,7 @@ extension QuestionsGridGameProcessViewController: QuestionsGridGameProcessViewCo
 
 extension QuestionsGridGameProcessViewController: QuestionsGridGameProcessViewDelegate {
 
-    func didTapQuestion(dto: QuestionsGridQuestionDTO) {
-        onOpenQuestion?(dto)
+    func didTapQuestion(topic: QuestionsGridTopicDTO, question: QuestionsGridQuestionDTO) {
+        interactor.navigateToQuestion(topic: topic, question: question)
     }
 }
