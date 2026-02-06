@@ -37,6 +37,9 @@ final class QuestionsGridGameEditorViewController: UIHostingController<Questions
     private let interactor: QuestionsGridGameEditorInteractorProtocol
     private let viewModel: QuestionsGridGameEditorViewModel
 
+    private let resetGameProgressAlertMessageLong = "Перед изменением данных игры необходимо сбросить прогресс текущей игры.\nВы уверены, что хотите сбросить прогресс текущей игры?"
+    private let resetGameProgressAlertMessage = "Вы уверены, что хотите сбросить прогресс текущей игры?"
+
     // MARK: - Initializer
 
     init(
@@ -70,6 +73,42 @@ final class QuestionsGridGameEditorViewController: UIHostingController<Questions
 
     private func configureAppearance() {
         view.backgroundColor = .systemBackground
+    }
+
+    private func resetGameProgressConfirmation(topic: QuestionsGridTopicDTO) {
+        let alert = UIAlertController(
+            title: "Подтверждение",
+            message: "Вы уверены, что хотите удалить эту тему?\nВсе вопросы из этой темы будут также удалены",
+            preferredStyle: .alert
+        )
+
+        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+            self?.interactor.deleteTopic(topic: topic)
+        }
+        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+
+        alert.addAction(cancelAction)
+        alert.addAction(deleteAction)
+
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func presentResetGameProgressConfirmation(message: String) {
+        let alert = UIAlertController(
+            title: "Подтверждение",
+            message: message,
+            preferredStyle: .alert
+        )
+
+        let deleteAction = UIAlertAction(title: "Сбросить", style: .destructive) { [weak self] _ in
+            self?.interactor.resetGameProgress()
+        }
+        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+
+        alert.addAction(cancelAction)
+        alert.addAction(deleteAction)
+
+        present(alert, animated: true, completion: nil)
     }
 }
 
@@ -126,67 +165,99 @@ extension QuestionsGridGameEditorViewController: QuestionsGridGameEditorViewDele
     }
 
     func didTapCreateNewTopic() {
-        interactor.navigateToEditTopic(topic: nil)
+        if viewModel.hasProgress {
+            presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
+        } else {
+            interactor.navigateToEditTopic(topic: nil)
+        }
     }
 
     func didTapEditTopic(topic: QuestionsGridTopicDTO) {
-        interactor.navigateToEditTopic(topic: topic)
+        if viewModel.hasProgress {
+            presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
+        } else {
+            interactor.navigateToEditTopic(topic: topic)
+        }
     }
 
     func didTapDeleteTopic(topic: QuestionsGridTopicDTO) {
-        let alert = UIAlertController(
-            title: "Подтверждение",
-            message: "Вы уверены, что хотите удалить эту тему?\nВсе вопросы из этой темы будут также удалены",
-            preferredStyle: .alert
-        )
+        if viewModel.hasProgress {
+            presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
+        } else {
+            let alert = UIAlertController(
+                title: "Подтверждение",
+                message: "Вы уверены, что хотите удалить эту тему?\nВсе вопросы из этой темы будут также удалены",
+                preferredStyle: .alert
+            )
 
-        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
-            self?.interactor.deleteTopic(topic: topic)
+            let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+                self?.interactor.deleteTopic(topic: topic)
+            }
+            let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+
+            alert.addAction(cancelAction)
+            alert.addAction(deleteAction)
+
+            present(alert, animated: true, completion: nil)
         }
-        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
-
-        alert.addAction(cancelAction)
-        alert.addAction(deleteAction)
-
-        present(alert, animated: true, completion: nil)
     }
 
     func didTapCreateNewQuestion(topic: QuestionsGridTopicDTO) {
-        interactor.navigateToCreateNewQuestion(topic: topic)
+        if viewModel.hasProgress {
+            presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
+        } else {
+            interactor.navigateToCreateNewQuestion(topic: topic)
+        }
     }
 
     func didTapEditQuestion(question: QuestionsGridQuestionDTO, topic: QuestionsGridTopicDTO) {
-        interactor.navigateToEditQuestion(question: question, topic: topic)
+        if viewModel.hasProgress {
+            presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
+        } else {
+            interactor.navigateToEditQuestion(question: question, topic: topic)
+        }
     }
 
     func didTapDeleteQuestion(question: QuestionsGridQuestionDTO) {
-        let alert = UIAlertController(
-            title: "Подтверждение",
-            message: "Вы уверены, что хотите удалить этот вопрос?",
-            preferredStyle: .alert
-        )
+        if viewModel.hasProgress {
+            presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
+        } else {
+            let alert = UIAlertController(
+                title: "Подтверждение",
+                message: "Вы уверены, что хотите удалить этот вопрос?",
+                preferredStyle: .alert
+            )
 
-        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
-            self?.interactor.deleteQuestion(question: question)
+            let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+                self?.interactor.deleteQuestion(question: question)
+            }
+            let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+
+            alert.addAction(cancelAction)
+            alert.addAction(deleteAction)
+
+            present(alert, animated: true, completion: nil)
         }
-        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
-
-        alert.addAction(cancelAction)
-        alert.addAction(deleteAction)
-
-        present(alert, animated: true, completion: nil)
     }
 
     func didTapCreateNewPlayer() {
-        interactor.navigateToEditPlayer(player: nil)
+        if viewModel.hasProgress {
+            presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
+        } else {
+            interactor.navigateToEditPlayer(player: nil)
+        }
     }
 
     func didTapEditPlayer(player: QuestionsGridPlayerDTO) {
-        interactor.navigateToEditPlayer(player: player)
+        if viewModel.hasProgress {
+            presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
+        } else {
+            interactor.navigateToEditPlayer(player: player)
+        }
     }
 
     func didTapResetGame() {
-        interactor.resetGameProgress()
+        presentResetGameProgressConfirmation(message: resetGameProgressAlertMessage)
     }
 
     func didTapStartGame() {
