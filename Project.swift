@@ -8,14 +8,28 @@ let bundleId = "gmikay.quiz.mates"
 let name = "Quiz Mates"
 let swiftVersion = "6.2.3"
 
+let databaseService = Target.target(
+    name: "DatabaseService",
+    destinations: .iOS,
+    product: .staticFramework,
+    bundleId: "gmikay.quiz.mates.database-service",
+    sources: .paths(["Targets/DatabaseService/Sources/**"]),
+    dependencies: [
+        .external(name: "Swinject", condition: nil)
+    ]
+)
+
 let questionsGrid = Target.target(
     name: "QuestionsGrid",
     destinations: .iOS,
     product: .staticFramework,
     bundleId: "gmikay.quiz.mates.questions-grid",
+    sources: .paths(["Targets/QuestionsGrid/Sources/**"]),
+    resources: .resources(["Targets/QuestionsGrid/Resources/**"]),
     dependencies: [
         .external(name: "Swinject", condition: nil),
-        .external(name: "DeviceKit", condition: nil)
+        .external(name: "DeviceKit", condition: nil),
+        .target(name: "DatabaseService", condition: nil)
     ]
 )
 
@@ -91,7 +105,7 @@ let mainApp = Target.target(
             "ITSAppUsesNonExemptEncryption": .boolean(false)
         ]
     ),
-    sources: .paths(["Targets/MainApp/**"]),
+    sources: .paths(["Targets/MainApp/Sources/**"]),
     resources: .resources(
         ["Targets/MainApp/Resources/**"],
         privacyManifest: .privacyManifest(
@@ -111,7 +125,8 @@ let mainApp = Target.target(
     dependencies: [
         .external(name: "Swinject", condition: nil),
         .external(name: "DeviceKit", condition: nil),
-        .target(name: "QuestionsGrid", condition: nil)
+        .target(name: "QuestionsGrid", condition: nil),
+        .target(name: "DatabaseService", condition: nil)
     ],
     settings: .settings(
         base: SettingsDictionary()
@@ -154,6 +169,6 @@ let mainApp = Target.target(
 
 let project = Project(
     name: "QuizMates",
-    targets: [questionsGrid, unitTests, uiTests, mainApp],
+    targets: [databaseService, questionsGrid, unitTests, uiTests, mainApp],
     resourceSynthesizers: [.assets(), .strings(), .fonts()]
 )
