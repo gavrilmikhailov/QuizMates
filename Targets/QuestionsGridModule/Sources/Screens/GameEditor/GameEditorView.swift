@@ -1,0 +1,312 @@
+//
+//  GameEditorView.swift
+//  QuizMates
+//
+//  Created by Gavriil Mikhailov on 23.01.2026.
+//
+
+import SwiftUI
+
+@MainActor
+protocol GameEditorViewDelegate: AnyObject {
+    func didSumbitNewGameName(name: String)
+    func didTapCreateNewTopic()
+    func didTapEditTopic(topic: TopicDTO)
+    func didTapDeleteTopic(topic: TopicDTO)
+    func didTapCreateNewQuestion(topic: TopicDTO)
+    func didTapEditQuestion(question: QuestionDTO, topic: TopicDTO)
+    func didTapDeleteQuestion(question: QuestionDTO)
+    func didTapCreateNewPlayer()
+    func didTapEditPlayer(player: PlayerDTO)
+    func didTapResetGame()
+    func didTapStartGame()
+}
+
+struct GameEditorView: View {
+
+    @Bindable var viewModel: GameEditorViewModel
+    @State private var isEditing: Bool = false
+    @FocusState private var isFocused: Bool
+
+    weak var delegate: GameEditorViewDelegate?
+
+    var body: some View {
+        ScrollView(.vertical) {
+            gameNameView
+                .padding(top: 16, leading: 16, bottom: 0, trailing: 16)
+
+            if !viewModel.topics.isEmpty {
+                gameTopicsView
+                    .padding(top: 24, leading: 16, bottom: 0, trailing: 16)
+            } else {
+                gameTopicsEmptyView
+                    .padding(top: 40)
+            }
+            if !viewModel.players.isEmpty {
+                gamePlayersView
+                    .padding(top: 24, leading: 16, bottom: 0, trailing: 16)
+            } else {
+                gamePlayersEmptyView
+                    .padding(top: 40)
+            }
+
+            startGameView
+                .padding(top: 24, leading: 16, bottom: 0, trailing: 16)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            toggleNameEditing(isOn: false)
+        }
+    }
+
+    private var gameNameView: some View {
+        HStack(alignment: .center, spacing: 12) {
+            if isEditing {
+                TextField("Название игры", text: $viewModel.name)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .textFieldStyle(.plain)
+                    .focused($isFocused)
+                    .submitLabel(.done)
+                    .onSubmit {
+                        toggleNameEditing(isOn: false)
+                    }
+            } else {
+                Text(viewModel.name)
+                    .font(.title2)
+                    .fontWeight(.bold)
+            }
+            if !isEditing {
+                Button(
+                    action: {
+                        toggleNameEditing(isOn: true)
+                    }, label: {
+                        Image(systemName: "square.and.pencil")
+                            .imageScale(.small)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundStyle(Color(UIColor.label))
+                    }
+                )
+            }
+            Spacer()
+        }
+    }
+
+    @ViewBuilder
+    private var gameTopicsView: some View {
+        ScrollView(.horizontal) {
+            Grid {
+                ForEach(viewModel.topics, id: \.0.id) { tuple in
+                    GridRow {
+                        Button(
+                            action: {
+                                delegate?.didTapEditTopic(topic: tuple.0)
+                            },
+                            label: {
+                                Text(tuple.0.name)
+                            }
+                        )
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                delegate?.didTapDeleteTopic(topic: tuple.0)
+                            } label: {
+                                Label("Удалить", systemImage: "trash")
+                            }
+                        }
+                        ForEach(tuple.1, id: \.id) { question in
+                            Button(
+                                action: {
+                                    delegate?.didTapEditQuestion(question: question, topic: tuple.0)
+                                },
+                                label: {
+                                    Text(question.price.description)
+                                }
+                            )
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    delegate?.didTapDeleteQuestion(question: question)
+                                } label: {
+                                    Label("Удалить", systemImage: "trash")
+                                }
+                            }
+                        }
+                        Button(
+                            action: {
+                                delegate?.didTapCreateNewQuestion(topic: tuple.0)
+                            },
+                            label: {
+                                HStack {
+                                    Image(systemName: "plus")
+                                    Text("Новый вопрос")
+                                        .multilineTextAlignment(.leading)
+                                }
+                            }
+                        )
+                    }
+                    Divider()
+                }
+                GridRow {
+                    Button(
+                        action: {
+                            delegate?.didTapCreateNewTopic()
+                        },
+                        label: {
+                            HStack {
+                                Image(systemName: "plus")
+                                Text("Новая тема")
+                                    .multilineTextAlignment(.leading)
+                            }
+                        }
+                    )
+                }
+            }
+            .padding(top: 8, bottom: 8)
+        }
+    }
+
+    private var gameTopicsEmptyView: some View {
+        ContentUnavailableView(
+            label: {
+                Label("Нет тем", systemImage: "folder.badge.questionmark")
+            },
+            description: {
+                Text("Вы еще не добавили ни одной темы для вопросов")
+            },
+            actions: {
+                Button(
+                    action: {
+                        delegate?.didTapCreateNewTopic()
+                    },
+                    label: {
+                        Label("Добавить новую тему", systemImage: "plus")
+                    }
+                )
+            }
+        )
+    }
+
+    private var gamePlayersView: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Игроки:")
+                .font(.title3)
+                .foregroundStyle(.primary)
+                .fontWeight(.bold)
+                .padding(bottom: 16)
+            ForEach(viewModel.players) { player in
+                Button(
+                    action: {
+                        delegate?.didTapEditPlayer(player: player)
+                    },
+                    label: {
+                        HStack(alignment: .center, spacing: 4) {
+                            Text(player.emoji)
+                            Text(player.name)
+                                .font(.title3)
+                            Spacer()
+                        }
+                        .padding(top: 4, bottom: 4)
+                    }
+                )
+                .contentShape(Rectangle())
+                .buttonStyle(.plain)
+            }
+            Button(
+                action: {
+                    delegate?.didTapCreateNewPlayer()
+                },
+                label: {
+                    HStack(alignment: .center, spacing: 12) {
+                        Image(systemName: "person.badge.plus")
+                        Text("Добавить игрока")
+                            .font(.title3)
+                    }
+                }
+            )
+            .padding(top: 16, bottom: 0)
+        }
+    }
+
+    private var startGameView: some View {
+        VStack(alignment: .center, spacing: 16) {
+            if viewModel.hasProgress {
+                Button(
+                    action: {
+                        delegate?.didTapResetGame()
+                    },
+                    label: {
+                        HStack(alignment: .center, spacing: 12) {
+                            Image(systemName: "repeat")
+                            Text("Сбросить прогресс")
+                                .font(.title3)
+                        }
+                        .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+                    }
+                )
+                .tint(.gray)
+                .buttonStyle(.borderedProminent)
+            }
+            Button(
+                action: {
+                    delegate?.didTapStartGame()
+                },
+                label: {
+                    HStack(alignment: .center, spacing: 12) {
+                        Image(systemName: "play.fill")
+                        Text(viewModel.hasProgress ? "Продолжить игру" : "Начать игру")
+                            .font(.title3)
+                    }
+                    .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+                }
+            )
+            .buttonStyle(.borderedProminent)
+            .tint(.blue)
+            .disabled(viewModel.players.isEmpty || viewModel.topics.isEmpty)
+        }
+    }
+
+    private var gamePlayersEmptyView: some View {
+        ContentUnavailableView(
+            label: {
+                Label("Нет игроков", systemImage: "person.crop.circle.badge.questionmark")
+            },
+            description: {
+                Text("Вы еще не добавили ни одного игрока")
+            },
+            actions: {
+                Button(
+                    action: {
+                        delegate?.didTapCreateNewPlayer()
+                    },
+                    label: {
+                        Label("Добавить нового игрока", systemImage: "plus")
+                    }
+                )
+            }
+        )
+    }
+
+    private func toggleNameEditing(isOn: Bool) {
+        if isOn {
+            withAnimation(.spring()) {
+                isEditing = true
+                isFocused = true
+            }
+            Task {
+                try? await Task.sleep(for: .milliseconds(50))
+                UIApplication.shared.sendAction(
+                    #selector(UIResponder.selectAll(_:)),
+                    to: nil,
+                    from: nil,
+                    for: nil
+                )
+            }
+        } else {
+            withAnimation(.spring()) {
+                isEditing = false
+                isFocused = false
+            }
+            delegate?.didSumbitNewGameName(name: viewModel.name)
+        }
+    }
+}

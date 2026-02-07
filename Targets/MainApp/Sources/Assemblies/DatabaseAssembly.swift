@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import DatabaseModule
+import QuestionsGridModule
 import SwiftData
 @preconcurrency import Swinject
 
@@ -17,11 +19,11 @@ final class DatabaseAssembly: Assembly {
         container.register(ModelContainer.self) { _ in
             let schema = Schema(
                 [
-                    QuestionsGridGameModel.self,
-                    QuestionsGridTopicModel.self,
-                    QuestionsGridQuestionModel.self,
-                    QuestionsGridMediaModel.self,
-                    QuestionsGridPlayerModel.self
+                    GameModel.self,
+                    TopicModel.self,
+                    QuestionModel.self,
+                    MediaModel.self,
+                    PlayerModel.self
                 ]
             )
             let bundleId = Bundle.main.bundleIdentifier!
@@ -34,9 +36,9 @@ final class DatabaseAssembly: Assembly {
         }
         .inObjectScope(.container)
 
-        container.register(DatabaseService.self) { resolver in
+        container.register(DatabaseServiceProtocol.self) { resolver in
             let modelContainer = resolver.resolve(ModelContainer.self)!
-            return DatabaseActor(modelContainer: modelContainer)
+            return DatabaseService(modelContainer: modelContainer)
         }
         .inObjectScope(.container)
     }

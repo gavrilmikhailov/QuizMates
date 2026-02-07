@@ -16,6 +16,7 @@ open class BaseCoordinator: Coordinator {
     public var childCoordinators: [Coordinator] = []
     public let router: Router
     public let resolver: Resolver
+    public var onFinish: (() -> Void)?
 
     // MARK: - Initializer
 

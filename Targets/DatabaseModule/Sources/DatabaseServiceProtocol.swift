@@ -11,19 +11,25 @@ import SwiftData
 public protocol DatabaseServiceProtocol: Sendable {
 
     func fetch<T: PersistentModel, V: Sendable>(
-        descriptor: FetchDescriptor<T>,
+        modelType: T.Type,
+        transformer: @escaping @Sendable (T) -> V
+    ) async throws -> [V] 
+
+    func fetch<T: PersistentModel, V: Sendable>(
+        ids: [PersistentIdentifier],
         transformer: @escaping @Sendable (T) -> V
     ) async throws -> [V]
 
-    func fetchOne<T: PersistentModel, V: Sendable>(
+    func fetch<T: PersistentModel, V: Sendable>(
         id: PersistentIdentifier,
         transformer: @escaping @Sendable (T) -> V
-    ) async throws -> V?
+    ) async throws -> V
 
+    @discardableResult
     func create<T: PersistentModel, V: Sendable>(
         from dto: V,
         transformer: @escaping @Sendable (V) -> T
-    ) async throws
+    ) async throws -> PersistentIdentifier
 
     func update<T: PersistentModel, V: Sendable>(
         id: PersistentIdentifier,

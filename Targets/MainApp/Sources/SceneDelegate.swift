@@ -7,6 +7,7 @@
 
 import NavigationModule
 import SwiftData
+import QuestionsGridModule
 @preconcurrency import Swinject
 import UIKit
 
@@ -37,7 +38,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = rootController
         window?.makeKeyAndVisible()
 
-        let assembler = Assembler([DatabaseAssembly(), HelpersAssembly(), QuestionsGridAssembly()])
+        let assembler = Assembler([DatabaseAssembly(), QuestionsGridAssembly()])
 
         appCoordinator = AppCoordinator(
             router: Router(navigationController: rootController),

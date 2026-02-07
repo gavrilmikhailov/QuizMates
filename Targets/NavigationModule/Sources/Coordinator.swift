@@ -12,6 +12,7 @@ public protocol Coordinator: AnyObject {
     var childCoordinators: [Coordinator] { get set }
     var router: Router { get }
     var resolver: Resolver { get }
+    var onFinish: (() -> Void)? { get set }
 
     func start()
     func retain(coordinator: Coordinator)

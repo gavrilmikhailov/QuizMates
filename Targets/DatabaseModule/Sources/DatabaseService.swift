@@ -12,52 +12,55 @@ import SwiftData
 public actor DatabaseService: DatabaseServiceProtocol {
 
     public func fetch<T: PersistentModel, V: Sendable>(
-        descriptor: FetchDescriptor<T>,
+        modelType: T.Type,
+        transformer: @escaping @Sendable (T) -> V
+    ) async throws -> [V] {
+        return try modelContext
+            .fetch(FetchDescriptor<T>())
+            .map(transformer)
+    }
+
+    public func fetch<T: PersistentModel, V: Sendable>(
+        ids: [PersistentIdentifier],
         transformer: @escaping @Sendable (T) -> V
     ) throws -> [V] {
-        let models = try modelContext.fetch(descriptor)
-        return models.map(transformer)
+        return ids
+            .compactMap { id in
+                modelContext.model(for: id) as? T
+            }
+            .map(transformer)
     }
-    
-    public func fetchOne<T: PersistentModel, V: Sendable>(
+
+    public func fetch<T: PersistentModel, V: Sendable>(
         id: PersistentIdentifier,
         transformer: @escaping @Sendable (T) -> V
-    ) throws -> V? {
+    ) throws -> V {
         guard let model = modelContext.model(for: id) as? T else {
-            return nil
+            throw DatabaseError.notFound
         }
         return transformer(model)
     }
 
+    @discardableResult
     public func create<T: PersistentModel, V: Sendable>(
         from dto: V,
         transformer: @escaping @Sendable (V) -> T
-    ) throws {
-        // 1. Превращаем DTO в Модель внутри актора
+    ) throws -> PersistentIdentifier {
         let model = transformer(dto)
-        
-        // 2. Вставляем в контекст
         modelContext.insert(model)
-        
-        // 3. Сохраняем
         try modelContext.save()
+        return model.persistentModelID
     }
-    
+
     public func update<T: PersistentModel, V: Sendable>(
         id: PersistentIdentifier,
         with dto: V,
         modifier: @escaping @Sendable (T, V) -> Void
     ) throws {
-        // 1. Ищем модель по ID
         guard let model = modelContext.model(for: id) as? T else {
-            // Можно выбросить ошибку "Not Found", если критично
-            return
+            throw DatabaseError.notFound
         }
-        
-        // 2. Применяем изменения (переносим данные из DTO в Модель)
         modifier(model, dto)
-        
-        // 3. Сохраняем
         try modelContext.save()
     }
 
@@ -65,10 +68,11 @@ public actor DatabaseService: DatabaseServiceProtocol {
         modelType: T.Type,
         id: PersistentIdentifier
     ) throws {
-        if let model = modelContext.model(for: id) as? T {
-            modelContext.delete(model)
-            try modelContext.save()
+        guard let model = modelContext.model(for: id) as? T else {
+            throw DatabaseError.notFound
         }
+        modelContext.delete(model)
+        try modelContext.save()
     }
     
     public func delete<T: PersistentModel>(
