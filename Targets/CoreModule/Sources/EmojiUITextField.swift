@@ -7,9 +7,9 @@
 
 import UIKit
 
-final class EmojiUITextField: UITextField {
+public final class EmojiUITextField: UITextField {
 
-    override var textInputMode: UITextInputMode? {
+    public override var textInputMode: UITextInputMode? {
         return UITextInputMode.activeInputModes.first(where: { $0.primaryLanguage == "emoji" }) ?? super.textInputMode
     }
 }

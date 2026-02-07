@@ -8,28 +8,48 @@ let bundleId = "gmikay.quiz.mates"
 let name = "Quiz Mates"
 let swiftVersion = "6.2.3"
 
-let databaseService = Target.target(
-    name: "DatabaseService",
+let coreModule = Target.target(
+    name: "CoreModule",
     destinations: .iOS,
     product: .staticFramework,
-    bundleId: "gmikay.quiz.mates.database-service",
-    sources: .paths(["Targets/DatabaseService/Sources/**"]),
+    bundleId: "gmikay.quiz.mates.core-module",
+    deploymentTargets: .iOS(deploymentTarget),
+    sources: "Targets/CoreModule/Sources/**"
+)
+let navigationModule = Target.target(
+    name: "NavigationModule",
+    destinations: .iOS,
+    product: .staticFramework,
+    bundleId: "gmikay.quiz.mates.navigation-module",
+    deploymentTargets: .iOS(deploymentTarget),
+    sources: "Targets/NavigationModule/Sources/**",
+    dependencies: [.external(name: "Swinject", condition: nil)]
+)
+let databaseModule = Target.target(
+    name: "DatabaseModule",
+    destinations: .iOS,
+    product: .staticFramework,
+    bundleId: "gmikay.quiz.mates.database-module",
+    deploymentTargets: .iOS(deploymentTarget),
+    sources: .paths(["Targets/DatabaseModule/Sources/**"]),
     dependencies: [
         .external(name: "Swinject", condition: nil)
     ]
 )
-
-let questionsGrid = Target.target(
-    name: "QuestionsGrid",
+let questionsGridModule = Target.target(
+    name: "QuestionsGridModule",
     destinations: .iOS,
     product: .staticFramework,
-    bundleId: "gmikay.quiz.mates.questions-grid",
-    sources: .paths(["Targets/QuestionsGrid/Sources/**"]),
-    resources: .resources(["Targets/QuestionsGrid/Resources/**"]),
+    bundleId: "gmikay.quiz.mates.questions-grid-module",
+    deploymentTargets: .iOS(deploymentTarget),
+    sources: .paths(["Targets/QuestionsGridModule/Sources/**"]),
+    resources: .resources(["Targets/QuestionsGridModule/Resources/**"]),
     dependencies: [
         .external(name: "Swinject", condition: nil),
         .external(name: "DeviceKit", condition: nil),
-        .target(name: "DatabaseService", condition: nil)
+        .target(name: "DatabaseModule", condition: nil),
+        .target(name: "NavigationModule", condition: nil),
+        .target(name: "CoreModule", condition: nil)
     ]
 )
 
@@ -38,6 +58,7 @@ let unitTests = Target.target(
     destinations: .iOS,
     product: .unitTests,
     bundleId: "gmikay.quiz.mates.unit-tests",
+    deploymentTargets: .iOS(deploymentTarget),
     sources: .paths(["Targets/UnitTests/**"])
 )
 
@@ -46,6 +67,7 @@ let uiTests = Target.target(
     destinations: .iOS,
     product: .uiTests,
     bundleId: "gmikay.quiz.mates.ui-tests",
+    deploymentTargets: .iOS(deploymentTarget),
     sources: .paths(["Targets/UITests/**"])
 )
 
@@ -125,8 +147,10 @@ let mainApp = Target.target(
     dependencies: [
         .external(name: "Swinject", condition: nil),
         .external(name: "DeviceKit", condition: nil),
-        .target(name: "QuestionsGrid", condition: nil),
-        .target(name: "DatabaseService", condition: nil)
+        .target(name: "QuestionsGridModule", condition: nil),
+        .target(name: "DatabaseModule", condition: nil),
+        .target(name: "NavigationModule", condition: nil),
+        .target(name: "CoreModule", condition: nil)
     ],
     settings: .settings(
         base: SettingsDictionary()
@@ -169,6 +193,6 @@ let mainApp = Target.target(
 
 let project = Project(
     name: "QuizMates",
-    targets: [databaseService, questionsGrid, unitTests, uiTests, mainApp],
+    targets: [coreModule, navigationModule, databaseModule, questionsGridModule, unitTests, uiTests, mainApp],
     resourceSynthesizers: [.assets(), .strings(), .fonts()]
 )

@@ -6,6 +6,7 @@
 //
 
 import AVKit
+import CoreModule
 import DeviceKit
 import SwiftUI
 

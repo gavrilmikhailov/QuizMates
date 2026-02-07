@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension UIViewController {
+public extension UIViewController {
 
     private static var observerKey: UInt8 = 0
 
@@ -19,5 +19,21 @@ extension UIViewController {
             DeinitObserver(identifier: "\(type(of: self))", onDeinit: closure),
             .OBJC_ASSOCIATION_RETAIN_NONATOMIC
         )
+    }
+}
+
+private final class DeinitObserver {
+    private let identifier: String
+    private let onDeinit: () -> Void
+
+    init(identifier: String, onDeinit: @escaping () -> Void) {
+        self.identifier = identifier
+        self.onDeinit = onDeinit
+        print("🐣 [Memory] Allocated: \(identifier)")
+    }
+
+    deinit {
+        print("🗑️ [Memory] Deallocated: \(identifier)")
+        onDeinit()
     }
 }

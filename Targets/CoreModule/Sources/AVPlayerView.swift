@@ -8,24 +8,28 @@
 import AVKit
 import SwiftUI
 
-struct AVPlayerView: UIViewControllerRepresentable {
-    let player: AVPlayer
+public struct AVPlayerView: UIViewControllerRepresentable {
+    private let player: AVPlayer
 
-    func makeCoordinator() -> Coordinator {
+    public init(player: AVPlayer) {
+        self.player = player
+    }
+
+    public func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
 
-    func makeUIViewController(context: Context) -> AVPlayerViewController {
+    public func makeUIViewController(context: Context) -> AVPlayerViewController {
         let controller = AVPlayerViewController()
         controller.player = player
         controller.showsPlaybackControls = true
         return controller
     }
 
-    func updateUIViewController(_ uiViewController: AVPlayerViewController, context: Context) {
+    public func updateUIViewController(_ uiViewController: AVPlayerViewController, context: Context) {
     }
 
-    class Coordinator: NSObject {
+    public class Coordinator: NSObject {
         var parent: AVPlayerView
 
         init(_ parent: AVPlayerView) {

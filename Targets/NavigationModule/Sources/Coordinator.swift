@@ -8,10 +8,12 @@
 @preconcurrency import Swinject
 
 @MainActor
-protocol Coordinator: AnyObject {
+public protocol Coordinator: AnyObject {
     var childCoordinators: [Coordinator] { get set }
     var router: Router { get }
     var resolver: Resolver { get }
 
     func start()
+    func retain(coordinator: Coordinator)
+    func release(coordinator: Coordinator)
 }

@@ -7,11 +7,16 @@
 
 import SwiftUI
 
-struct EmojiTextField: UIViewRepresentable {
+public struct EmojiTextField: UIViewRepresentable {
     @Binding var text: String
     var placeholder: String = ""
 
-    func makeUIView(context: Context) -> EmojiUITextField {
+    public init(text: Binding<String>, placeholder: String) {
+        self._text = text
+        self.placeholder = placeholder
+    }
+
+    public func makeUIView(context: Context) -> EmojiUITextField {
         let textField = EmojiUITextField()
         textField.attributedPlaceholder = NSAttributedString(
             string: placeholder,
@@ -23,22 +28,22 @@ struct EmojiTextField: UIViewRepresentable {
         return textField
     }
 
-    func updateUIView(_ uiView: EmojiUITextField, context: Context) {
+    public func updateUIView(_ uiView: EmojiUITextField, context: Context) {
         uiView.text = text
     }
 
-    func makeCoordinator() -> Coordinator {
+    public func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
 
-    class Coordinator: NSObject, UITextFieldDelegate {
+    public class Coordinator: NSObject, UITextFieldDelegate {
         var parent: EmojiTextField
 
         init(_ parent: EmojiTextField) {
             self.parent = parent
         }
 
-        func textFieldDidChangeSelection(_ textField: UITextField) {
+        public func textFieldDidChangeSelection(_ textField: UITextField) {
             if let text = textField.text, text.count > 1 {
                 textField.text = String(text.suffix(1))
             }

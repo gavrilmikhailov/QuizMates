@@ -7,10 +7,12 @@
 
 import SwiftUI
 
-struct ShimmerView: View {
+public struct ShimmerView: View {
     @State private var isAnimating = false
 
-    var body: some View {
+    public init() {}
+
+    public var body: some View {
         Color.gray.opacity(0.3)
             .overlay {
                 GeometryReader { geometry in

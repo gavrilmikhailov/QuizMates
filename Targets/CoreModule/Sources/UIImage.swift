@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-extension UIImage {
+public extension UIImage {
 
     func resizedForThumbnail(to maxDimension: CGFloat = 300.0) -> UIImage? {
         let width = size.width

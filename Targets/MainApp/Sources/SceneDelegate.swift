@@ -5,6 +5,7 @@
 //  Created by Gavriil Mikhailov on 22.01.2026.
 //
 
+import NavigationModule
 import SwiftData
 @preconcurrency import Swinject
 import UIKit
