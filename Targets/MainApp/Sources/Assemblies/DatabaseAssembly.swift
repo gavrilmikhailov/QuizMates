@@ -19,11 +19,11 @@ final class DatabaseAssembly: Assembly {
         container.register(ModelContainer.self) { _ in
             let schema = Schema(
                 [
-                    GameModel.self,
-                    TopicModel.self,
-                    QuestionModel.self,
-                    MediaModel.self,
-                    PlayerModel.self
+                    QuestionsGridGameModel.self,
+                    QuestionsGridTopicModel.self,
+                    QuestionsGridQuestionModel.self,
+                    QuestionsGridMediaModel.self,
+                    QuestionsGridPlayerModel.self
                 ]
             )
             let bundleId = Bundle.main.bundleIdentifier!

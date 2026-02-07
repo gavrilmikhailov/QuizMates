@@ -1,5 +1,5 @@
 //
-//  QuetsionsGridQuestionModel.swift
+//  QuestionsGridQuestionModel.swift
 //  QuizMates
 //
 //  Created by Gavriil Mikhailov on 25.01.2026.
@@ -8,7 +8,7 @@
 import SwiftData
 
 @Model
-public final class QuetsionsGridQuestionModel {
+public final class QuestionsGridQuestionModel {
     var text: String?
     var answer: String?
     var price: Int?
@@ -17,7 +17,7 @@ public final class QuetsionsGridQuestionModel {
     @Relationship(deleteRule: .cascade, inverse: \QuestionsGridMediaModel.question)
     var medias: [QuestionsGridMediaModel]? = []
 
-    var topic: TopicModel?
+    var topic: QuestionsGridTopicModel?
 
     init(text: String, medias: [QuestionsGridMediaModel], answer: String, price: Int, isAnswered: Bool) {
         self.text = text

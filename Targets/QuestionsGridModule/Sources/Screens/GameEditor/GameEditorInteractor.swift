@@ -70,7 +70,7 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
                 do {
                     let draft = GameDraft(name: generateDefaultGameName(), createdAt: .now)
                     let newGameId = try await databaseSevice.create(from: draft) { draft in
-                        return GameModel(draft: draft)
+                        return QuestionsGridGameModel(draft: draft)
                     }
                     game = try await databaseSevice.fetch(id: newGameId) { model in
                         return GameDTO(from: model)
@@ -146,7 +146,7 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
         )
         Task {
             do {
-                try await databaseSevice.update(id: game.id, with: newGame) { (model: GameModel, dto: GameDTO) in
+                try await databaseSevice.update(id: game.id, with: newGame) { (model: QuestionsGridGameModel, dto: GameDTO) in
                     model.name = dto.name
                 }
                 await MainActor.run {
@@ -163,8 +163,8 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
     func addNewTopic(topic: TopicDraft, game: GameDTO) {
         Task {
             do {
-                try await databaseSevice.update(id: game.id, with: game) { (game: GameModel, dto: GameDTO) in
-                    game.topics?.append(TopicModel(draft: topic))
+                try await databaseSevice.update(id: game.id, with: game) { (game: QuestionsGridGameModel, dto: GameDTO) in
+                    game.topics?.append(QuestionsGridTopicModel(draft: topic))
                 }
                 await MainActor.run {
                     presenter.presentGameLoading()
@@ -180,7 +180,7 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
     func updateTopic(topic: TopicDTO) {
         Task {
             do {
-                try await databaseSevice.update(id: topic.id, with: topic) { (model: TopicModel, dto: TopicDTO) in
+                try await databaseSevice.update(id: topic.id, with: topic) { (model: QuestionsGridTopicModel, dto: TopicDTO) in
                     model.name = dto.name
                     model.createdAt = dto.createdAt
                 }
@@ -198,7 +198,7 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
     func deleteTopic(topic: TopicDTO) {
         Task {
             do {
-                try await databaseSevice.delete(modelType: TopicModel.self, id: topic.id)
+                try await databaseSevice.delete(modelType: QuestionsGridTopicModel.self, id: topic.id)
                 await MainActor.run {
                     presenter.presentGameLoading()
                 }
@@ -217,10 +217,10 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
     ) {
         Task {
             do {
-                try await databaseSevice.update(id: topic.id, with: topic) { (model: TopicModel, dto: TopicDTO) in
-                    let question = QuestionModel(draft: question)
+                try await databaseSevice.update(id: topic.id, with: topic) { (model: QuestionsGridTopicModel, dto: TopicDTO) in
+                    let question = QuestionsGridQuestionModel(draft: question)
                     question.medias = medias.map { draft in
-                        return MediaModel(draft: draft)
+                        return QuestionsGridMediaModel(draft: draft)
                     }
                     model.questions?.append(question)
                 }
@@ -238,14 +238,14 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
     func updateQuestion(question: QuestionDTO, medias: [MediaDraft]) {
         Task {
             do {
-                try await databaseSevice.update(id: question.id, with: question) { (model: QuestionModel, dto) in
+                try await databaseSevice.update(id: question.id, with: question) { (model: QuestionsGridQuestionModel, dto) in
                     model.text = dto.text
                     model.answer = dto.answer
                     model.price = dto.price
                     model.isAnswered = dto.isAnswered
 
                     let newMedias = medias.map { media in
-                        MediaModel(draft: media)
+                        QuestionsGridMediaModel(draft: media)
                     }
                     model.medias?.append(contentsOf: newMedias)
                 }
@@ -263,7 +263,7 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
     func deleteQuestion(question: QuestionDTO) {
         Task {
             do {
-                try await databaseSevice.delete(modelType: QuestionModel.self, id: question.id)
+                try await databaseSevice.delete(modelType: QuestionsGridQuestionModel.self, id: question.id)
                 await MainActor.run {
                     presenter.presentGameLoading()
                 }
@@ -278,8 +278,8 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
     func addNewPlayer(player: PlayerDraft, game: GameDTO) {
         Task {
             do {
-                try await databaseSevice.update(id: game.id, with: game) { (game: GameModel, dto) in
-                    game.players?.append(PlayerModel(draft: player))
+                try await databaseSevice.update(id: game.id, with: game) { (game: QuestionsGridGameModel, dto) in
+                    game.players?.append(QuestionsGridPlayerModel(draft: player))
                 }
                 await MainActor.run {
                     presenter.presentGameLoading()
@@ -295,7 +295,7 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
     func updatePlayer(player: PlayerDTO) {
         Task {
             do {
-                try await databaseSevice.update(id: player.id, with: player) { (model: PlayerModel, dto) in
+                try await databaseSevice.update(id: player.id, with: player) { (model: QuestionsGridPlayerModel, dto) in
                     model.emoji = dto.emoji
                     model.name = dto.name
                     model.score = dto.score
@@ -315,7 +315,7 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
     func deletePlayer(player: PlayerDTO) {
         Task {
             do {
-                try await databaseSevice.delete(modelType: PlayerModel.self, id: player.id)
+                try await databaseSevice.delete(modelType: QuestionsGridPlayerModel.self, id: player.id)
                 await MainActor.run {
                     presenter.presentGameLoading()
                 }
@@ -381,7 +381,7 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
                         return QuestionDTO(from: model)
                     }
                     for question in questions {
-                        try await databaseSevice.update(id: question.id, with: question) { (model: QuestionModel, dto) in
+                        try await databaseSevice.update(id: question.id, with: question) { (model: QuestionsGridQuestionModel, dto) in
                             model.isAnswered = false
                         }
                     }
@@ -390,7 +390,7 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
                     return PlayerDTO(from: model)
                 }
                 for player in players {
-                    try await databaseSevice.update(id: player.id, with: player) { (model: PlayerModel, dto) in
+                    try await databaseSevice.update(id: player.id, with: player) { (model: QuestionsGridPlayerModel, dto) in
                         model.score = 0
                     }
                 }

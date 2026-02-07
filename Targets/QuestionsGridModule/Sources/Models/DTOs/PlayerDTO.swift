@@ -23,7 +23,7 @@ struct PlayerDTO: Sendable, Identifiable {
         self.createdAt = createdAt
     }
 
-    init(from model: PlayerModel) {
+    init(from model: QuestionsGridPlayerModel) {
         id = model.persistentModelID
         emoji = model.emoji ?? ""
         name = model.name ?? ""

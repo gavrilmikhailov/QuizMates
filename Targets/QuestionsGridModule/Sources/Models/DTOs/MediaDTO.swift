@@ -17,7 +17,7 @@ struct MediaDTO: Sendable, Identifiable {
     let thumbnailData: Data
     let createdAt: Date
 
-    init(from model: MediaModel) {
+    init(from model: QuestionsGridMediaModel) {
         id = model.persistentModelID
         fileName = model.fileName ?? ""
         fileExtension = model.fileExtension ?? ""

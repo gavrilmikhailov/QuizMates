@@ -32,7 +32,7 @@ struct QuestionDTO: Sendable, Identifiable {
         self.isAnswered = isAnswered
     }
 
-    init(from model: QuestionModel) {
+    init(from model: QuestionsGridQuestionModel) {
         id = model.persistentModelID
         medias = model.medias?.map(\.id) ?? []
         text = model.text ?? ""

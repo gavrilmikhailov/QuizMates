@@ -38,7 +38,7 @@ final class GamesListInteractor: GamesListInteractorProtocol {
     func fetchGames() {
         Task {
             do {
-                games = try await databaseService.fetch(modelType: GameModel.self) { model in
+                games = try await databaseService.fetch(modelType: QuestionsGridGameModel.self) { model in
                     return GameDTO(from: model)
                 }
                 await MainActor.run {
@@ -55,8 +55,8 @@ final class GamesListInteractor: GamesListInteractorProtocol {
     func deleteGame(dto: GameDTO) {
         Task {
             do {
-                try await databaseService.delete(modelType: GameModel.self, id: dto.id)
-                games = try await databaseService.fetch(modelType: GameModel.self) { model in
+                try await databaseService.delete(modelType: QuestionsGridGameModel.self, id: dto.id)
+                games = try await databaseService.fetch(modelType: QuestionsGridGameModel.self) { model in
                     return GameDTO(from: model)
                 }
                 await MainActor.run {

@@ -29,7 +29,7 @@ struct GameDTO: Sendable, Identifiable {
         self.players = players
     }
 
-    init(from model: GameModel) {
+    init(from model: QuestionsGridGameModel) {
         id = model.persistentModelID
         name = model.name ?? ""
         createdAt = model.createdAt ?? .now

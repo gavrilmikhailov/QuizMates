@@ -1,7 +1,7 @@
 import ProjectDescription
 
 let versionNumber = "1.0"
-let buildNumber = "4"
+let buildNumber = "5"
 let teamId = "6PWFL227LZ"
 let deploymentTarget = "17.0"
 let bundleId = "gmikay.quiz.mates"

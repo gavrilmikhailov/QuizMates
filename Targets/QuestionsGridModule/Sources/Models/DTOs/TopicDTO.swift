@@ -26,7 +26,7 @@ struct TopicDTO: Sendable, Identifiable {
         self.questions = questions
     }
 
-    init(from model: TopicModel) {
+    init(from model: QuestionsGridTopicModel) {
         id = model.persistentModelID
         name = model.name ?? ""
         createdAt = model.createdAt ?? .now

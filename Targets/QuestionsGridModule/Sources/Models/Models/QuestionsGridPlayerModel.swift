@@ -1,5 +1,5 @@
 //
-//  PlayerModel.swift
+//  QuestionsGridPlayerModel.swift
 //  QuizMates
 //
 //  Created by Gavriil Mikhailov on 31.01.2026.
@@ -9,13 +9,13 @@ import Foundation
 import SwiftData
 
 @Model
-public final class PlayerModel {
+public final class QuestionsGridPlayerModel {
     var emoji: String?
     var name: String?
     var score: Int?
     var createdAt: Date?
 
-    var game: GameModel?
+    var game: QuestionsGridGameModel?
 
     init(emoji: String, name: String, score: Int, createdAt: Date) {
         self.emoji = emoji

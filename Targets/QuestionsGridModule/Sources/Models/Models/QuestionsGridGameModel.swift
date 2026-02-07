@@ -13,13 +13,13 @@ public final class QuestionsGridGameModel {
     var name: String?
     var createdAt: Date?
 
-    @Relationship(deleteRule: .cascade, inverse: \TopicModel.game)
-    var topics: [TopicModel]? = []
+    @Relationship(deleteRule: .cascade, inverse: \QuestionsGridTopicModel.game)
+    var topics: [QuestionsGridTopicModel]? = []
 
-    @Relationship(deleteRule: .cascade, inverse: \PlayerModel.game)
-    var players: [PlayerModel]? = []
+    @Relationship(deleteRule: .cascade, inverse: \QuestionsGridPlayerModel.game)
+    var players: [QuestionsGridPlayerModel]? = []
 
-    init(name: String, topics: [TopicModel], players: [PlayerModel], createdAt: Date) {
+    init(name: String, topics: [QuestionsGridTopicModel], players: [QuestionsGridPlayerModel], createdAt: Date) {
         self.name = name
         self.topics = topics
         self.players = players

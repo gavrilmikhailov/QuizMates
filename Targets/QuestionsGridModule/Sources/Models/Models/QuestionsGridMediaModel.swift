@@ -1,5 +1,5 @@
 //
-//  MediaModel.swift
+//  QuestionsGridMediaModel.swift
 //  QuizMates
 //
 //  Created by Gavriil Mikhailov on 25.01.2026.
@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-public final class MediaModel {
+public final class QuestionsGridMediaModel {
     var fileName: String?
     var fileExtension: String?
     var type: String?
@@ -21,7 +21,7 @@ public final class MediaModel {
     @Attribute(.externalStorage)
     var thumbnailData: Data?
 
-    var question: QuestionModel?
+    var question: QuestionsGridQuestionModel?
 
     init(fileName: String, fileExtension: String, type: String, data: Data, thumbnailData: Data, createdAt: Date) {
         self.fileName = fileName

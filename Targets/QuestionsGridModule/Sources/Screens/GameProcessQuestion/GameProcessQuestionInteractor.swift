@@ -73,7 +73,7 @@ final class GameProcessQuestionInteractor: GameProcessQuestionInteractorProtocol
         Task {
             do {
                 let newScore = player.score + (isAddition ? question.price : -question.price)
-                try await databaseService.update(id: player.id, with: player) { (model: PlayerModel, dto) in
+                try await databaseService.update(id: player.id, with: player) { (model: QuestionsGridPlayerModel, dto) in
                     model.score = newScore
                 }
                 players = try await databaseService.fetch(ids: players.map(\.id)) { model in
@@ -93,7 +93,7 @@ final class GameProcessQuestionInteractor: GameProcessQuestionInteractorProtocol
     func markQuestionAsAnswered() {
         Task {
             do {
-                try await databaseService.update(id: question.id, with: question) { (model: QuestionModel, dto) in
+                try await databaseService.update(id: question.id, with: question) { (model: QuestionsGridQuestionModel, dto) in
                     model.isAnswered = true
                 }
                 await MainActor.run {
