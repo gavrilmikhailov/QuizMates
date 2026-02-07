@@ -125,4 +125,8 @@ extension QuestionsGridGamesListViewController: QuestionsGridGamesListViewDelega
 
         present(alert, animated: true, completion: nil)
     }
+
+    func didPullToRefresh() {
+        interactor.fetchGames()
+    }
 }

@@ -12,6 +12,7 @@ protocol QuestionsGridGamesListViewDelegate: AnyObject {
     func didTapCreateNewGame()
     func didTapGame(dto: QuestionsGridGameDTO)
     func didSwipeToDeleteGame(dto: QuestionsGridGameDTO)
+    func didPullToRefresh()
 }
 
 struct QuestionsGridGamesListView: View {
@@ -64,8 +65,16 @@ struct QuestionsGridGamesListView: View {
                         }
                     }
                 }
+                .refreshable {
+                    delegate?.didPullToRefresh()
+                }
             } else {
-                emptyView
+                List {
+                    emptyView
+                }
+                .refreshable {
+                    delegate?.didPullToRefresh()
+                }
             }
         case .error(let errorText):
             Text(errorText)
