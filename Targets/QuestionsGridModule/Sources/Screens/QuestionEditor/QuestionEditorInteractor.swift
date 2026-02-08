@@ -14,6 +14,7 @@ protocol QuestionEditorInteractorProtocol {
     func loadQuestionContent(isInitial: Bool)
     func updateQuestionContent(text: String, answer: String, price: Int)
     func addMediaItems(items: [PhotosPickerItem])
+    func addMediaItems(images: [URL])
     func addMediaItems(audios: [URL])
     func deleteMedia(fileName: String)
     func submitQuestion(text: String, answer: String, price: Int)
@@ -154,6 +155,35 @@ final class QuestionEditorInteractor: QuestionEditorInteractorProtocol {
                     print(error.localizedDescription)
                     continue
                 }
+            }
+        }
+    }
+
+    func addMediaItems(images: [URL]) {
+        Task {
+            for url in images {
+                guard url.startAccessingSecurityScopedResource() else {
+                    continue
+                }
+                do {
+                    let data = try Data(contentsOf: url)
+                    let draft = MediaDraft(
+                        id: UUID(),
+                        fileName: UUID().uuidString,
+                        fileExtension: url.pathExtension,
+                        type: "photo",
+                        data: data,
+                        thumbnailData: UIImage(data: data)?.jpegThumbnailData() ?? Data(),
+                        createdAt: .now
+                    )
+                    await MainActor.run {
+                        self.mediaDrafts.append(draft)
+                        self.view?.displayUpdateContent()
+                    }
+                } catch {
+                    print(error.localizedDescription)
+                }
+                url.stopAccessingSecurityScopedResource()
             }
         }
     }

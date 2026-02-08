@@ -11,6 +11,7 @@ import SwiftUI
 @MainActor
 protocol QuestionEditorViewDelegate: AnyObject {
     func didPickMediaItems(items: [PhotosPickerItem])
+    func didPickMediaItems(images: [URL])
     func didPickMediaItems(audios: [URL])
     func didTapMedia(media: MediaDTO)
     func didTapMedia(draft: MediaDraft)
@@ -36,7 +37,9 @@ struct QuestionEditorView: View {
         ScrollView(.vertical) {
             photosView
                 .padding(top: 16, leading: 0, bottom: 0, trailing: 0)
-            photoPickerView
+            photoFromGalleryPickerView
+                .padding(top: 16, leading: 16, bottom: 0, trailing: 16)
+            photoFromFilesPickerView
                 .padding(top: 16, leading: 16, bottom: 0, trailing: 16)
             videoPickerView
                 .padding(top: 16, leading: 16, bottom: 0, trailing: 16)
@@ -90,7 +93,7 @@ struct QuestionEditorView: View {
         .scrollIndicators(.never)
     }
 
-    private var photoPickerView: some View {
+    private var photoFromGalleryPickerView: some View {
         HStack(alignment: .center, spacing: 0) {
             PhotosPicker(
                 selection: $viewModel.photoPickerItems,
@@ -99,12 +102,39 @@ struct QuestionEditorView: View {
             ) {
                 HStack(alignment: .center, spacing: 12) {
                     Image(systemName: "photo.badge.plus")
-                    Text("Добавить фото")
+                    Text("Добавить фото из галереи")
                         .font(.title3)
                 }
             }
             .onChange(of: viewModel.photoPickerItems) { _, items in
                 delegate?.didPickMediaItems(items: items)
+            }
+            Spacer(minLength: 0)
+        }
+    }
+
+    private var photoFromFilesPickerView: some View {
+        HStack(alignment: .center, spacing: 0) {
+            Button(
+                action: {
+                    isFileImporterPresented = true
+                },
+                label: {
+                    HStack(alignment: .center, spacing: 12) {
+                        Image(systemName: "photo.badge.plus")
+                        Text("Добавить фото из файлов")
+                            .font(.title3)
+                    }
+                }
+            )
+            .fileImporter(
+                isPresented: $isFileImporterPresented,
+                allowedContentTypes: [.image],
+                allowsMultipleSelection: true
+            ) { result in
+                if case .success(let urls) = result {
+                    delegate?.didPickMediaItems(images: urls)
+                }
             }
             Spacer(minLength: 0)
         }

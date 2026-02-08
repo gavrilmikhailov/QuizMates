@@ -221,6 +221,10 @@ extension QuestionEditorViewController: QuestionEditorViewDelegate {
         interactor.addMediaItems(items: items)
     }
 
+    func didPickMediaItems(images: [URL]) {
+        interactor.addMediaItems(images: images)
+    }
+
     func didPickMediaItems(audios: [URL]) {
         interactor.addMediaItems(audios: audios)
     }

@@ -96,7 +96,8 @@ struct GameEditorView: View {
 
     @ViewBuilder
     private var gameTopicsView: some View {
-        ScrollView(.horizontal) {
+        HStack(alignment: .center, spacing: 0) {
+            Spacer(minLength: 0)
             Grid {
                 ForEach(viewModel.topics, id: \.0.id) { tuple in
                     GridRow {
@@ -162,8 +163,9 @@ struct GameEditorView: View {
                     )
                 }
             }
-            .padding(top: 8, bottom: 8)
+            Spacer(minLength: 0)
         }
+        .padding(top: 8, bottom: 8)
     }
 
     private var gameTopicsEmptyView: some View {
