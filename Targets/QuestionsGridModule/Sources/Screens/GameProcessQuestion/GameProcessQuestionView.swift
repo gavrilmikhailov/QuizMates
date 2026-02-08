@@ -40,12 +40,22 @@ struct GameProcessQuestionView: View {
                         } else {
                             mediaLoadErrorView
                         }
-                    case "video", "audio":
+                    case "video":
                         if let url = media.getTemporaryUrl() {
-                            GameProcessQuestionViewVideoPlayer(
+                            GameProcessQuestionVideoPlayerView(
                                 url: url,
                                 width: getVideoPlayerWidth(windowSize: geoProxy.size),
                                 height: getVideoPlayerHeight(windowSize: geoProxy.size)
+                            )
+                        } else {
+                            mediaLoadErrorView
+                        }
+                    case "audio":
+                        if let url = media.getTemporaryUrl() {
+                            GameProcessQuestionVideoPlayerView(
+                                url: url,
+                                width: getVideoPlayerWidth(windowSize: geoProxy.size),
+                                height: 150
                             )
                         } else {
                             mediaLoadErrorView
@@ -87,65 +97,20 @@ struct GameProcessQuestionView: View {
                     }
                     .padding(top: 40, bottom: 40)
                 }
-
-
-                HStack {
+            }
+            .safeAreaInset(edge: .bottom, alignment: .center, spacing: 0) {
+                HStack(alignment: .center, spacing: 0) {
                     Spacer()
-                    switch scoreAssigningMode {
-                    case .hidden:
-                        EmptyView()
-                    case .ready:
-                        Button(
-                            action: {
-                                scoreAssigningMode = .adding
-                            },
-                            label: {
-                                HStack(alignment: .center, spacing: 8) {
-                                    Image(systemName: "plus")
-                                    Text("Присвоить")
-                                        .font(.title3)
-                                }
-                                .padding(top: 4, leading: 8, bottom: 4, trailing: 8)
-                            }
-                        )
-                        .tint(.green)
-                        .buttonStyle(.borderedProminent)
-                        Button(
-                            action: {
-                                scoreAssigningMode = .subtracting
-                            },
-                            label: {
-                                HStack(alignment: .center, spacing: 12) {
-                                    Image(systemName: "minus")
-                                    Text("Вычесть")
-                                        .font(.title3)
-                                }
-                                .padding(top: 4, leading: 8, bottom: 4, trailing: 8)
-                            }
-                        )
-                        .tint(.red)
-                        .buttonStyle(.borderedProminent)
-                    case .adding, .subtracting:
-                        Button(
-                            action: {
-                                scoreAssigningMode = .ready
-                            },
-                            label: {
-                                HStack(alignment: .center, spacing: 12) {
-                                    Text("Отменить")
-                                        .font(.title3)
-                                }
-                                .padding(top: 4, leading: 8, bottom: 4, trailing: 8)
-                            }
-                        )
-                        .tint(.gray)
-                        .buttonStyle(.borderedProminent)
+                    VStack(alignment: .center, spacing: 16) {
+                        actionButtonsView
+                        playersView
                     }
                     Spacer()
                 }
-                .padding(top: 40, bottom: 40)
-
-                playersView
+                .padding(top: 16, bottom: 16)
+                .background {
+                    Color(UIColor.systemBackground)
+                }
             }
         }
     }
@@ -161,32 +126,74 @@ struct GameProcessQuestionView: View {
     }
 
     @ViewBuilder
+    private var actionButtonsView: some View {
+        HStack {
+            Spacer()
+            switch scoreAssigningMode {
+            case .hidden:
+                EmptyView()
+            case .ready:
+                Button(
+                    action: {
+                        scoreAssigningMode = .adding
+                    },
+                    label: {
+                        HStack(alignment: .center, spacing: 8) {
+                            Image(systemName: "plus")
+                            Text("Присвоить")
+                                .font(.title3)
+                        }
+                        .padding(top: 4, leading: 8, bottom: 4, trailing: 8)
+                    }
+                )
+                .tint(.green)
+                .buttonStyle(.borderedProminent)
+                Button(
+                    action: {
+                        scoreAssigningMode = .subtracting
+                    },
+                    label: {
+                        HStack(alignment: .center, spacing: 12) {
+                            Image(systemName: "minus")
+                            Text("Вычесть")
+                                .font(.title3)
+                        }
+                        .padding(top: 4, leading: 8, bottom: 4, trailing: 8)
+                    }
+                )
+                .tint(.red)
+                .buttonStyle(.borderedProminent)
+            case .adding, .subtracting:
+                Button(
+                    action: {
+                        scoreAssigningMode = .ready
+                    },
+                    label: {
+                        HStack(alignment: .center, spacing: 12) {
+                            Text("Отменить")
+                                .font(.title3)
+                        }
+                        .padding(top: 4, leading: 8, bottom: 4, trailing: 8)
+                    }
+                )
+                .tint(.gray)
+                .buttonStyle(.borderedProminent)
+            }
+            Spacer()
+        }
+    }
+
+    @ViewBuilder
     private var playersView: some View {
-        if Device.current.isPhone {
+        HStack(alignment: .center, spacing: 0) {
+            Spacer(minLength: 0)
             VStack(alignment: .leading, spacing: 8) {
                 Text("Игроки:")
                     .font(.title3)
                     .fontWeight(.bold)
-                    .padding(leading: 16)
-                ScrollView(.horizontal) {
-                    makePlayersRowView(itemSpacing: 8)
-                        .padding(leading: 16, trailing: 16)
-                }
+                makePlayersRowView(itemSpacing: 16)
             }
-        } else {
-            VStack(alignment: .center, spacing: 8) {
-                HStack(alignment: .center, spacing: 0) {
-                    Spacer(minLength: 0)
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Игроки:")
-                            .font(.title3)
-                            .fontWeight(.bold)
-                        makePlayersRowView(itemSpacing: 16)
-                    }
-                    Spacer(minLength: 0)
-                }
-            }
-            .padding(bottom: 16)
+            Spacer(minLength: 0)
         }
     }
 
@@ -244,7 +251,7 @@ struct GameProcessQuestionView: View {
     }
 }
 
-private struct GameProcessQuestionViewVideoPlayer: View {
+private struct GameProcessQuestionVideoPlayerView: View {
     let url: URL
     let width: CGFloat
     let height: CGFloat
