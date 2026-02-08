@@ -14,12 +14,13 @@ protocol GameEditorViewControllerProtocol: AnyObject {
         game: GameDTO,
         topics: [(TopicDTO, [QuestionDTO])],
         players: [PlayerDTO],
-        hasProgress: Bool
+        progressState: GameEditorProgressState
     )
     func displayNavigateToEditTopic(topic: TopicDTO?, game: GameDTO)
     func displayNavigateToEditQuestion(question: QuestionDTO?, topic: TopicDTO)
     func displayNavigateToEditPlayer(player: PlayerDTO?, game: GameDTO)
     func displayNavigateToGameProcess(game: GameDTO)
+    func displayNavigateToGameResults(players: [PlayerDTO])
     func displayError(text: String)
 }
 
@@ -31,6 +32,7 @@ final class GameEditorViewController: UIHostingController<GameEditorView> {
     var onEditQuestion: ((QuestionDTO?, TopicDTO) -> Void)?
     var onEditPlayer: ((PlayerDTO?, GameDTO) -> Void)?
     var onOpenGameProcess: ((GameDTO) -> Void)?
+    var onOpenGameResults: (([PlayerDTO]) -> Void)?
 
     // MARK: - Private properties
 
@@ -124,12 +126,12 @@ extension GameEditorViewController: GameEditorViewControllerProtocol {
         game: GameDTO,
         topics: [(TopicDTO, [QuestionDTO])],
         players: [PlayerDTO],
-        hasProgress: Bool
+        progressState: GameEditorProgressState
     ) {
         viewModel.name = game.name
         viewModel.topics = topics
         viewModel.players = players
-        viewModel.hasProgress = hasProgress
+        viewModel.progressState = progressState
     }
 
     func displayNavigateToEditTopic(topic: TopicDTO?, game: GameDTO) {
@@ -146,6 +148,10 @@ extension GameEditorViewController: GameEditorViewControllerProtocol {
 
     func displayNavigateToGameProcess(game: GameDTO) {
         onOpenGameProcess?(game)
+    }
+
+    func displayNavigateToGameResults(players: [PlayerDTO]) {
+        onOpenGameResults?(players)
     }
 
     func displayError(text: String) {
@@ -165,7 +171,7 @@ extension GameEditorViewController: GameEditorViewDelegate {
     }
 
     func didTapCreateNewTopic() {
-        if viewModel.hasProgress {
+        if viewModel.progressState == .inProgress {
             presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
         } else {
             interactor.navigateToEditTopic(topic: nil)
@@ -173,7 +179,7 @@ extension GameEditorViewController: GameEditorViewDelegate {
     }
 
     func didTapEditTopic(topic: TopicDTO) {
-        if viewModel.hasProgress {
+        if viewModel.progressState == .inProgress {
             presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
         } else {
             interactor.navigateToEditTopic(topic: topic)
@@ -181,7 +187,7 @@ extension GameEditorViewController: GameEditorViewDelegate {
     }
 
     func didTapDeleteTopic(topic: TopicDTO) {
-        if viewModel.hasProgress {
+        if viewModel.progressState == .inProgress {
             presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
         } else {
             let alert = UIAlertController(
@@ -203,7 +209,7 @@ extension GameEditorViewController: GameEditorViewDelegate {
     }
 
     func didTapCreateNewQuestion(topic: TopicDTO) {
-        if viewModel.hasProgress {
+        if viewModel.progressState == .inProgress {
             presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
         } else {
             interactor.navigateToCreateNewQuestion(topic: topic)
@@ -211,7 +217,7 @@ extension GameEditorViewController: GameEditorViewDelegate {
     }
 
     func didTapEditQuestion(question: QuestionDTO, topic: TopicDTO) {
-        if viewModel.hasProgress {
+        if viewModel.progressState == .inProgress {
             presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
         } else {
             interactor.navigateToEditQuestion(question: question, topic: topic)
@@ -219,7 +225,7 @@ extension GameEditorViewController: GameEditorViewDelegate {
     }
 
     func didTapDeleteQuestion(question: QuestionDTO) {
-        if viewModel.hasProgress {
+        if viewModel.progressState == .inProgress {
             presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
         } else {
             let alert = UIAlertController(
@@ -241,7 +247,7 @@ extension GameEditorViewController: GameEditorViewDelegate {
     }
 
     func didTapCreateNewPlayer() {
-        if viewModel.hasProgress {
+        if viewModel.progressState == .inProgress {
             presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
         } else {
             interactor.navigateToEditPlayer(player: nil)
@@ -249,7 +255,7 @@ extension GameEditorViewController: GameEditorViewDelegate {
     }
 
     func didTapEditPlayer(player: PlayerDTO) {
-        if viewModel.hasProgress {
+        if viewModel.progressState == .inProgress {
             presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
         } else {
             interactor.navigateToEditPlayer(player: player)
@@ -258,6 +264,10 @@ extension GameEditorViewController: GameEditorViewDelegate {
 
     func didTapResetGame() {
         presentResetGameProgressConfirmation(message: resetGameProgressAlertMessage)
+    }
+
+    func didTapGameResults() {
+        interactor.navigateToGameResults()
     }
 
     func didTapStartGame() {

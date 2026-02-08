@@ -54,6 +54,9 @@ public final class QuestionsGridCoordinator: BaseCoordinator {
         view.onOpenGameProcess = { [weak self] game in
             self?.showGameProcess(game: game)
         }
+        view.onOpenGameResults = { [weak self] players in
+            self?.showGameResults(players: players, completion: nil)
+        }
 
         router.pushView(view, animated: true, hideBottomBar: true)
     }
@@ -140,6 +143,11 @@ public final class QuestionsGridCoordinator: BaseCoordinator {
         view.onOpenQuestion = { [weak self] topic, question, players in
             self?.showGameProcessQuestion(topic: topic, question: question, players: players)
         }
+        view.onFinish = { [weak self] players in
+            self?.showGameResults(players: players) {
+                self?.router.popView(animated: false)
+            }
+        }
 
         router.pushView(view, animated: true, hideBottomBar: true)
     }
@@ -161,5 +169,17 @@ public final class QuestionsGridCoordinator: BaseCoordinator {
         let nav = UINavigationController(rootViewController: view)
         nav.modalPresentationStyle = .fullScreen
         router.presentView(nav, animated: true, completion: nil)
+    }
+
+    private func showGameResults(players: [PlayerDTO], completion: (() -> Void)?) {
+        let view = resolver.resolve(GameResultsViewController.self, argument: players)!
+
+        view.onClose = { [weak self] in
+            self?.router.dismissView(animated: true, completion: nil)
+        }
+
+        let nav = UINavigationController(rootViewController: view)
+        nav.modalPresentationStyle = .fullScreen
+        router.presentView(nav, animated: true, completion: completion)
     }
 }

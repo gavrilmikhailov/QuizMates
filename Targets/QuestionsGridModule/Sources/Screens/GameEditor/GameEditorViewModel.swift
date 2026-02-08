@@ -12,5 +12,12 @@ final class GameEditorViewModel {
     var name: String = ""
     var topics: [(TopicDTO, [QuestionDTO])] = []
     var players: [PlayerDTO] = []
-    var hasProgress: Bool = false
+    var progressState: GameEditorProgressState = .unableToStart
+}
+
+enum GameEditorProgressState {
+    case unableToStart
+    case readyToStart
+    case inProgress
+    case finished
 }

@@ -19,6 +19,7 @@ protocol GameEditorViewDelegate: AnyObject {
     func didTapCreateNewPlayer()
     func didTapEditPlayer(player: PlayerDTO)
     func didTapResetGame()
+    func didTapGameResults()
     func didTapStartGame()
 }
 
@@ -50,7 +51,7 @@ struct GameEditorView: View {
                     .padding(top: 40)
             }
 
-            startGameView
+            actionButtonsView
                 .padding(top: 24, leading: 16, bottom: 0, trailing: 16)
         }
         .contentShape(Rectangle())
@@ -227,42 +228,93 @@ struct GameEditorView: View {
         }
     }
 
-    private var startGameView: some View {
+    private var actionButtonsView: some View {
         VStack(alignment: .center, spacing: 16) {
-            if viewModel.hasProgress {
-                Button(
-                    action: {
-                        delegate?.didTapResetGame()
-                    },
-                    label: {
-                        HStack(alignment: .center, spacing: 12) {
-                            Image(systemName: "repeat")
-                            Text("Сбросить прогресс")
-                                .font(.title3)
-                        }
-                        .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
-                    }
-                )
-                .tint(.gray)
-                .buttonStyle(.borderedProminent)
+            switch viewModel.progressState {
+            case .unableToStart:
+                makeStartGameButton(isEnabled: false)
+            case .readyToStart:
+                makeStartGameButton(isEnabled: true)
+            case .inProgress:
+                resetProgressButton
+                resumeGameButton
+            case .finished:
+                resetProgressButton
+                resultsOfGameButton
             }
-            Button(
-                action: {
-                    delegate?.didTapStartGame()
-                },
-                label: {
-                    HStack(alignment: .center, spacing: 12) {
-                        Image(systemName: "play.fill")
-                        Text(viewModel.hasProgress ? "Продолжить игру" : "Начать игру")
-                            .font(.title3)
-                    }
-                    .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
-                }
-            )
-            .buttonStyle(.borderedProminent)
-            .tint(.blue)
-            .disabled(viewModel.players.isEmpty || viewModel.topics.isEmpty)
         }
+    }
+
+    private var resetProgressButton: some View {
+        Button(
+            action: {
+                delegate?.didTapResetGame()
+            },
+            label: {
+                HStack(alignment: .center, spacing: 12) {
+                    Image(systemName: "repeat")
+                    Text("Сбросить прогресс")
+                        .font(.title3)
+                }
+                .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+            }
+        )
+        .tint(.gray)
+        .buttonStyle(.borderedProminent)
+    }
+
+    private var resumeGameButton: some View {
+        Button(
+            action: {
+                delegate?.didTapStartGame()
+            },
+            label: {
+                HStack(alignment: .center, spacing: 12) {
+                    Image(systemName: "play.fill")
+                    Text("Продолжить игру")
+                        .font(.title3)
+                }
+                .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+            }
+        )
+        .buttonStyle(.borderedProminent)
+        .tint(.blue)
+    }
+
+    private var resultsOfGameButton: some View {
+        Button(
+            action: {
+                delegate?.didTapGameResults()
+            },
+            label: {
+                HStack(alignment: .center, spacing: 12) {
+                    Text("Показать результаты")
+                        .font(.title3)
+                }
+                .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+            }
+        )
+        .tint(.blue)
+        .buttonStyle(.borderedProminent)
+    }
+
+    private func makeStartGameButton(isEnabled: Bool) -> some View {
+        Button(
+            action: {
+                delegate?.didTapStartGame()
+            },
+            label: {
+                HStack(alignment: .center, spacing: 12) {
+                    Image(systemName: "play.fill")
+                    Text("Начать игру")
+                        .font(.title3)
+                }
+                .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+            }
+        )
+        .buttonStyle(.borderedProminent)
+        .tint(.blue)
+        .disabled(!isEnabled)
     }
 
     private var gamePlayersEmptyView: some View {

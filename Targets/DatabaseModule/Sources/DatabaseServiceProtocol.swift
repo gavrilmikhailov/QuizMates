@@ -5,7 +5,6 @@
 //  Created by Gavriil Mikhailov on 07.02.2026.
 //
 
-import Foundation
 import SwiftData
 
 public protocol DatabaseServiceProtocol: Sendable {

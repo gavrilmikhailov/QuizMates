@@ -35,6 +35,7 @@ protocol GameEditorInteractorProtocol {
     func navigateToEditPlayer(player: PlayerDTO?)
 
     func navigateToGameProcess()
+    func navigateToGameResults()
 
     func resetGameProgress()
 }
@@ -112,16 +113,36 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
                 let players = try await databaseSevice.fetch(ids: game.players) { model in
                     return PlayerDTO(from: model)
                 }
-                let hasAnsweredQuestions = content.contains { tuple in
-                    tuple.1.contains(where: { $0.isAnswered })
+                var questionsCount: Int = 0
+                var answeredQuestionsCount: Int = 0
+                for (_, questions) in content {
+                    for question in questions {
+                        questionsCount += 1
+                        if question.isAnswered {
+                            answeredQuestionsCount += 1
+                        }
+                    }
                 }
                 let hasPlayersWithScore = players.contains(where: { $0.score != 0 })
+                let progressState: GameEditorProgressState
+                if questionsCount == 0 || players.count == 0 {
+                    progressState = .unableToStart
+                } else if answeredQuestionsCount > 0, answeredQuestionsCount == questionsCount {
+                    progressState = .finished
+                } else if answeredQuestionsCount > 0, answeredQuestionsCount < questionsCount {
+                    progressState = .inProgress
+                } else if hasPlayersWithScore {
+                    progressState = .inProgress
+                } else {
+                    progressState = .readyToStart
+                }
+
                 await MainActor.run {
                     presenter.presentGameContent(
                         game: game,
                         topics: content,
                         players: players,
-                        hasProgress: hasAnsweredQuestions || hasPlayersWithScore
+                        progressState: progressState
                     )
                 }
             } catch {
@@ -361,6 +382,29 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
             return
         }
         presenter.presentNavigateToGameProcess(game: game)
+    }
+
+    func navigateToGameResults() {
+        guard let gameId = game?.id else {
+            return
+        }
+        Task {
+            do {
+                let game = try await databaseSevice.fetch(id: gameId) { model in
+                    return GameDTO(from: model)
+                }
+                let players = try await databaseSevice.fetch(ids: game.players) { model in
+                    return PlayerDTO(from: model)
+                }
+                await MainActor.run {
+                    presenter.presentNavigateToGameResults(players: players)
+                }
+            } catch {
+                await MainActor.run {
+                    presenter.presentError(text: error.localizedDescription)
+                }
+            }
+        }
     }
 
     func resetGameProgress() {

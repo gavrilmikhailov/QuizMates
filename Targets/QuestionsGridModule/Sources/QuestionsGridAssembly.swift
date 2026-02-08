@@ -225,6 +225,20 @@ public final class QuestionsGridAssembly: Assembly {
                 view.rootView.delegate = view
                 return view
             }
+            // Game results
+            container.register(GameResultsViewController.self) { (resolver: Resolver, players: [PlayerDTO]) in
+                let databaseService = resolver.resolve(DatabaseServiceProtocol.self)!
+                let viewModel = GameResultsViewModel()
+                let interactor = GameResultsInteractor(databaseService: databaseService, players: players)
+                let view = GameResultsViewController(
+                    interactor: interactor,
+                    viewModel: viewModel,
+                    rootView: GameResultsView(viewModel: viewModel)
+                )
+                interactor.view = view
+                view.rootView.delegate = view
+                return view
+            }
         }
     }
 }

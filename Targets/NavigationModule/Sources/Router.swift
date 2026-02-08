@@ -31,6 +31,10 @@ public final class Router {
         navigationController.pushViewController(controller, animated: animated)
     }
 
+    public func popView(animated: Bool) {
+        navigationController.popViewController(animated: animated)
+    }
+
     public func presentView(_ controller: UIViewController, animated: Bool, completion: (() -> Void)?) {
         navigationController.present(controller, animated: animated, completion: completion)
     }

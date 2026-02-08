@@ -11,6 +11,7 @@ import DatabaseModule
 protocol GameProcessInteractorProtocol {
     func loadGameContent()
     func navigateToQuestion(topic: TopicDTO, question: QuestionDTO)
+    func checkGameResults()
 }
 
 @MainActor
@@ -79,6 +80,38 @@ final class GameProcessInteractor: GameProcessInteractorProtocol {
                 }
                 await MainActor.run {
                     view?.displayNavigateToQuestion(topic: topic, question: question, players: players)
+                }
+            } catch {
+                await MainActor.run {
+                    view?.displayError(text: error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    func checkGameResults() {
+        Task {
+            do {
+                let game = try await databaseSevice.fetch(id: game.id) { model in
+                    return GameDTO(from: model)
+                }
+                let topics = try await databaseSevice.fetch(ids: game.topics) { model in
+                    return TopicDTO(from: model)
+                }
+                var questions: [QuestionDTO] = []
+                for topic in topics {
+                    let topicQuestions = try await databaseSevice.fetch(ids: topic.questions) { model in
+                        return QuestionDTO(from: model)
+                    }
+                    questions.append(contentsOf: topicQuestions)
+                }
+                if questions.allSatisfy(\.isAnswered) {
+                    let players = try await databaseSevice.fetch(ids: game.players) { model in
+                        return PlayerDTO(from: model)
+                    }
+                    await MainActor.run {
+                        view?.displayGameResults(players: players)
+                    }
                 }
             } catch {
                 await MainActor.run {

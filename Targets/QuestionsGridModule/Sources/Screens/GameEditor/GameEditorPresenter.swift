@@ -12,12 +12,13 @@ protocol GameEditorPresenterProtocol {
         game: GameDTO,
         topics: [(TopicDTO, [QuestionDTO])],
         players: [PlayerDTO],
-        hasProgress: Bool
+        progressState: GameEditorProgressState
     )
     func presentNavigateToEditTopic(topic: TopicDTO?, game: GameDTO)
     func presentNavigateToEditQuestion(question: QuestionDTO?, topic: TopicDTO)
     func presentNavigateToEditPlayer(player: PlayerDTO?, game: GameDTO)
     func presentNavigateToGameProcess(game: GameDTO)
+    func presentNavigateToGameResults(players: [PlayerDTO])
     func presentError(text: String)
 }
 
@@ -38,7 +39,7 @@ final class GameEditorPresenter: GameEditorPresenterProtocol {
         game: GameDTO,
         topics: [(TopicDTO, [QuestionDTO])],
         players: [PlayerDTO],
-        hasProgress: Bool
+        progressState: GameEditorProgressState
     ) {
         let sortedTopics = topics
             .sorted { lhs, rhs in
@@ -48,7 +49,12 @@ final class GameEditorPresenter: GameEditorPresenterProtocol {
                 return (topic, questions.sorted { $0.price < $1.price })
             }
         let sortedPlayers = players.sorted { $0.createdAt < $1.createdAt }
-        view?.displayGameContent(game: game, topics: sortedTopics, players: sortedPlayers, hasProgress: hasProgress)
+        view?.displayGameContent(
+            game: game,
+            topics: sortedTopics,
+            players: sortedPlayers,
+            progressState: progressState
+        )
     }
 
     func presentNavigateToEditTopic(topic: TopicDTO?, game: GameDTO) {
@@ -65,6 +71,10 @@ final class GameEditorPresenter: GameEditorPresenterProtocol {
 
     func presentNavigateToGameProcess(game: GameDTO) {
         view?.displayNavigateToGameProcess(game: game)
+    }
+
+    func presentNavigateToGameResults(players: [PlayerDTO]) {
+        view?.displayNavigateToGameResults(players: players)
     }
 
     func presentError(text: String) {

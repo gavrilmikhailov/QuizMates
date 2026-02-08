@@ -70,8 +70,9 @@ struct GamesListView: View {
                     delegate?.didPullToRefresh()
                 }
             } else {
-                List {
+                ScrollView(.vertical) {
                     emptyView
+                        .padding(top: 40)
                 }
                 .refreshable {
                     delegate?.didPullToRefresh()

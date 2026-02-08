@@ -20,6 +20,7 @@ protocol ViewControllerProtocol: AnyObject {
         question: QuestionDTO,
         players: [PlayerDTO]
     )
+    func displayGameResults(players: [PlayerDTO])
     func displayError(text: String)
 }
 
@@ -28,6 +29,7 @@ final class GameProcessViewController: UIHostingController<GameProcessView> {
     // MARK: - Internal properties
 
     var onOpenQuestion: ((TopicDTO, QuestionDTO, [PlayerDTO]) -> Void)?
+    var onFinish: (([PlayerDTO]) -> Void)?
 
     // MARK: - Private properties
 
@@ -63,6 +65,11 @@ final class GameProcessViewController: UIHostingController<GameProcessView> {
         interactor.loadGameContent()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        interactor.checkGameResults()
+    }
+
     // MARK: - Private methods
 
     private func configureAppearance() {
@@ -96,6 +103,10 @@ extension GameProcessViewController: ViewControllerProtocol {
         players: [PlayerDTO]
     ) {
         onOpenQuestion?(topic, question, players)
+    }
+
+    func displayGameResults(players: [PlayerDTO]) {
+        onFinish?(players)
     }
 
     func displayError(text: String) {
