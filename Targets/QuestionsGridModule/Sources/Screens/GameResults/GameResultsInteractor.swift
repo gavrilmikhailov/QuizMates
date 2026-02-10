@@ -40,10 +40,26 @@ final class GameResultsInteractor: GameResultsInteractorProtocol {
         var results: [GameResult] = []
         for (index, score) in sortedScores.enumerated() {
             let playersWithScore = players.filter { $0.score == score }
+            let playerNames = playersWithScore
+                .map {
+                    "\($0.name) \($0.emoji)"
+                }
+                .joined(separator: ", ")
+            let placeEmoji: String = switch index {
+            case 0:
+                "🥇"
+            case 1:
+                "🥈"
+            case 2:
+                "🥉"
+            default:
+                "  "
+            }
             let result = GameResult(
+                placeEmoji: placeEmoji,
                 place: index + 1,
-                playerNames: playersWithScore.map(\.name).joined(separator: ", "),
-                score: score
+                playerNames: playerNames,
+                score: "\(score)"
             )
             results.append(result)
         }

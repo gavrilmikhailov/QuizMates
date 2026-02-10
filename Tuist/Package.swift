@@ -19,6 +19,7 @@ let package = Package(
         // .package(url: "https://github.com/Alamofire/Alamofire", from: "5.0.0"),
         // You can read more about dependencies here: https://docs.tuist.io/documentation/tuist/dependencies
         .package(url: "https://github.com/Swinject/Swinject.git", exact: "2.10.0"),
-        .package(url: "https://github.com/devicekit/DeviceKit.git", exact: "5.7.0")
+        .package(url: "https://github.com/devicekit/DeviceKit.git", exact: "5.7.0"),
+        .package(url: "https://github.com/twostraws/Vortex.git", exact: "1.0.4")
     ]
 )

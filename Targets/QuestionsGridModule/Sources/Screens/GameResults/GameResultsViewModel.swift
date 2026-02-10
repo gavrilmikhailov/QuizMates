@@ -10,12 +10,14 @@ import Observation
 @Observable
 final class GameResultsViewModel {
     var results: [GameResult] = []
+    var confettiToggle: Bool = false
 }
 
 struct GameResult: Identifiable {
+    let placeEmoji: String
     let place: Int
     let playerNames: String
-    let score: Int
+    let score: String
 
     var id: Int {
         place

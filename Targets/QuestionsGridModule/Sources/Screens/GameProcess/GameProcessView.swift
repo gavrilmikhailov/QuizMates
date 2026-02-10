@@ -17,7 +17,7 @@ struct GameProcessView: View {
     @Bindable var viewModel: GameProcessViewModel
     weak var delegate: GameProcessViewDelegate?
 
-    private let tileSize: CGFloat = 64
+    private let tileSize: CGFloat = Device.current.isPad ? 120 : 64
 
     var body: some View {
         if Device.current.isPad {
@@ -87,6 +87,7 @@ struct GameProcessView: View {
                     .frame(width: tileSize, height: tileSize)
                     .overlay {
                         Text(price)
+                            .font(.title)
                             .foregroundStyle(Color.white)
                     }
             }

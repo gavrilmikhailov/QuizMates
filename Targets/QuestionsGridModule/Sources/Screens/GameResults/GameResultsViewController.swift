@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Vortex
 
 @MainActor
 protocol GameResultsViewControllerProtocol: AnyObject {
@@ -22,6 +23,7 @@ final class GameResultsViewController: UIHostingController<GameResultsView> {
 
     private let interactor: GameResultsInteractorProtocol
     private let viewModel: GameResultsViewModel
+    private var didAppear: Bool = false
 
     // MARK: - Initializer
 
@@ -43,10 +45,23 @@ final class GameResultsViewController: UIHostingController<GameResultsView> {
         interactor.loadPlayers()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if !didAppear {
+            showVictoryEffect()
+        }
+        didAppear = true
+    }
+
     // MARK: - Private methods
 
     private func configureAppearance() {
+        extendedLayoutIncludesOpaqueBars = true
         view.backgroundColor = .systemBackground
+    }
+
+    private func showVictoryEffect() {
+        viewModel.confettiToggle.toggle()
     }
 }
 

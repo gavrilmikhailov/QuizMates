@@ -47,6 +47,7 @@ let questionsGridModule = Target.target(
     dependencies: [
         .external(name: "Swinject", condition: nil),
         .external(name: "DeviceKit", condition: nil),
+        .external(name: "Vortex", condition: nil),
         .target(name: "DatabaseModule", condition: nil),
         .target(name: "NavigationModule", condition: nil),
         .target(name: "CoreModule", condition: nil)
