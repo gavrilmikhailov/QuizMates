@@ -84,6 +84,8 @@ struct GameProcessQuestionView: View {
                                 Text("Показать ответ")
                             }
                         )
+                        .buttonBorderShape(.capsule)
+                        .glassOrPlainButtonStyle()
                         Spacer()
                     }
                     .padding(top: 40, bottom: 40)
@@ -147,7 +149,9 @@ struct GameProcessQuestionView: View {
                     }
                 )
                 .tint(.green)
-                .buttonStyle(.borderedProminent)
+                .buttonBorderShape(.capsule)
+                .glassOrPlainButtonStyle()
+
                 Button(
                     action: {
                         scoreAssigningMode = .subtracting
@@ -162,7 +166,8 @@ struct GameProcessQuestionView: View {
                     }
                 )
                 .tint(.red)
-                .buttonStyle(.borderedProminent)
+                .buttonBorderShape(.capsule)
+                .glassOrPlainButtonStyle()
             case .adding, .subtracting:
                 Button(
                     action: {
@@ -177,7 +182,8 @@ struct GameProcessQuestionView: View {
                     }
                 )
                 .tint(.gray)
-                .buttonStyle(.borderedProminent)
+                .buttonBorderShape(.capsule)
+                .glassOrPlainButtonStyle()
             }
             Spacer()
         }

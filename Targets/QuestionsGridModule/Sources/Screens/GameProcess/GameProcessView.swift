@@ -92,7 +92,8 @@ struct GameProcessView: View {
                     }
             }
         )
-        .buttonStyle(.plain)
+        .buttonBorderShape(.roundedRectangle(radius: 0))
+        .glassProminentOrPlainButtonStyle()
     }
 
     @ViewBuilder

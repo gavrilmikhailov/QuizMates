@@ -28,4 +28,22 @@ public extension View {
             .listRowBackground(Color.clear)
             .listRowSpacing(0)
     }
+
+    @ViewBuilder
+    func glassOrPlainButtonStyle() -> some View {
+        if #available(iOS 26, *) {
+            buttonStyle(.glass)
+        } else {
+            buttonStyle(.plain)
+        }
+    }
+
+    @ViewBuilder
+    func glassProminentOrPlainButtonStyle() -> some View {
+        if #available(iOS 26, *) {
+            buttonStyle(.glassProminent)
+        } else {
+            buttonStyle(.plain)
+        }
+    }
 }

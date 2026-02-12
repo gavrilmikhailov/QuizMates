@@ -189,7 +189,7 @@ struct GameEditorView: View {
         )
     }
 
-    private var gamePlayersView: some View {
+    private var gamePlayersView: some View  {
         VStack(alignment: .leading, spacing: 0) {
             Text("Игроки:")
                 .font(.title3)
@@ -262,7 +262,8 @@ struct GameEditorView: View {
             }
         )
         .tint(.gray)
-        .buttonStyle(.borderedProminent)
+        .buttonBorderShape(.capsule)
+        .glassProminentOrPlainButtonStyle()
     }
 
     private var resumeGameButton: some View {
@@ -279,8 +280,9 @@ struct GameEditorView: View {
                 .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
             }
         )
-        .buttonStyle(.borderedProminent)
         .tint(.blue)
+        .buttonBorderShape(.capsule)
+        .glassProminentOrPlainButtonStyle()
     }
 
     private var resultsOfGameButton: some View {
@@ -297,7 +299,8 @@ struct GameEditorView: View {
             }
         )
         .tint(.blue)
-        .buttonStyle(.borderedProminent)
+        .buttonBorderShape(.capsule)
+        .glassProminentOrPlainButtonStyle()
     }
 
     private func makeStartGameButton(isEnabled: Bool) -> some View {
@@ -314,8 +317,9 @@ struct GameEditorView: View {
                 .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
             }
         )
-        .buttonStyle(.borderedProminent)
         .tint(.blue)
+        .buttonBorderShape(.capsule)
+        .glassProminentOrPlainButtonStyle()
         .disabled(!isEnabled)
     }
 
