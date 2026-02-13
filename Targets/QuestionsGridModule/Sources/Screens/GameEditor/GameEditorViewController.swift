@@ -39,9 +39,6 @@ final class GameEditorViewController: UIHostingController<GameEditorView> {
     private let interactor: GameEditorInteractorProtocol
     private let viewModel: GameEditorViewModel
 
-    private let resetGameProgressAlertMessageLong = "Перед изменением данных игры необходимо сбросить прогресс текущей игры.\nВы уверены, что хотите сбросить прогресс текущей игры?"
-    private let resetGameProgressAlertMessage = "Вы уверены, что хотите сбросить прогресс текущей игры?"
-
     // MARK: - Initializer
 
     init(
@@ -77,35 +74,17 @@ final class GameEditorViewController: UIHostingController<GameEditorView> {
         view.backgroundColor = .systemBackground
     }
 
-    private func resetGameProgressConfirmation(topic: TopicDTO) {
-        let alert = UIAlertController(
-            title: "Подтверждение",
-            message: "Вы уверены, что хотите удалить эту тему?\nВсе вопросы из этой темы будут также удалены",
-            preferredStyle: .alert
-        )
-
-        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
-            self?.interactor.deleteTopic(topic: topic)
-        }
-        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
-
-        alert.addAction(cancelAction)
-        alert.addAction(deleteAction)
-
-        present(alert, animated: true, completion: nil)
-    }
-
     private func presentResetGameProgressConfirmation(message: String) {
         let alert = UIAlertController(
-            title: "Подтверждение",
+            title: Strings.resetProgressTitle,
             message: message,
             preferredStyle: .alert
         )
 
-        let deleteAction = UIAlertAction(title: "Сбросить", style: .destructive) { [weak self] _ in
+        let deleteAction = UIAlertAction(title: Strings.resetProgressAction, style: .destructive) { [weak self] _ in
             self?.interactor.resetGameProgress()
         }
-        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: Strings.resetProgressCancel, style: .cancel, handler: nil)
 
         alert.addAction(cancelAction)
         alert.addAction(deleteAction)
@@ -155,8 +134,16 @@ extension GameEditorViewController: GameEditorViewControllerProtocol {
     }
 
     func displayError(text: String) {
-        let alert = UIAlertController(title: "Ошибка", message: text, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        let alert = UIAlertController(
+            title: QuestionsGridModuleStrings.errorTitle,
+            message: text,
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(
+            title: QuestionsGridModuleStrings.errorAction,
+            style: .default,
+            handler: nil
+        )
         alert.addAction(okAction)
         present(alert, animated: true, completion: nil)
     }
@@ -172,7 +159,7 @@ extension GameEditorViewController: GameEditorViewDelegate {
 
     func didTapCreateNewTopic() {
         if viewModel.progressState == .inProgress {
-            presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
+            presentResetGameProgressConfirmation(message: Strings.resetProgressEditWarning)
         } else {
             interactor.navigateToEditTopic(topic: nil)
         }
@@ -180,7 +167,7 @@ extension GameEditorViewController: GameEditorViewDelegate {
 
     func didTapEditTopic(topic: TopicDTO) {
         if viewModel.progressState == .inProgress {
-            presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
+            presentResetGameProgressConfirmation(message: Strings.resetProgressEditWarning)
         } else {
             interactor.navigateToEditTopic(topic: topic)
         }
@@ -188,18 +175,18 @@ extension GameEditorViewController: GameEditorViewDelegate {
 
     func didTapDeleteTopic(topic: TopicDTO) {
         if viewModel.progressState == .inProgress {
-            presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
+            presentResetGameProgressConfirmation(message: Strings.resetProgressEditWarning)
         } else {
             let alert = UIAlertController(
-                title: "Подтверждение",
-                message: "Вы уверены, что хотите удалить эту тему?\nВсе вопросы из этой темы будут также удалены",
+                title: Strings.deleteTopicTitle,
+                message: Strings.deleteTopicWarning,
                 preferredStyle: .alert
             )
 
-            let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+            let deleteAction = UIAlertAction(title: Strings.deleteTopicAction, style: .destructive) { [weak self] _ in
                 self?.interactor.deleteTopic(topic: topic)
             }
-            let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+            let cancelAction = UIAlertAction(title: Strings.deleteTopicCancel, style: .cancel, handler: nil)
 
             alert.addAction(cancelAction)
             alert.addAction(deleteAction)
@@ -210,7 +197,7 @@ extension GameEditorViewController: GameEditorViewDelegate {
 
     func didTapCreateNewQuestion(topic: TopicDTO) {
         if viewModel.progressState == .inProgress {
-            presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
+            presentResetGameProgressConfirmation(message: Strings.resetProgressEditWarning)
         } else {
             interactor.navigateToCreateNewQuestion(topic: topic)
         }
@@ -218,7 +205,7 @@ extension GameEditorViewController: GameEditorViewDelegate {
 
     func didTapEditQuestion(question: QuestionDTO, topic: TopicDTO) {
         if viewModel.progressState == .inProgress {
-            presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
+            presentResetGameProgressConfirmation(message: Strings.resetProgressEditWarning)
         } else {
             interactor.navigateToEditQuestion(question: question, topic: topic)
         }
@@ -226,18 +213,21 @@ extension GameEditorViewController: GameEditorViewDelegate {
 
     func didTapDeleteQuestion(question: QuestionDTO) {
         if viewModel.progressState == .inProgress {
-            presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
+            presentResetGameProgressConfirmation(message: Strings.resetProgressEditWarning)
         } else {
             let alert = UIAlertController(
-                title: "Подтверждение",
-                message: "Вы уверены, что хотите удалить этот вопрос?",
+                title: Strings.deleteQuestionTitle,
+                message: Strings.deleteQuestionWarning,
                 preferredStyle: .alert
             )
-
-            let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
-                self?.interactor.deleteQuestion(question: question)
-            }
-            let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+            let deleteAction = UIAlertAction(
+                title: Strings.deleteQuestionAction,
+                style: .destructive,
+                handler: { [weak self] _ in
+                    self?.interactor.deleteQuestion(question: question)
+                }
+            )
+            let cancelAction = UIAlertAction(title: Strings.deleteQuestionCancel, style: .cancel, handler: nil)
 
             alert.addAction(cancelAction)
             alert.addAction(deleteAction)
@@ -248,7 +238,7 @@ extension GameEditorViewController: GameEditorViewDelegate {
 
     func didTapCreateNewPlayer() {
         if viewModel.progressState == .inProgress {
-            presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
+            presentResetGameProgressConfirmation(message: Strings.resetProgressEditWarning)
         } else {
             interactor.navigateToEditPlayer(player: nil)
         }
@@ -256,14 +246,14 @@ extension GameEditorViewController: GameEditorViewDelegate {
 
     func didTapEditPlayer(player: PlayerDTO) {
         if viewModel.progressState == .inProgress {
-            presentResetGameProgressConfirmation(message: resetGameProgressAlertMessageLong)
+            presentResetGameProgressConfirmation(message: Strings.resetProgressEditWarning)
         } else {
             interactor.navigateToEditPlayer(player: player)
         }
     }
 
     func didTapResetGame() {
-        presentResetGameProgressConfirmation(message: resetGameProgressAlertMessage)
+        presentResetGameProgressConfirmation(message: Strings.resetProgressWarning)
     }
 
     func didTapGameResults() {

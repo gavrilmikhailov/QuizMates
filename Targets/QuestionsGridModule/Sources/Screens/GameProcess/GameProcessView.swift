@@ -100,7 +100,7 @@ struct GameProcessView: View {
     private var playersView: some View {
         if Device.current.isPhone {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Игроки:")
+                Text(Strings.players)
                     .font(.title3)
                     .fontWeight(.bold)
                     .padding(leading: 16)
@@ -114,7 +114,7 @@ struct GameProcessView: View {
                 HStack(alignment: .center, spacing: 0) {
                     Spacer(minLength: 0)
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Игроки:")
+                        Text(Strings.players)
                             .font(.title3)
                             .fontWeight(.bold)
                         makePlayersRowView(itemSpacing: 16)

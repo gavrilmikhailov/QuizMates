@@ -1,0 +1,89 @@
+/* 
+  Localizable.strings
+  QuizMates
+
+  Created by Gavriil Mikhailov on 13.02.2026.
+  
+*/
+
+"game_default_name" = "Game";
+"start_game" = "Start Game";
+"no_players_title" = "No Players";
+"no_players_subtitle" = "You haven't added any players yet";
+"no_players_action" = "Add New Player";
+"show_results" = "Show Results";
+"reset_progress" = "Reset Progress";
+"resume_game" = "Resume Game";
+"add_player" = "Add Player";
+"no_topics_title" = "No Topics";
+"no_topics_subtitle" = "You haven't added any question topics yet";
+"no_topics_button" = "Add New Topic";
+"new_topic" = "New Topic";
+"new_question" = "New Question";
+"new_player" = "New Player";
+"delete" = "Delete";
+"game_name" = "Game Name";
+"players" = "Players";
+
+"reset_progress_title" = "Confirmation";
+"reset_progress_warning" = "Are you sure you want to reset the progress of the current game?";
+"reset_progress_edit_warning" = "You must reset the progress of the current game before editing game data.\nAre you sure you want to reset the current game's progress?";
+"reset_progress_action" = "Reset";
+"reset_progress_cancel" = "Cancel";
+
+"delete_topic_title" = "Confirmation";
+"delete_topic_warning" = "Are you sure you want to delete this topic?\nAll questions in this topic will also be deleted";
+"delete_topic_action" = "Delete";
+"delete_topic_cancel" = "Cancel";
+
+"delete_question_title" = "Confirmation";
+"delete_question_warning" = "Are you sure you want to delete this question?";
+"delete_question_action" = "Delete";
+"delete_question_cancel" = "Cancel";
+
+"error_title" = "Error";
+"error_subtitle" = "An error occurred";
+"error_action" = "OK";
+
+"show_answer" = "Show Answer";
+"add_score" = "Add";
+"subtract_score" = "Subtract";
+"cancel_score" = "Cancel";
+
+"game_results_action" = "Done";
+
+"games_list_title" = "Quiz Game";
+"no_games_title" = "No Games";
+"no_games_subtitle" = "You haven't created any games yet";
+"no_games_action" = "Create New Game";
+
+"delete_game_title" = "Confirmation";
+"delete_game_warning" = "Are you sure you want to delete this game?";
+"delete_game_action" = "Delete";
+"delete_game_cancel" = "Cancel";
+
+"delete_media_title" = "Confirmation";
+"delete_media_warning" = "Are you sure you want to delete this media file?";
+"delete_media_action" = "Delete";
+"delete_media_cancel" = "Cancel";
+
+"media_load_error" = "Failed to load media file";
+"photo_load_error" = "Failed to load image";
+
+"player_emoji" = "Player Emoji";
+"player_name" = "Player Name";
+
+"delete_player_title" = "Confirmation";
+"delete_player_warning" = "Are you sure you want to delete this player?";
+"delete_player_action" = "Delete";
+"delete_player_cancel" = "Cancel";
+
+"add_image_from_gallery" = "Add Photo from Gallery";
+"add_image_from_files" = "Add Photo from Files";
+"add_video" = "Add Video";
+"add_audio" = "Add Audio";
+"question_text" = "Question Text";
+"question_answer" = "Answer";
+"question_price" = "Question Value";
+
+"topic_name" = "Topic Name";

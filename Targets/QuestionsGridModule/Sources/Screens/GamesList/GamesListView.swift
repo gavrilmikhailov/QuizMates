@@ -52,7 +52,7 @@ struct GamesListView: View {
                                     delegate?.didSwipeToDeleteGame(dto: game)
                                 },
                                 label: {
-                                    Label("Удалить", systemImage: "trash.fill")
+                                    Label(Strings.delete, systemImage: "trash.fill")
                                 }
                             )
                             .tint(.red)
@@ -61,7 +61,7 @@ struct GamesListView: View {
                             Button(role: .destructive) {
                                 delegate?.didSwipeToDeleteGame(dto: game)
                             } label: {
-                                Label("Удалить", systemImage: "trash")
+                                Label(Strings.delete, systemImage: "trash")
                             }
                         }
                     }
@@ -102,10 +102,10 @@ struct GamesListView: View {
     private var emptyView: some View {
         ContentUnavailableView(
             label: {
-                Label("Нет игр", systemImage: "square.grid.3x2")
+                Label(Strings.noGamesTitle, systemImage: "square.grid.3x2")
             },
             description: {
-                Text("Вы еще не создали ни одной игры")
+                Text(Strings.noGamesSubtitle)
             },
             actions: {
                 Button(
@@ -113,7 +113,7 @@ struct GamesListView: View {
                         delegate?.didTapCreateNewGame()
                     },
                     label: {
-                        Label("Создать новую игру", systemImage: "plus")
+                        Label(Strings.noGamesAction, systemImage: "plus")
                     }
                 )
             }

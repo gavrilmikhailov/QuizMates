@@ -81,7 +81,7 @@ struct GameProcessQuestionView: View {
                                 isAnswerHidden = false
                             },
                             label: {
-                                Text("Показать ответ")
+                                Text(Strings.showAnswer)
                             }
                         )
                         .buttonBorderShape(.capsule)
@@ -122,7 +122,7 @@ struct GameProcessQuestionView: View {
             Image(systemName: "exclamationmark.triangle")
                 .font(.largeTitle)
                 .foregroundColor(.gray)
-            Text("Не удалось загрузить медиафайл")
+            Text(Strings.mediaLoadError)
                 .foregroundColor(.gray)
         }
     }
@@ -142,7 +142,7 @@ struct GameProcessQuestionView: View {
                     label: {
                         HStack(alignment: .center, spacing: 8) {
                             Image(systemName: "plus")
-                            Text("Присвоить")
+                            Text(Strings.addScore)
                                 .font(.title3)
                         }
                         .padding(top: 4, leading: 8, bottom: 4, trailing: 8)
@@ -159,7 +159,7 @@ struct GameProcessQuestionView: View {
                     label: {
                         HStack(alignment: .center, spacing: 12) {
                             Image(systemName: "minus")
-                            Text("Вычесть")
+                            Text(Strings.subtractScore)
                                 .font(.title3)
                         }
                         .padding(top: 4, leading: 8, bottom: 4, trailing: 8)
@@ -175,7 +175,7 @@ struct GameProcessQuestionView: View {
                     },
                     label: {
                         HStack(alignment: .center, spacing: 12) {
-                            Text("Отменить")
+                            Text(Strings.cancelScore)
                                 .font(.title3)
                         }
                         .padding(top: 4, leading: 8, bottom: 4, trailing: 8)
@@ -194,7 +194,7 @@ struct GameProcessQuestionView: View {
         HStack(alignment: .center, spacing: 0) {
             Spacer(minLength: 0)
             VStack(alignment: .leading, spacing: 8) {
-                Text("Игроки:")
+                Text(Strings.players)
                     .font(.title3)
                     .fontWeight(.bold)
                 makePlayersRowView(itemSpacing: 16)

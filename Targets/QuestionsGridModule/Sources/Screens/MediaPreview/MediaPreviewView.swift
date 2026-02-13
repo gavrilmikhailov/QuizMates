@@ -66,7 +66,7 @@ private struct PhotoPreviewView: View {
                     Image(systemName: "exclamationmark.triangle")
                         .font(.largeTitle)
                         .foregroundColor(.gray)
-                    Text("Не удалось загрузить изображение")
+                    Text(Strings.photoLoadError)
                         .foregroundColor(.gray)
                 }
             }

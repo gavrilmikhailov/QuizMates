@@ -1,7 +1,7 @@
 import ProjectDescription
 
 let versionNumber = "1.0"
-let buildNumber = "10"
+let buildNumber = "12"
 let teamId = "6PWFL227LZ"
 let deploymentTarget = "17.0"
 let bundleId = "gmikay.quiz.mates"
@@ -42,8 +42,8 @@ let questionsGridModule = Target.target(
     product: .staticFramework,
     bundleId: "gmikay.quiz.mates.questions-grid-module",
     deploymentTargets: .iOS(deploymentTarget),
-    sources: .paths(["Targets/QuestionsGridModule/Sources/**"]),
-    resources: .resources(["Targets/QuestionsGridModule/Resources/**"]),
+    sources: ["Targets/QuestionsGridModule/Sources/**"],
+    resources: ["Targets/QuestionsGridModule/Resources/**"],
     dependencies: [
         .external(name: "Swinject", condition: nil),
         .external(name: "DeviceKit", condition: nil),
@@ -125,7 +125,8 @@ let mainApp = Target.target(
             ),
             "CFBundlePackageType": "APPL",
             "UIBackgroundModes": .array([.string("remote-notification")]),
-            "ITSAppUsesNonExemptEncryption": .boolean(false)
+            "ITSAppUsesNonExemptEncryption": .boolean(false),
+            "CFBundleLocalizations": .array([.string("en"), .string("ru")])
         ]
     ),
     sources: .paths(["Targets/MainApp/Sources/**"]),

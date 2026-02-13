@@ -35,7 +35,7 @@ struct PlayerEditorView: View {
     private var playerEmojiView: some View {
         HStack(alignment: .center, spacing: 0) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Эмодзи игрока")
+                Text(Strings.playerEmoji)
                     .font(.title2)
                     .fontWeight(.bold)
                     .foregroundStyle(Color(.placeholderText))
@@ -53,7 +53,7 @@ struct PlayerEditorView: View {
 
     private var playerNameView: some View {
         HStack(alignment: .center, spacing: 12) {
-            TextField("Имя игрока", text: $viewModel.name)
+            TextField(Strings.playerName, text: $viewModel.name)
                 .font(.title2)
                 .fontWeight(.bold)
                 .textFieldStyle(.plain)

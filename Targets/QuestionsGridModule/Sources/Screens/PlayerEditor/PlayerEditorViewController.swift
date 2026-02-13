@@ -90,7 +90,7 @@ final class PlayerEditorViewController: UIHostingController<PlayerEditorView> {
         )
         switch mode {
         case .createNewPlayer:
-            title = "Новый игрок"
+            title = Strings.newPlayer
             navigationController?.navigationBar.prefersLargeTitles = true
             navigationItem.leftBarButtonItem = closeButton
             navigationItem.rightBarButtonItem = saveButton
@@ -110,14 +110,14 @@ final class PlayerEditorViewController: UIHostingController<PlayerEditorView> {
     @objc
     private func deleteButtonTapped() {
         let alert = UIAlertController(
-            title: "Подтверждение",
-            message: "Вы уверены, что хотите удалить этого игрока?",
+            title: Strings.deletePlayerTitle,
+            message: Strings.deletePlayerWarning,
             preferredStyle: .alert
         )
-        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+        let deleteAction = UIAlertAction(title: Strings.deletePlayerAction, style: .destructive) { [weak self] _ in
             self?.interactor.deletePlayer()
         }
-        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: Strings.deletePlayerCancel, style: .cancel, handler: nil)
 
         alert.addAction(cancelAction)
         alert.addAction(deleteAction)

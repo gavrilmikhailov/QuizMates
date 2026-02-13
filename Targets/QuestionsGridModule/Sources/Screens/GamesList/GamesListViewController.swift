@@ -61,7 +61,7 @@ final class GamesListViewController: UIHostingController<GamesListView> {
 
     private func configureAppearance() {
         view.backgroundColor = .systemBackground
-        title = "Questions Grid"
+        title = Strings.gamesListTitle
     }
 
     private func setupNavigationBar() {
@@ -110,15 +110,15 @@ extension GamesListViewController: GamesListViewDelegate {
 
     func didSwipeToDeleteGame(dto: GameDTO) {
         let alert = UIAlertController(
-            title: "Подтверждение",
-            message: "Вы уверены, что хотите удалить эту игру?",
+            title: Strings.deleteGameTitle,
+            message: Strings.deleteGameWarning,
             preferredStyle: .alert
         )
 
-        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+        let deleteAction = UIAlertAction(title: Strings.deleteGameAction, style: .destructive) { [weak self] _ in
             self?.interactor.deleteGame(dto: dto)
         }
-        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: Strings.deleteGameCancel, style: .cancel, handler: nil)
 
         alert.addAction(cancelAction)
         alert.addAction(deleteAction)

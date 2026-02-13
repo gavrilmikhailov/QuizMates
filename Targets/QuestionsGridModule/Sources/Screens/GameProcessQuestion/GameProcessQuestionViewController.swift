@@ -118,8 +118,8 @@ extension GameProcessQuestionViewController: GameProcessQuestionViewControllerPr
     }
 
     func displayError(text: String) {
-        let alert = UIAlertController(title: "Ошибка", message: text, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        let alert = UIAlertController(title: Strings.errorTitle, message: text, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: Strings.errorAction, style: .default, handler: nil)
         alert.addAction(okAction)
         present(alert, animated: true, completion: nil)
     }

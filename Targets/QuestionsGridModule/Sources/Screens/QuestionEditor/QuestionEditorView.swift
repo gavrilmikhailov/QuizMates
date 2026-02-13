@@ -102,7 +102,7 @@ struct QuestionEditorView: View {
             ) {
                 HStack(alignment: .center, spacing: 12) {
                     Image(systemName: "photo.badge.plus")
-                    Text("Добавить фото из галереи")
+                    Text(Strings.addImageFromGallery)
                         .font(.title3)
                 }
             }
@@ -122,7 +122,7 @@ struct QuestionEditorView: View {
                 label: {
                     HStack(alignment: .center, spacing: 12) {
                         Image(systemName: "photo.badge.plus")
-                        Text("Добавить фото из файлов")
+                        Text(Strings.addImageFromFiles)
                             .font(.title3)
                     }
                 }
@@ -149,7 +149,7 @@ struct QuestionEditorView: View {
             ) {
                 HStack(alignment: .center, spacing: 12) {
                     Image(systemName: "video.badge.plus")
-                    Text("Добавить видео")
+                    Text(Strings.addVideo)
                         .font(.title3)
                 }
             }
@@ -169,7 +169,7 @@ struct QuestionEditorView: View {
                 label: {
                     HStack(alignment: .center, spacing: 12) {
                         Image(systemName: "microphone.badge.plus")
-                        Text("Добавить аудио")
+                        Text(Strings.addAudio)
                             .font(.title3)
                     }
                 }
@@ -189,7 +189,7 @@ struct QuestionEditorView: View {
 
     private var questionTextView: some View {
         HStack(alignment: .center, spacing: 12) {
-            TextField("Текст вопроса", text: $viewModel.questionText)
+            TextField(Strings.questionText, text: $viewModel.questionText)
                 .font(.title2)
                 .fontWeight(.bold)
                 .textFieldStyle(.plain)
@@ -204,7 +204,7 @@ struct QuestionEditorView: View {
 
     private var questionAnswerView: some View {
         HStack(alignment: .center, spacing: 12) {
-            TextField("Ответ на вопрос", text: $viewModel.questionAnswer)
+            TextField(Strings.questionAnswer, text: $viewModel.questionAnswer)
                 .font(.title2)
                 .fontWeight(.bold)
                 .textFieldStyle(.plain)
@@ -219,10 +219,10 @@ struct QuestionEditorView: View {
 
     private var questionPriceView: some View {
         HStack(alignment: .center, spacing: 12) {
-            Text("Стоимость вопроса")
+            Text(Strings.questionPrice)
                 .font(.title2)
                 .fontWeight(.bold)
-            Picker("Стоимость вопроса", selection: $viewModel.questionPrice) {
+            Picker(Strings.questionPrice, selection: $viewModel.questionPrice) {
                 ForEach(priceValues, id: \.self) { number in
                     Text("\(number)")
                 }
@@ -295,7 +295,7 @@ private struct QuestionEditorThumbnailView: View {
                 role: .destructive,
                 action: onDelete,
                 label: {
-                    Label("Удалить", systemImage: "trash")
+                    Label(Strings.delete, systemImage: "trash")
                 }
             )
         }

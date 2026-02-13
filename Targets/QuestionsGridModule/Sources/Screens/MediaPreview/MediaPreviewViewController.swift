@@ -66,16 +66,16 @@ final class MediaPreviewViewController: UIHostingController<MediaPreviewView> {
     @objc
     private func deleteButtonTapped() {
         let alert = UIAlertController(
-            title: "Подтверждение",
-            message: "Вы уверены, что хотите удалить это изображение?",
+            title: Strings.deleteMediaTitle,
+            message: Strings.deleteMediaWarning,
             preferredStyle: .alert
         )
 
-        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [unowned self] _ in
+        let deleteAction = UIAlertAction(title: Strings.deleteMediaAction, style: .destructive) { [unowned self] _ in
             self.delegate?.didDeleteMedia(fileName: self.fileName)
             self.onClose?()
         }
-        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: Strings.deleteMediaCancel, style: .cancel, handler: nil)
 
         alert.addAction(cancelAction)
         alert.addAction(deleteAction)

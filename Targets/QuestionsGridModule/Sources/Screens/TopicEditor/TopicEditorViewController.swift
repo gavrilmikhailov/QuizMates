@@ -76,7 +76,7 @@ final class TopicEditorViewController: UIHostingController<TopicEditorView> {
 
     private func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = isNew
-        title = isNew ? "Новая тема" : ""
+        title = isNew ? Strings.newTopic : ""
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .close,
             target: self,
@@ -107,15 +107,15 @@ final class TopicEditorViewController: UIHostingController<TopicEditorView> {
     @objc
     private func deleteButtonTapped() {
         let alert = UIAlertController(
-            title: "Подтверждение",
-            message: "Вы уверены, что хотите удалить эту тему?\nВсе вопросы из этой темы будут также удалены",
+            title: Strings.deleteTopicTitle,
+            message: Strings.deleteTopicWarning,
             preferredStyle: .alert
         )
 
-        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+        let deleteAction = UIAlertAction(title: Strings.deleteTopicAction, style: .destructive) { [weak self] _ in
             self?.interactor.deleteTopic()
         }
-        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: Strings.deleteTopicCancel, style: .cancel, handler: nil)
 
         alert.addAction(cancelAction)
         alert.addAction(deleteAction)
@@ -157,8 +157,8 @@ extension TopicEditorViewController: TopicEditorViewControllerProtocol {
     }
 
     func displayError(text: String) {
-        let alert = UIAlertController(title: "Ошибка", message: text, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        let alert = UIAlertController(title: Strings.errorTitle, message: text, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: Strings.errorAction, style: .default, handler: nil)
         alert.addAction(okAction)
         present(alert, animated: true, completion: nil)
     }

@@ -33,7 +33,7 @@ struct TopicEditorView: View {
 
     private var topicNameView: some View {
         HStack(alignment: .center, spacing: 12) {
-            TextField("Название темы", text: $viewModel.name)
+            TextField(Strings.topicName, text: $viewModel.name)
                 .font(.title2)
                 .fontWeight(.bold)
                 .textFieldStyle(.plain)

@@ -63,7 +63,7 @@ struct GameEditorView: View {
     private var gameNameView: some View {
         HStack(alignment: .center, spacing: 12) {
             if isEditing {
-                TextField("Название игры", text: $viewModel.name)
+                TextField(QuestionsGridModuleStrings.gameName, text: $viewModel.name)
                     .font(.title2)
                     .fontWeight(.bold)
                     .textFieldStyle(.plain)
@@ -113,7 +113,7 @@ struct GameEditorView: View {
                             Button(role: .destructive) {
                                 delegate?.didTapDeleteTopic(topic: tuple.0)
                             } label: {
-                                Label("Удалить", systemImage: "trash")
+                                Label(QuestionsGridModuleStrings.delete, systemImage: "trash")
                             }
                         }
                         ForEach(tuple.1, id: \.id) { question in
@@ -129,7 +129,7 @@ struct GameEditorView: View {
                                 Button(role: .destructive) {
                                     delegate?.didTapDeleteQuestion(question: question)
                                 } label: {
-                                    Label("Удалить", systemImage: "trash")
+                                    Label(QuestionsGridModuleStrings.delete, systemImage: "trash")
                                 }
                             }
                         }
@@ -140,7 +140,7 @@ struct GameEditorView: View {
                             label: {
                                 HStack {
                                     Image(systemName: "plus")
-                                    Text("Новый вопрос")
+                                    Text(QuestionsGridModuleStrings.newQuestion)
                                         .multilineTextAlignment(.leading)
                                 }
                             }
@@ -156,7 +156,7 @@ struct GameEditorView: View {
                         label: {
                             HStack {
                                 Image(systemName: "plus")
-                                Text("Новая тема")
+                                Text(QuestionsGridModuleStrings.newTopic)
                                     .multilineTextAlignment(.leading)
                             }
                         }
@@ -171,10 +171,10 @@ struct GameEditorView: View {
     private var gameTopicsEmptyView: some View {
         ContentUnavailableView(
             label: {
-                Label("Нет тем", systemImage: "folder.badge.questionmark")
+                Label(QuestionsGridModuleStrings.noTopicsTitle, systemImage: "folder.badge.questionmark")
             },
             description: {
-                Text("Вы еще не добавили ни одной темы для вопросов")
+                Text(QuestionsGridModuleStrings.noTopicsSubtitle)
             },
             actions: {
                 Button(
@@ -182,7 +182,7 @@ struct GameEditorView: View {
                         delegate?.didTapCreateNewTopic()
                     },
                     label: {
-                        Label("Добавить новую тему", systemImage: "plus")
+                        Label(QuestionsGridModuleStrings.noTopicsButton, systemImage: "plus")
                     }
                 )
             }
@@ -191,7 +191,7 @@ struct GameEditorView: View {
 
     private var gamePlayersView: some View  {
         VStack(alignment: .leading, spacing: 0) {
-            Text("Игроки:")
+            Text(QuestionsGridModuleStrings.players)
                 .font(.title3)
                 .foregroundStyle(.primary)
                 .fontWeight(.bold)
@@ -221,7 +221,7 @@ struct GameEditorView: View {
                 label: {
                     HStack(alignment: .center, spacing: 12) {
                         Image(systemName: "person.badge.plus")
-                        Text("Добавить игрока")
+                        Text(QuestionsGridModuleStrings.addPlayer)
                             .font(.title3)
                     }
                 }
@@ -255,7 +255,7 @@ struct GameEditorView: View {
             label: {
                 HStack(alignment: .center, spacing: 12) {
                     Image(systemName: "repeat")
-                    Text("Сбросить прогресс")
+                    Text(QuestionsGridModuleStrings.resetProgress)
                         .font(.title3)
                 }
                 .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
@@ -274,7 +274,7 @@ struct GameEditorView: View {
             label: {
                 HStack(alignment: .center, spacing: 12) {
                     Image(systemName: "play.fill")
-                    Text("Продолжить игру")
+                    Text(QuestionsGridModuleStrings.resumeGame)
                         .font(.title3)
                 }
                 .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
@@ -292,7 +292,7 @@ struct GameEditorView: View {
             },
             label: {
                 HStack(alignment: .center, spacing: 12) {
-                    Text("Показать результаты")
+                    Text(QuestionsGridModuleStrings.showResults)
                         .font(.title3)
                 }
                 .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
@@ -311,7 +311,7 @@ struct GameEditorView: View {
             label: {
                 HStack(alignment: .center, spacing: 12) {
                     Image(systemName: "play.fill")
-                    Text("Начать игру")
+                    Text(QuestionsGridModuleStrings.startGame)
                         .font(.title3)
                 }
                 .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
@@ -326,10 +326,10 @@ struct GameEditorView: View {
     private var gamePlayersEmptyView: some View {
         ContentUnavailableView(
             label: {
-                Label("Нет игроков", systemImage: "person.crop.circle.badge.questionmark")
+                Label(QuestionsGridModuleStrings.noPlayersTitle, systemImage: "person.crop.circle.badge.questionmark")
             },
             description: {
-                Text("Вы еще не добавили ни одного игрока")
+                Text(QuestionsGridModuleStrings.noPlayersSubtitle)
             },
             actions: {
                 Button(
@@ -337,7 +337,7 @@ struct GameEditorView: View {
                         delegate?.didTapCreateNewPlayer()
                     },
                     label: {
-                        Label("Добавить нового игрока", systemImage: "plus")
+                        Label(QuestionsGridModuleStrings.noPlayersAction, systemImage: "plus")
                     }
                 )
             }

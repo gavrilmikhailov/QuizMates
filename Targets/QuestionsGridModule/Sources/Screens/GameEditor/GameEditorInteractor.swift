@@ -92,7 +92,7 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
 
     func loadGameContent() {
         guard let gameId = game?.id else {
-            presenter.presentError(text: "Ошибка")
+            presenter.presentError(text: Strings.errorSubtitle)
             return
         }
         Task {
@@ -155,7 +155,7 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
 
     func updateGameName(name: String) {
         guard let game else {
-            presenter.presentError(text: "Ошибка")
+            presenter.presentError(text: Strings.errorSubtitle)
             return
         }
         let newGame = GameDTO(
@@ -409,7 +409,7 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
 
     func resetGameProgress() {
         guard let gameId = game?.id else {
-            presenter.presentError(text: "Ошибка")
+            presenter.presentError(text: Strings.errorSubtitle)
             return
         }
         Task {
@@ -452,6 +452,6 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
     // MARK: - Private methods
 
     private func generateDefaultGameName() -> String {
-        return "Игра"
+        return Strings.gameDefaultName
     }
 }

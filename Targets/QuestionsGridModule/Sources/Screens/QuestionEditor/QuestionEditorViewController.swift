@@ -93,7 +93,7 @@ final class QuestionEditorViewController: UIHostingController<QuestionEditorView
 
     private func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = isNew
-        title = isNew ? "Новый вопрос" : ""
+        title = isNew ? Strings.newQuestion : ""
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .close,
             target: self,
@@ -124,15 +124,15 @@ final class QuestionEditorViewController: UIHostingController<QuestionEditorView
     @objc
     private func deleteButtonTapped() {
         let alert = UIAlertController(
-            title: "Подтверждение",
-            message: "Вы уверены, что хотите удалить этот вопрос?",
+            title: Strings.deleteQuestionTitle,
+            message: Strings.deleteQuestionWarning,
             preferredStyle: .alert
         )
 
-        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+        let deleteAction = UIAlertAction(title: Strings.deleteQuestionAction, style: .destructive) { [weak self] _ in
             self?.interactor.deleteQuestion()
         }
-        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: Strings.deleteQuestionCancel, style: .cancel, handler: nil)
 
         alert.addAction(cancelAction)
         alert.addAction(deleteAction)
@@ -206,8 +206,8 @@ extension QuestionEditorViewController: QuestionEditorViewControllerProtocol {
     }
 
     func displayError(text: String) {
-        let alert = UIAlertController(title: "Ошибка", message: text, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        let alert = UIAlertController(title: Strings.errorTitle, message: text, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: Strings.errorAction, style: .default, handler: nil)
         alert.addAction(okAction)
         present(alert, animated: true, completion: nil)
     }

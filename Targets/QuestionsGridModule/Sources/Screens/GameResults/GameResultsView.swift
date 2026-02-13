@@ -64,7 +64,7 @@ struct GameResultsView: View {
                                     delegate?.didTapOk()
                                 },
                                 label: {
-                                    Text("Готово")
+                                    Text(Strings.gameResultsAction)
                                         .font(.title3)
                                         .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
                                 }

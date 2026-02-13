@@ -1,0 +1,89 @@
+/* 
+  Localizable.strings
+  QuizMates
+
+  Created by Gavriil Mikhailov on 13.02.2026.
+  
+*/
+
+"game_default_name" = "Игра";
+"start_game" = "Начать игру";
+"no_players_title" = "Нет игроков";
+"no_players_subtitle" = "Вы еще не добавили ни одного игрока";
+"no_players_action" = "Добавить нового игрока";
+"show_results" = "Показать результаты";
+"reset_progress" = "Сбросить прогресс";
+"resume_game" = "Продолжить игру";
+"add_player" = "Добавить игрока";
+"no_topics_title" = "Нет тем";
+"no_topics_subtitle" = "Вы еще не добавили ни одной темы для вопросов";
+"no_topics_button" = "Добавить новую тему";
+"new_topic" = "Новая тема";
+"new_question" = "Новый вопрос";
+"new_player" = "Новый игрок";
+"delete" = "Удалить";
+"game_name" = "Название игры";
+"players" = "Игроки";
+
+"reset_progress_title" = "Подтверждение";
+"reset_progress_warning" = "Вы уверены, что хотите сбросить прогресс текущей игры?";
+"reset_progress_edit_warning" = "Перед изменением данных игры необходимо сбросить прогресс текущей игры.\nВы уверены, что хотите сбросить прогресс текущей игры?";
+"reset_progress_action" = "Сбросить";
+"reset_progress_cancel" = "Отмена";
+
+"delete_topic_title" = "Подтверждение";
+"delete_topic_warning" = "Вы уверены, что хотите удалить эту тему?\nВсе вопросы из этой темы будут также удалены";
+"delete_topic_action" = "Удалить";
+"delete_topic_cancel" = "Отмена";
+
+"delete_question_title" = "Подтверждение";
+"delete_question_warning" = "Вы уверены, что хотите удалить этот вопрос?";
+"delete_question_action" = "Удалить";
+"delete_question_cancel" = "Отмена";
+
+"error_title" = "Ошибка";
+"error_subtitle" = "Произошла ошибка";
+"error_action" = "Ок";
+
+"show_answer" = "Показать ответ";
+"add_score" = "Присвоить";
+"subtract_score" = "Вычесть";
+"cancel_score" = "Отменить";
+
+"game_results_action" = "Готово";
+
+"games_list_title" = "Своя игра";
+"no_games_title" = "Нет игр";
+"no_games_subtitle" = "Вы еще не создали ни одной игры";
+"no_games_action" = "Создать новую игру";
+
+"delete_game_title" = "Подтверждение";
+"delete_game_warning" = "Вы уверены, что хотите удалить эту игру?";
+"delete_game_action" = "Удалить";
+"delete_game_cancel" = "Отмена";
+
+"delete_media_title" = "Подтверждение";
+"delete_media_warning" = "Вы уверены, что хотите удалить этот медиафайл?";
+"delete_media_action" = "Удалить";
+"delete_media_cancel" = "Отмена";
+
+"media_load_error" = "Не удалось загрузить медиафайл";
+"photo_load_error" = "Не удалось загрузить изображение";
+
+"player_emoji" = "Эмодзи игрока";
+"player_name" = "Имя игрока";
+
+"delete_player_title" = "Подтверждение";
+"delete_player_warning" = "Вы уверены, что хотите удалить этого игрока?";
+"delete_player_action" = "Удалить";
+"delete_player_cancel" = "Отмена";
+
+"add_image_from_gallery" = "Добавить фото из галереи";
+"add_image_from_files" = "Добавить фото из файлов";
+"add_video" = "Добавить видео";
+"add_audio" = "Добавить аудио";
+"question_text" = "Текст вопроса";
+"question_answer" = "Ответ на вопрос";
+"question_price" = "Стоимость вопроса";
+
+"topic_name" = "Название темы";
