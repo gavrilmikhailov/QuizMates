@@ -8,13 +8,14 @@
 import SwiftUI
 
 @MainActor
-protocol ViewControllerProtocol: AnyObject {
+protocol GameProcessViewControllerProtocol: AnyObject {
     func displayGameContent(
         title: String,
         topics: [(TopicDTO, [QuestionDTO])],
         prices: [Int],
         players: [PlayerDTO]
     )
+    func displaySettings(topicFontSize: Double?, questionFontSize: Double?, cellSize: Double?, cellColor: String?)
     func displayNavigateToQuestion(
         topic: TopicDTO,
         question: QuestionDTO,
@@ -58,6 +59,7 @@ final class GameProcessViewController: UIHostingController<GameProcessView> {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureAppearance()
+        interactor.loadSettings()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -100,9 +102,9 @@ final class GameProcessViewController: UIHostingController<GameProcessView> {
     }
 }
 
-// MARK: - ViewControllerProtocol
+// MARK: - GameProcessViewControllerProtocol
 
-extension GameProcessViewController: ViewControllerProtocol {
+extension GameProcessViewController: GameProcessViewControllerProtocol {
 
     func displayGameContent(
         title: String,
@@ -114,6 +116,21 @@ extension GameProcessViewController: ViewControllerProtocol {
         viewModel.prices = prices
         viewModel.topics = topics
         viewModel.players = players
+    }
+
+    func displaySettings(topicFontSize: Double?, questionFontSize: Double?, cellSize: Double?, cellColor: String?) {
+        if let topicFontSize, topicFontSize > 0  {
+            viewModel.topicFontSize = CGFloat(topicFontSize)
+        }
+        if let questionFontSize, questionFontSize > 0 {
+            viewModel.questionFontSize = CGFloat(questionFontSize)
+        }
+        if let cellSize, cellSize > 0 {
+            viewModel.cellSize = CGFloat(cellSize)
+        }
+        if let cellColor, let colorPreset = ColorPreset(rawValue: cellColor) {
+            viewModel.cellColor = colorPreset
+        }
     }
 
     func displayNavigateToQuestion(
@@ -159,18 +176,22 @@ extension GameProcessViewController: UIPopoverPresentationControllerDelegate {
 extension GameProcessViewController: GameProcessSettingsDelegate {
 
     func didChangeTopicFontSize(value: CGFloat) {
+        interactor.saveTopicFontSize(value: value)
         viewModel.topicFontSize = value
     }
 
     func didChangeQuestionFontSize(value: CGFloat) {
+        interactor.saveQuestionFontSize(value: value)
         viewModel.questionFontSize = value
     }
 
     func didChangeCellSize(value: CGFloat) {
+        interactor.saveCellSize(value: value)
         viewModel.cellSize = value
     }
 
-    func didChangeCellColor(value: Color) {
+    func didChangeCellColor(value: ColorPreset) {
+        interactor.saveCellColor(value: value)
         viewModel.cellColor = value
     }
 }

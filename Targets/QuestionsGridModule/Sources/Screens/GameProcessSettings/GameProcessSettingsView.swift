@@ -12,13 +12,8 @@ struct GameProcessSettingsView: View {
     @State private var topicFontSize: CGFloat
     @State private var questionFontSize: CGFloat
     @State private var cellSize: CGFloat
-    @State private var selectedColor: Color
+    @State private var selectedColorPreset: ColorPreset
 
-    private let presets: [Color] = [
-        .red, .orange, .yellow, .green, .mint,
-        .teal, .cyan, .blue, .indigo, .purple,
-        .pink, .brown, .gray, .black
-    ]
     private let columns = [
         GridItem(.adaptive(minimum: 44))
     ]
@@ -29,7 +24,7 @@ struct GameProcessSettingsView: View {
         self.topicFontSize = configuration.topicFontSize
         self.questionFontSize = configuration.questionFontSize
         self.cellSize = configuration.cellSize
-        self.selectedColor = configuration.cellColor
+        self.selectedColorPreset = configuration.cellColor
         self.delegate = delegate
     }
 
@@ -66,13 +61,13 @@ struct GameProcessSettingsView: View {
                 Text(Strings.cellColor)
                     .font(.headline)
                 LazyVGrid(columns: columns, spacing: 15) {
-                    ForEach(presets, id: \.self) { color in
+                    ForEach(ColorPreset.allCases, id: \.self) { colorPreset in
                         ZStack {
                             Circle()
-                                .fill(color)
+                                .fill(Color(preset: colorPreset))
                                 .frame(width: 40, height: 40)
                                 .shadow(color: .gray.opacity(0.3), radius: 2, x: 0, y: 1)
-                            if selectedColor == color {
+                            if selectedColorPreset == colorPreset {
                                 Image(systemName: "checkmark")
                                     .foregroundColor(.white)
                                     .font(.system(size: 14, weight: .bold))
@@ -81,8 +76,8 @@ struct GameProcessSettingsView: View {
                         }
                         .onTapGesture {
                             withAnimation(.spring()) {
-                                selectedColor = color
-                                delegate?.didChangeCellColor(value: color)
+                                selectedColorPreset = colorPreset
+                                delegate?.didChangeCellColor(value: colorPreset)
                             }
                         }
                     }

@@ -12,7 +12,7 @@ protocol GameProcessSettingsDelegate: AnyObject {
     func didChangeTopicFontSize(value: CGFloat)
     func didChangeQuestionFontSize(value: CGFloat)
     func didChangeCellSize(value: CGFloat)
-    func didChangeCellColor(value: Color)
+    func didChangeCellColor(value: ColorPreset)
 }
 
 final class GameProcessSettingsViewController: UIHostingController<GameProcessSettingsView> {

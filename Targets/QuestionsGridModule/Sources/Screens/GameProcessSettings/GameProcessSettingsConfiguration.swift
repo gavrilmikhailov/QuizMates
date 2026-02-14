@@ -5,11 +5,11 @@
 //  Created by Gavriil Mikhailov on 14.02.2026.
 //
 
-import SwiftUI
+import CoreGraphics
 
 struct GameProcessSettingsConfiguration {
     let topicFontSize: CGFloat
     let questionFontSize: CGFloat
     let cellSize: CGFloat
-    let cellColor: Color
+    let cellColor: ColorPreset
 }

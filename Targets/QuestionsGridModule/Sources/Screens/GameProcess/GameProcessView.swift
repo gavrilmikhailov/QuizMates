@@ -88,7 +88,7 @@ struct GameProcessView: View {
                     .frame(width: viewModel.cellSize, height: viewModel.cellSize)
             }
         )
-        .tint(viewModel.cellColor)
+        .tint(Color(preset: viewModel.cellColor))
         .buttonBorderShape(.roundedRectangle(radius: 0))
         .glassProminentOrPlainButtonStyle()
     }

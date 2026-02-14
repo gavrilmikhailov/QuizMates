@@ -31,7 +31,18 @@ let databaseModule = Target.target(
     product: .staticFramework,
     bundleId: "gmikay.quiz.mates.database-module",
     deploymentTargets: .iOS(deploymentTarget),
-    sources: .paths(["Targets/DatabaseModule/Sources/**"]),
+    sources: "Targets/DatabaseModule/Sources/**",
+    dependencies: [
+        .external(name: "Swinject", condition: nil)
+    ]
+)
+let userDefaultsModule = Target.target(
+    name: "UserDefaultsModule",
+    destinations: .iOS,
+    product: .staticFramework,
+    bundleId: "gmikay.quiz.mates.user-defaults-module",
+    deploymentTargets: .iOS(deploymentTarget),
+    sources: "Targets/UserDefaultsModule/Sources/**",
     dependencies: [
         .external(name: "Swinject", condition: nil)
     ]
@@ -42,15 +53,16 @@ let questionsGridModule = Target.target(
     product: .staticFramework,
     bundleId: "gmikay.quiz.mates.questions-grid-module",
     deploymentTargets: .iOS(deploymentTarget),
-    sources: ["Targets/QuestionsGridModule/Sources/**"],
-    resources: ["Targets/QuestionsGridModule/Resources/**"],
+    sources: "Targets/QuestionsGridModule/Sources/**",
+    resources: "Targets/QuestionsGridModule/Resources/**",
     dependencies: [
         .external(name: "Swinject", condition: nil),
         .external(name: "DeviceKit", condition: nil),
         .external(name: "Vortex", condition: nil),
         .target(name: "DatabaseModule", condition: nil),
         .target(name: "NavigationModule", condition: nil),
-        .target(name: "CoreModule", condition: nil)
+        .target(name: "CoreModule", condition: nil),
+        .target(name: "UserDefaultsModule", condition: nil)
     ]
 )
 
@@ -129,7 +141,7 @@ let mainApp = Target.target(
             "CFBundleLocalizations": .array([.string("en"), .string("ru")])
         ]
     ),
-    sources: .paths(["Targets/MainApp/Sources/**"]),
+    sources: "Targets/MainApp/Sources/**",
     resources: .resources(
         ["Targets/MainApp/Resources/**"],
         privacyManifest: .privacyManifest(
@@ -152,7 +164,8 @@ let mainApp = Target.target(
         .target(name: "QuestionsGridModule", condition: nil),
         .target(name: "DatabaseModule", condition: nil),
         .target(name: "NavigationModule", condition: nil),
-        .target(name: "CoreModule", condition: nil)
+        .target(name: "CoreModule", condition: nil),
+        .target(name: "UserDefaultsModule", condition: nil)
     ],
     settings: .settings(
         base: SettingsDictionary()
@@ -195,6 +208,15 @@ let mainApp = Target.target(
 
 let project = Project(
     name: "QuizMates",
-    targets: [coreModule, navigationModule, databaseModule, questionsGridModule, unitTests, uiTests, mainApp],
+    targets: [
+        coreModule,
+        navigationModule,
+        databaseModule,
+        userDefaultsModule,
+        questionsGridModule,
+        unitTests,
+        uiTests,
+        mainApp
+    ],
     resourceSynthesizers: [.assets(), .strings(), .fonts()]
 )

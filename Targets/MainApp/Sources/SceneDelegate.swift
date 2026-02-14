@@ -38,7 +38,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = rootController
         window?.makeKeyAndVisible()
 
-        let assembler = Assembler([DatabaseAssembly(), QuestionsGridAssembly()])
+        let assembler = Assembler([DatabaseAssembly(), UserDefaultsAssembly(), QuestionsGridAssembly()])
 
         appCoordinator = AppCoordinator(
             router: Router(navigationController: rootController),

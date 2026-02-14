@@ -8,6 +8,7 @@
 import DatabaseModule
 import SwiftData
 @preconcurrency import Swinject
+import UserDefaultsModule
 
 public final class QuestionsGridAssembly: Assembly {
 
@@ -195,8 +196,13 @@ public final class QuestionsGridAssembly: Assembly {
             // Game process
             container.register(GameProcessViewController.self) { (resolver: Resolver, game: GameDTO) in
                 let databaseService = resolver.resolve(DatabaseServiceProtocol.self)!
+                let userDefaultsService = resolver.resolve(UserDefaultsServiceProtocol.self)!
                 let viewModel = GameProcessViewModel()
-                let interactor = GameProcessInteractor(databaseSevice: databaseService, game: game)
+                let interactor = GameProcessInteractor(
+                    databaseSevice: databaseService,
+                    userDefaultsService: userDefaultsService,
+                    game: game
+                )
                 let view = GameProcessViewController(
                     interactor: interactor,
                     viewModel: viewModel,
