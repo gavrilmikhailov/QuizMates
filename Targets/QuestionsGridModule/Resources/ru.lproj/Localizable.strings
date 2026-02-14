@@ -87,3 +87,8 @@
 "question_price" = "Стоимость вопроса";
 
 "topic_name" = "Название темы";
+
+"font_size_topic" = "Размер шрифта темы: %@";
+"font_size_question" = "Размер шрифта вопроса: %@";
+"cell_size" = "Размер ячейки: %@";
+"cell_color" = "Цвет ячейки";

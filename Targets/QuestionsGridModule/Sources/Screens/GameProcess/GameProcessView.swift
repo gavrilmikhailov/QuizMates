@@ -17,8 +17,6 @@ struct GameProcessView: View {
     @Bindable var viewModel: GameProcessViewModel
     weak var delegate: GameProcessViewDelegate?
 
-    private let tileSize: CGFloat = Device.current.isPad ? 120 : 64
-
     var body: some View {
         if Device.current.isPad {
             VStack(alignment: .center, spacing: 0) {
@@ -55,6 +53,7 @@ struct GameProcessView: View {
             ForEach(viewModel.topics, id: \.0.id) { tuple in
                 GridRow {
                     Text(tuple.0.name)
+                        .font(.system(size: viewModel.topicFontSize))
                         .foregroundStyle(Color(UIColor.label))
                         .padding(leading: 8, trailing: 16)
                     ForEach(viewModel.prices, id: \.self) { price in
@@ -75,7 +74,7 @@ struct GameProcessView: View {
     @ViewBuilder
     private func makeEmptyQuestionView() -> some View {
         Color.clear
-            .frame(width: tileSize, height: tileSize)
+            .frame(width: viewModel.cellSize, height: viewModel.cellSize)
     }
 
     @ViewBuilder
@@ -83,15 +82,13 @@ struct GameProcessView: View {
         Button(
             action: action,
             label: {
-                Color.blue
-                    .frame(width: tileSize, height: tileSize)
-                    .overlay {
-                        Text(price)
-                            .font(.title)
-                            .foregroundStyle(Color.white)
-                    }
+                Text(price)
+                    .font(.system(size: viewModel.questionFontSize))
+                    .foregroundStyle(Color.white)
+                    .frame(width: viewModel.cellSize, height: viewModel.cellSize)
             }
         )
+        .tint(viewModel.cellColor)
         .buttonBorderShape(.roundedRectangle(radius: 0))
         .glassProminentOrPlainButtonStyle()
     }

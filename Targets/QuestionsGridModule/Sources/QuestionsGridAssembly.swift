@@ -225,6 +225,13 @@ public final class QuestionsGridAssembly: Assembly {
                 view.rootView.delegate = view
                 return view
             }
+            // Game process settings
+            container.register(GameProcessSettingsViewController.self) { (resolver: Resolver, configuration: GameProcessSettingsConfiguration, delegate: GameProcessSettingsDelegate?) in
+                let view = GameProcessSettingsViewController(
+                    rootView: GameProcessSettingsView(configuration: configuration, delegate: delegate)
+                )
+                return view
+            }
             // Game results
             container.register(GameResultsViewController.self) { (resolver: Resolver, players: [PlayerDTO]) in
                 let databaseService = resolver.resolve(DatabaseServiceProtocol.self)!

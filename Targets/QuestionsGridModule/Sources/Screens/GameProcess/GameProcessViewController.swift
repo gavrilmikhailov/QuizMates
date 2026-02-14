@@ -29,6 +29,7 @@ final class GameProcessViewController: UIHostingController<GameProcessView> {
     // MARK: - Internal properties
 
     var onOpenQuestion: ((TopicDTO, QuestionDTO, [PlayerDTO]) -> Void)?
+    var onOpenSettings: ((GameProcessSettingsConfiguration, UIPopoverPresentationControllerSourceItem) -> Void)?
     var onFinish: (([PlayerDTO]) -> Void)?
 
     // MARK: - Private properties
@@ -78,6 +79,24 @@ final class GameProcessViewController: UIHostingController<GameProcessView> {
 
     private func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = false
+        let settingsButton = UIBarButtonItem(
+            image: UIImage(systemName: "gear"),
+            style: .plain,
+            target: self,
+            action: #selector(settingsButtonTapped(_:))
+        )
+        navigationItem.rightBarButtonItem = settingsButton
+    }
+
+    @objc
+    private func settingsButtonTapped(_ sender: UIBarButtonItem) {
+        let configuration = GameProcessSettingsConfiguration(
+            topicFontSize: viewModel.topicFontSize,
+            questionFontSize: viewModel.questionFontSize,
+            cellSize: viewModel.cellSize,
+            cellColor: viewModel.cellColor
+        )
+        onOpenSettings?(configuration, sender)
     }
 }
 
@@ -123,5 +142,35 @@ extension GameProcessViewController: GameProcessViewDelegate {
 
     func didTapQuestion(topic: TopicDTO, question: QuestionDTO) {
         interactor.navigateToQuestion(topic: topic, question: question)
+    }
+}
+
+// MARK: - UIPopoverPresentationControllerDelegate
+
+extension GameProcessViewController: UIPopoverPresentationControllerDelegate {
+
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
+    }
+}
+
+// MARK: - GameProcessSettingsDelegate
+
+extension GameProcessViewController: GameProcessSettingsDelegate {
+
+    func didChangeTopicFontSize(value: CGFloat) {
+        viewModel.topicFontSize = value
+    }
+
+    func didChangeQuestionFontSize(value: CGFloat) {
+        viewModel.questionFontSize = value
+    }
+
+    func didChangeCellSize(value: CGFloat) {
+        viewModel.cellSize = value
+    }
+
+    func didChangeCellColor(value: Color) {
+        viewModel.cellColor = value
     }
 }

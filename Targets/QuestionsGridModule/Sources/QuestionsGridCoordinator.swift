@@ -143,6 +143,14 @@ public final class QuestionsGridCoordinator: BaseCoordinator {
         view.onOpenQuestion = { [weak self] topic, question, players in
             self?.showGameProcessQuestion(topic: topic, question: question, players: players)
         }
+        view.onOpenSettings = { [weak self, weak view] configuration, sourceItem in
+            self?.showGameProcessSettings(
+                configuration: configuration,
+                sourceItem: sourceItem,
+                delegate: view,
+                presentingView: view
+            )
+        }
         view.onFinish = { [weak self] players in
             self?.showGameResults(players: players) {
                 self?.router.popView(animated: false)
@@ -169,6 +177,25 @@ public final class QuestionsGridCoordinator: BaseCoordinator {
         let nav = UINavigationController(rootViewController: view)
         nav.modalPresentationStyle = .fullScreen
         router.presentView(nav, animated: true, completion: nil)
+    }
+
+    private func showGameProcessSettings(
+        configuration: GameProcessSettingsConfiguration,
+        sourceItem: UIPopoverPresentationControllerSourceItem,
+        delegate: GameProcessSettingsDelegate?,
+        presentingView: (UIViewController & UIPopoverPresentationControllerDelegate)?
+    ) {
+        let view = resolver.resolve(GameProcessSettingsViewController.self, arguments: configuration, delegate)!
+        view.modalPresentationStyle = .popover
+        view.preferredContentSize = CGSize(width: 300, height: 500)
+
+        if let popover = view.popoverPresentationController {
+            popover.sourceItem = sourceItem
+            popover.delegate = presentingView
+            popover.backgroundColor = .systemBackground
+        }
+
+        presentingView?.present(view, animated: true)
     }
 
     private func showGameResults(players: [PlayerDTO], completion: (() -> Void)?) {

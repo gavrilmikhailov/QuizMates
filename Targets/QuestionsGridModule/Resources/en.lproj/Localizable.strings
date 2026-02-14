@@ -87,3 +87,8 @@
 "question_price" = "Question Value";
 
 "topic_name" = "Topic Name";
+
+"font_size_topic" = "Topic Font Size: %@";
+"font_size_question" = "Question Font Size: %@";
+"cell_size" = "Cell Size: %@";
+"cell_color" = "Cell Color";
