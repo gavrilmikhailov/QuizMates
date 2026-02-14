@@ -127,19 +127,13 @@ struct GameProcessView: View {
     private func makePlayersRowView(itemSpacing: CGFloat) -> some View {
         HStack(alignment: .center, spacing: itemSpacing) {
             ForEach(viewModel.players) { player in
-                VStack(alignment: .center, spacing: 8) {
-                    Text(player.emoji)
-                        .font(.system(size: 50, weight: .bold))
-                    Text(player.name)
-                        .font(.system(size: 16, weight: .medium))
-                    Text("\(player.score)")
-                        .font(.system(size: 16, weight: .regular))
-                }
-                .padding(all: 16)
-                .background {
-                    Color(UIColor.secondarySystemBackground)
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                Text("\(player.emoji)  \(player.name)  \(player.score)")
+                    .font(.system(size: viewModel.playerNameFontSize, weight: .regular))
+                    .padding(all: 16)
+                    .background {
+                        Color(UIColor.secondarySystemBackground)
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
             }
         }
     }

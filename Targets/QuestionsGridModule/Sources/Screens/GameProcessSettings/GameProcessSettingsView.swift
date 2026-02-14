@@ -11,6 +11,7 @@ struct GameProcessSettingsView: View {
 
     @State private var topicFontSize: CGFloat
     @State private var questionFontSize: CGFloat
+    @State private var playerNameFontSize: CGFloat
     @State private var cellSize: CGFloat
     @State private var selectedColorPreset: ColorPreset
 
@@ -23,6 +24,7 @@ struct GameProcessSettingsView: View {
     init(configuration: GameProcessSettingsConfiguration, delegate: GameProcessSettingsDelegate?) {
         self.topicFontSize = configuration.topicFontSize
         self.questionFontSize = configuration.questionFontSize
+        self.playerNameFontSize = configuration.playerNameFontSize
         self.cellSize = configuration.cellSize
         self.selectedColorPreset = configuration.cellColor
         self.delegate = delegate
@@ -45,6 +47,15 @@ struct GameProcessSettingsView: View {
                 Slider(value: $questionFontSize, in: 10...200, step: 1)
                     .onChange(of: questionFontSize) { _, newValue in
                         delegate?.didChangeQuestionFontSize(value: newValue)
+                    }
+            }
+            Divider()
+            VStack(alignment: .leading) {
+                Text(Strings.fontSizePlayerName(Int(playerNameFontSize)))
+                    .font(.headline)
+                Slider(value: $playerNameFontSize, in: 10...200, step: 1)
+                    .onChange(of: playerNameFontSize) { _, newValue in
+                        delegate?.didChangePlayerNameFontSize(value: newValue)
                     }
             }
             Divider()
@@ -85,6 +96,6 @@ struct GameProcessSettingsView: View {
             }
         }
         .padding()
-        .frame(width: 300)
+        .frame(width: 400)
     }
 }

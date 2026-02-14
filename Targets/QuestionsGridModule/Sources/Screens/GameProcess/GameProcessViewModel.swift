@@ -16,6 +16,7 @@ final class GameProcessViewModel {
 
     var topicFontSize: CGFloat
     var questionFontSize: CGFloat
+    var playerNameFontSize: CGFloat
     var cellSize: CGFloat
     var cellColor: ColorPreset
 
@@ -26,6 +27,7 @@ final class GameProcessViewModel {
         players: [PlayerDTO] = [],
         topicFontSize: CGFloat = 16,
         questionFontSize: CGFloat = 24,
+        playerNameFontSize: CGFloat = 16,
         cellSize: CGFloat = 100,
         cellColor: ColorPreset = .blue
     ) {
@@ -35,6 +37,7 @@ final class GameProcessViewModel {
         self.players = players
         self.topicFontSize = topicFontSize
         self.questionFontSize = questionFontSize
+        self.playerNameFontSize = playerNameFontSize
         self.cellSize = cellSize
         self.cellColor = cellColor
     }

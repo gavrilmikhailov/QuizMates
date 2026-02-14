@@ -16,6 +16,7 @@ public struct UserDefaultsKey: RawRepresentable, Sendable, Hashable {
 public extension UserDefaultsKey {
     static let gameProcessTopicFontSize = UserDefaultsKey(rawValue: "gameProcessTopicFontSize")
     static let gameProcessQuestionFontSize = UserDefaultsKey(rawValue: "gameProcessQuestionFontSize")
+    static let gameProcessPlayerNameFontSize = UserDefaultsKey(rawValue: "gameProcessPlayerNameFontSize")
     static let gameProcessCellSize = UserDefaultsKey(rawValue: "gameProcessCellSize")
     static let gameProcessCellColor = UserDefaultsKey(rawValue: "gameProcessCellColor")
 }

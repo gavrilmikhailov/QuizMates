@@ -90,5 +90,6 @@
 
 "font_size_topic" = "Topic Font Size: %@";
 "font_size_question" = "Question Font Size: %@";
+"font_size_player_name" = "Player Name Font Size: %@";
 "cell_size" = "Cell Size: %@";
 "cell_color" = "Cell Color";

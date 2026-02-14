@@ -90,5 +90,6 @@
 
 "font_size_topic" = "Размер шрифта темы: %@";
 "font_size_question" = "Размер шрифта вопроса: %@";
+"font_size_player_name" = "Размер шрифта имени игрока: %@";
 "cell_size" = "Размер ячейки: %@";
 "cell_color" = "Цвет ячейки";

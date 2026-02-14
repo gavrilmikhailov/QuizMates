@@ -16,6 +16,7 @@ protocol GameProcessInteractorProtocol {
     func loadSettings()
     func saveTopicFontSize(value: CGFloat)
     func saveQuestionFontSize(value: CGFloat)
+    func savePlayerNameFontSize(value: CGFloat)
     func saveCellSize(value: CGFloat)
     func saveCellColor(value: ColorPreset)
     func navigateToQuestion(topic: TopicDTO, question: QuestionDTO)
@@ -37,6 +38,7 @@ final class GameProcessInteractor: GameProcessInteractorProtocol {
     private let settingsSaveDebouncers: [String: UIDebouncer] = [
         UserDefaultsKey.gameProcessTopicFontSize.rawValue: UIDebouncer(duration: .seconds(1)),
         UserDefaultsKey.gameProcessQuestionFontSize.rawValue: UIDebouncer(duration: .seconds(1)),
+        UserDefaultsKey.gameProcessPlayerNameFontSize.rawValue: UIDebouncer(duration: .seconds(1)),
         UserDefaultsKey.gameProcessCellSize.rawValue: UIDebouncer(duration: .seconds(1)),
         UserDefaultsKey.gameProcessCellColor.rawValue: UIDebouncer(duration: .seconds(1))
     ]
@@ -93,6 +95,7 @@ final class GameProcessInteractor: GameProcessInteractorProtocol {
             do {
                 let topicFontSize = try await userDefaultsService.get(Double.self, for: .gameProcessTopicFontSize)
                 let questionFontSize = try await userDefaultsService.get(Double.self, for: .gameProcessQuestionFontSize)
+                let playerNameFontSize = try await userDefaultsService.get(Double.self, for: .gameProcessPlayerNameFontSize)
                 let cellSize = try await userDefaultsService.get(Double.self, for: .gameProcessCellSize)
                 let cellColor = try await userDefaultsService.get(String.self, for: .gameProcessCellColor)
 
@@ -100,6 +103,7 @@ final class GameProcessInteractor: GameProcessInteractorProtocol {
                     view?.displaySettings(
                         topicFontSize: topicFontSize,
                         questionFontSize: questionFontSize,
+                        playerNameFontSize: playerNameFontSize,
                         cellSize: cellSize,
                         cellColor: cellColor
                     )
@@ -124,6 +128,14 @@ final class GameProcessInteractor: GameProcessInteractorProtocol {
         settingsSaveDebouncers[UserDefaultsKey.gameProcessQuestionFontSize.rawValue]?.submit { [userDefaultsService] in
             Task {
                 try? await userDefaultsService.set(Double(value), for: .gameProcessQuestionFontSize)
+            }
+        }
+    }
+
+    func savePlayerNameFontSize(value: CGFloat) {
+        settingsSaveDebouncers[UserDefaultsKey.gameProcessPlayerNameFontSize.rawValue]?.submit { [userDefaultsService] in
+            Task {
+                try? await userDefaultsService.set(Double(value), for: .gameProcessPlayerNameFontSize)
             }
         }
     }

@@ -15,7 +15,13 @@ protocol GameProcessViewControllerProtocol: AnyObject {
         prices: [Int],
         players: [PlayerDTO]
     )
-    func displaySettings(topicFontSize: Double?, questionFontSize: Double?, cellSize: Double?, cellColor: String?)
+    func displaySettings(
+        topicFontSize: Double?,
+        questionFontSize: Double?,
+        playerNameFontSize: Double?,
+        cellSize: Double?,
+        cellColor: String?
+    )
     func displayNavigateToQuestion(
         topic: TopicDTO,
         question: QuestionDTO,
@@ -95,6 +101,7 @@ final class GameProcessViewController: UIHostingController<GameProcessView> {
         let configuration = GameProcessSettingsConfiguration(
             topicFontSize: viewModel.topicFontSize,
             questionFontSize: viewModel.questionFontSize,
+            playerNameFontSize: viewModel.playerNameFontSize,
             cellSize: viewModel.cellSize,
             cellColor: viewModel.cellColor
         )
@@ -118,12 +125,21 @@ extension GameProcessViewController: GameProcessViewControllerProtocol {
         viewModel.players = players
     }
 
-    func displaySettings(topicFontSize: Double?, questionFontSize: Double?, cellSize: Double?, cellColor: String?) {
+    func displaySettings(
+        topicFontSize: Double?,
+        questionFontSize: Double?,
+        playerNameFontSize: Double?,
+        cellSize: Double?,
+        cellColor: String?
+    ) {
         if let topicFontSize, topicFontSize > 0  {
             viewModel.topicFontSize = CGFloat(topicFontSize)
         }
         if let questionFontSize, questionFontSize > 0 {
             viewModel.questionFontSize = CGFloat(questionFontSize)
+        }
+        if let playerNameFontSize, playerNameFontSize > 0 {
+            viewModel.playerNameFontSize = playerNameFontSize
         }
         if let cellSize, cellSize > 0 {
             viewModel.cellSize = CGFloat(cellSize)
@@ -183,6 +199,11 @@ extension GameProcessViewController: GameProcessSettingsDelegate {
     func didChangeQuestionFontSize(value: CGFloat) {
         interactor.saveQuestionFontSize(value: value)
         viewModel.questionFontSize = value
+    }
+
+    func didChangePlayerNameFontSize(value: CGFloat) {
+        interactor.savePlayerNameFontSize(value: value)
+        viewModel.playerNameFontSize = value
     }
 
     func didChangeCellSize(value: CGFloat) {
