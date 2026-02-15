@@ -264,6 +264,9 @@ final class GameEditorInteractor: GameEditorInteractorProtocol {
                     model.answer = dto.answer
                     model.price = dto.price
                     model.isAnswered = dto.isAnswered
+                    model.medias?.removeAll {
+                        !dto.medias.contains($0.persistentModelID)
+                    }
 
                     let newMedias = medias.map { media in
                         QuestionsGridMediaModel(draft: media)
