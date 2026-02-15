@@ -36,6 +36,7 @@ final class GameProcessViewController: UIHostingController<GameProcessView> {
     // MARK: - Internal properties
 
     var onOpenQuestion: ((TopicDTO, QuestionDTO, [PlayerDTO]) -> Void)?
+    var onOpenBirthday: (() -> Void)?
     var onOpenSettings: ((GameProcessSettingsConfiguration, UIPopoverPresentationControllerSourceItem) -> Void)?
     var onFinish: (([PlayerDTO]) -> Void)?
 
@@ -87,13 +88,37 @@ final class GameProcessViewController: UIHostingController<GameProcessView> {
 
     private func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = false
+        let birthdayButton = UIBarButtonItem(
+            image: UIImage(systemName: "balloon"),
+            style: .plain,
+            target: self,
+            action: #selector(birthdayButtonTapped)
+        )
         let settingsButton = UIBarButtonItem(
             image: UIImage(systemName: "gear"),
             style: .plain,
             target: self,
             action: #selector(settingsButtonTapped(_:))
         )
-        navigationItem.rightBarButtonItem = settingsButton
+
+        var components = DateComponents()
+        components.year = 2026
+        components.month = 2
+        components.day = 15
+        components.hour = 16
+        components.minute = 0
+        components.second = 0
+
+        if let date = Calendar.current.date(from: components), Date.now >= date {
+            navigationItem.rightBarButtonItems = [settingsButton, birthdayButton]
+        } else {
+            navigationItem.rightBarButtonItem = settingsButton
+        }
+    }
+
+    @objc
+    private func birthdayButtonTapped() {
+        onOpenBirthday?()
     }
 
     @objc

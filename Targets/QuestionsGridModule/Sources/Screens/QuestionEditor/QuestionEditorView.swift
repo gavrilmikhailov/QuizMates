@@ -27,7 +27,8 @@ struct QuestionEditorView: View {
     @FocusState private var isFocusedQuestionText: Bool
     @FocusState private var isFocusedQuestionAnswer: Bool
 
-    @State private var isFileImporterPresented = false
+    @State private var isPhotoFileImporterPresented = false
+    @State private var isAudioFileImporterPresented = false
 
     weak var delegate: QuestionEditorViewDelegate?
 
@@ -117,7 +118,7 @@ struct QuestionEditorView: View {
         HStack(alignment: .center, spacing: 0) {
             Button(
                 action: {
-                    isFileImporterPresented = true
+                    isPhotoFileImporterPresented = true
                 },
                 label: {
                     HStack(alignment: .center, spacing: 12) {
@@ -128,7 +129,7 @@ struct QuestionEditorView: View {
                 }
             )
             .fileImporter(
-                isPresented: $isFileImporterPresented,
+                isPresented: $isPhotoFileImporterPresented,
                 allowedContentTypes: [.image],
                 allowsMultipleSelection: true
             ) { result in
@@ -164,7 +165,7 @@ struct QuestionEditorView: View {
         HStack(alignment: .center, spacing: 0) {
             Button(
                 action: {
-                    isFileImporterPresented = true
+                    isAudioFileImporterPresented = true
                 },
                 label: {
                     HStack(alignment: .center, spacing: 12) {
@@ -175,7 +176,7 @@ struct QuestionEditorView: View {
                 }
             )
             .fileImporter(
-                isPresented: $isFileImporterPresented,
+                isPresented: $isAudioFileImporterPresented,
                 allowedContentTypes: [.audio],
                 allowsMultipleSelection: true
             ) { result in

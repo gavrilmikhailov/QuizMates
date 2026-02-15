@@ -252,6 +252,15 @@ public final class QuestionsGridAssembly: Assembly {
                 view.rootView.delegate = view
                 return view
             }
+            // Birthday
+            container.register(BirthdayViewController.self) { _ in
+                let viewModel = BirthdayViewModel()
+                let view = BirthdayViewController(
+                    viewModel: viewModel,
+                    rootView: BirthdayView(viewModel: viewModel)
+                )
+                return view
+            }
         }
     }
 }
