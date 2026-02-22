@@ -143,9 +143,6 @@ public final class QuestionsGridCoordinator: BaseCoordinator {
         view.onOpenQuestion = { [weak self] topic, question, players in
             self?.showGameProcessQuestion(topic: topic, question: question, players: players)
         }
-        view.onOpenBirthday = { [weak self] in
-            self?.showBirthday()
-        }
         view.onOpenSettings = { [weak self, weak view] configuration, sourceItem in
             self?.showGameProcessSettings(
                 configuration: configuration,
@@ -211,16 +208,5 @@ public final class QuestionsGridCoordinator: BaseCoordinator {
         let nav = UINavigationController(rootViewController: view)
         nav.modalPresentationStyle = .fullScreen
         router.presentView(nav, animated: true, completion: completion)
-    }
-
-    private func showBirthday() {
-        let view = resolver.resolve(BirthdayViewController.self)!
-
-        view.onClose = { [weak self] in
-            self?.router.dismissView(animated: true, completion: nil)
-        }
-
-        view.modalPresentationStyle = .overFullScreen
-        router.presentView(view, animated: false, completion: nil)
     }
 }
