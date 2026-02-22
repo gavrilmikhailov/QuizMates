@@ -67,7 +67,7 @@ struct GameProcessQuestionView: View {
                 HStack {
                     Spacer()
                     Text(viewModel.text)
-                        .font(.title)
+                        .font(.system(size: 72))
                         .fontWeight(.bold)
                     Spacer()
                 }
@@ -82,6 +82,7 @@ struct GameProcessQuestionView: View {
                             },
                             label: {
                                 Text(Strings.showAnswer)
+                                    .font(.title)
                             }
                         )
                         .buttonBorderShape(.capsule)
@@ -143,7 +144,7 @@ struct GameProcessQuestionView: View {
                         HStack(alignment: .center, spacing: 8) {
                             Image(systemName: "plus")
                             Text(Strings.addScore)
-                                .font(.title3)
+                                .font(.title)
                         }
                         .padding(top: 4, leading: 8, bottom: 4, trailing: 8)
                     }
@@ -160,7 +161,7 @@ struct GameProcessQuestionView: View {
                         HStack(alignment: .center, spacing: 12) {
                             Image(systemName: "minus")
                             Text(Strings.subtractScore)
-                                .font(.title3)
+                                .font(.title)
                         }
                         .padding(top: 4, leading: 8, bottom: 4, trailing: 8)
                     }
