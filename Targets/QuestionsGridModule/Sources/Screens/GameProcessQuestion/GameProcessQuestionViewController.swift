@@ -68,23 +68,35 @@ final class GameProcessQuestionViewController: UIHostingController<GameProcessQu
 
     private func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = false
+
         let closeButton = UIBarButtonItem(
             barButtonSystemItem: .close,
             target: self,
             action: #selector(closeButtonTapped)
         )
+        let settingsButton = UIBarButtonItem(
+            image: UIImage(systemName: "gear"),
+            style: .plain,
+            target: self,
+            action: #selector(settingsButtonTapped(_:))
+        )
+        navigationItem.rightBarButtonItem = settingsButton
         let saveButton = UIBarButtonItem(
             barButtonSystemItem: .done,
             target: self,
             action: #selector(saveButtonTapped)
         )
         navigationItem.leftBarButtonItem = closeButton
-        navigationItem.rightBarButtonItem = saveButton
+        navigationItem.rightBarButtonItems = [saveButton, settingsButton]
     }
 
     @objc
     private func closeButtonTapped() {
         onClose?()
+    }
+
+    @objc
+    private func settingsButtonTapped(_ sender: UIBarButtonItem) {
     }
 
     @objc
@@ -103,7 +115,7 @@ extension GameProcessQuestionViewController: GameProcessQuestionViewControllerPr
         text: String,
         answer: String
     ) {
-        viewModel.title = title
+        self.title = title
         viewModel.medias = medias
         viewModel.text = text
         viewModel.answer = answer

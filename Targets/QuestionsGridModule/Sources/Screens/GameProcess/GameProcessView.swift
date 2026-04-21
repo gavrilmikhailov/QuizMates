@@ -96,30 +96,16 @@ struct GameProcessView: View {
     @ViewBuilder
     private var playersView: some View {
         if Device.current.isPhone {
-            VStack(alignment: .leading, spacing: 8) {
-                Text(Strings.players)
-                    .font(.title3)
-                    .fontWeight(.bold)
-                    .padding(leading: 16)
-                ScrollView(.horizontal) {
-                    makePlayersRowView(itemSpacing: 8)
-                        .padding(leading: 16, trailing: 16)
-                }
+            ScrollView(.horizontal) {
+                makePlayersRowView(itemSpacing: 8)
+                    .padding(leading: 16, trailing: 16)
             }
         } else {
-            VStack(alignment: .center, spacing: 8) {
-                HStack(alignment: .center, spacing: 0) {
-                    Spacer(minLength: 0)
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(Strings.players)
-                            .font(.title3)
-                            .fontWeight(.bold)
-                        makePlayersRowView(itemSpacing: 16)
-                    }
-                    Spacer(minLength: 0)
-                }
+            HStack(alignment: .center, spacing: 0) {
+                Spacer(minLength: 0)
+                makePlayersRowView(itemSpacing: 16)
+                Spacer(minLength: 0)
             }
-            .padding(bottom: 16)
         }
     }
 

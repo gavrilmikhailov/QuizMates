@@ -31,7 +31,7 @@ struct GameProcessSettingsView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 8) {
             VStack(alignment: .leading) {
                 Text(Strings.fontSizeTopic(Int(topicFontSize)))
                     .font(.headline)
@@ -41,7 +41,7 @@ struct GameProcessSettingsView: View {
                     }
             }
             Divider()
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(Strings.fontSizeQuestion(Int(questionFontSize)))
                     .font(.headline)
                 Slider(value: $questionFontSize, in: 10...200, step: 1)
@@ -50,7 +50,7 @@ struct GameProcessSettingsView: View {
                     }
             }
             Divider()
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(Strings.fontSizePlayerName(Int(playerNameFontSize)))
                     .font(.headline)
                 Slider(value: $playerNameFontSize, in: 10...200, step: 1)
@@ -59,7 +59,7 @@ struct GameProcessSettingsView: View {
                     }
             }
             Divider()
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(Strings.cellSize(Int(cellSize)))
                     .font(.headline)
                 Slider(value: $cellSize, in: 50...500, step: 10)
@@ -68,7 +68,7 @@ struct GameProcessSettingsView: View {
                     }
             }
             Divider()
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(Strings.cellColor)
                     .font(.headline)
                 LazyVGrid(columns: columns, spacing: 15) {
@@ -95,7 +95,7 @@ struct GameProcessSettingsView: View {
                 }
             }
         }
-        .padding()
+        .padding(top: 40, leading: 16, bottom: 0, trailing: 16)
         .frame(width: 400)
     }
 }

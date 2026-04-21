@@ -88,8 +88,8 @@
 
 "topic_name" = "Название темы";
 
-"font_size_topic" = "Размер шрифта темы: %@";
-"font_size_question" = "Размер шрифта вопроса: %@";
-"font_size_player_name" = "Размер шрифта имени игрока: %@";
-"cell_size" = "Размер ячейки: %@";
+"font_size_topic" = "Размер тем: %@";
+"font_size_question" = "Размер стоимости вопросов: %@";
+"font_size_player_name" = "Размер игроков: %@";
+"cell_size" = "Размер клетки: %@";
 "cell_color" = "Цвет ячейки";

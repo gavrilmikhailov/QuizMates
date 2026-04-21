@@ -25,10 +25,6 @@ struct GameProcessQuestionView: View {
     var body: some View {
         GeometryReader { geoProxy in
             ScrollView(.vertical) {
-                Text(viewModel.title)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .padding(bottom: 40)
                 ForEach(viewModel.medias, id: \.fileName) { media in
                     switch media.type {
                     case "photo":
@@ -115,6 +111,7 @@ struct GameProcessQuestionView: View {
                     Color(UIColor.systemBackground)
                 }
             }
+            .clipped()
         }
     }
 
