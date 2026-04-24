@@ -196,23 +196,26 @@ struct GameEditorView: View {
                 .foregroundStyle(.primary)
                 .fontWeight(.bold)
                 .padding(bottom: 16)
-            ForEach(viewModel.players) { player in
-                Button(
-                    action: {
-                        delegate?.didTapEditPlayer(player: player)
-                    },
-                    label: {
-                        HStack(alignment: .center, spacing: 4) {
-                            Text(player.emoji)
-                            Text(player.name)
-                                .font(.title3)
-                            Spacer()
-                        }
-                        .padding(top: 4, bottom: 4)
+            ScrollView(.horizontal) {
+                HStack(alignment: .center, spacing: 8) {
+                    ForEach(viewModel.players) { player in
+                        Button(
+                            action: {
+                                delegate?.didTapEditPlayer(player: player)
+                            },
+                            label: {
+                                Text("\(player.emoji)  \(player.name)  \(player.score)")
+                                    .font(.system(size: 16, weight: .regular))
+                                    .padding(all: 8)
+                                    .background {
+                                        Color(UIColor.secondarySystemBackground)
+                                    }
+                                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                            }
+                        )
+                        .buttonStyle(.plain)
                     }
-                )
-                .contentShape(Rectangle())
-                .buttonStyle(.plain)
+                }
             }
             Button(
                 action: {
@@ -255,10 +258,12 @@ struct GameEditorView: View {
             label: {
                 HStack(alignment: .center, spacing: 12) {
                     Image(systemName: "repeat")
+                        .foregroundStyle(.white)
                     Text(QuestionsGridModuleStrings.resetProgress)
-                        .font(.title3)
+                        .font(.system(size: 14))
+                        .foregroundStyle(.white)
                 }
-                .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+                .padding(top: 8, leading: 16, bottom: 8, trailing: 16)
                 .background {
                     Color.gray
                 }
@@ -277,9 +282,10 @@ struct GameEditorView: View {
                 HStack(alignment: .center, spacing: 12) {
                     Image(systemName: "play.fill")
                     Text(QuestionsGridModuleStrings.resumeGame)
-                        .font(.title3)
+                        .font(.system(size: 14))
+                        .foregroundStyle(.white)
                 }
-                .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+                .padding(top: 8, leading: 16, bottom: 8, trailing: 16)
                 .background {
                     Color.blue
                 }
@@ -296,10 +302,13 @@ struct GameEditorView: View {
             },
             label: {
                 HStack(alignment: .center, spacing: 12) {
+                    Image(systemName: "person")
+                        .foregroundStyle(.white)
                     Text(QuestionsGridModuleStrings.showResults)
-                        .font(.title3)
+                        .font(.system(size: 14))
+                        .foregroundStyle(.white)
                 }
-                .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+                .padding(top: 8, leading: 16, bottom: 8, trailing: 16)
                 .background {
                     Color.blue
                 }
@@ -309,26 +318,42 @@ struct GameEditorView: View {
         .buttonStyle(.plain)
     }
 
+    @ViewBuilder
     private func makeStartGameButton(isEnabled: Bool) -> some View {
-        Button(
-            action: {
-                delegate?.didTapStartGame()
-            },
-            label: {
-                HStack(alignment: .center, spacing: 12) {
-                    Image(systemName: "play.fill")
-                    Text(QuestionsGridModuleStrings.startGame)
-                        .font(.title3)
+        if isEnabled {
+            Button(
+                action: {
+                    delegate?.didTapStartGame()
+                },
+                label: {
+                    HStack(alignment: .center, spacing: 12) {
+                        Image(systemName: "play.fill")
+                            .foregroundStyle(.white)
+                        Text(QuestionsGridModuleStrings.startGame)
+                            .font(.system(size: 14))
+                            .foregroundStyle(.white)
+                    }
+                    .padding(top: 8, leading: 16, bottom: 8, trailing: 16)
+                    .background {
+                        Color.blue
+                    }
+                    .clipShape(.capsule)
+                    .contentShape(.rect)
                 }
-                .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
-                .background {
-                    Color.blue
-                }
-                .clipShape(.capsule)
+            )
+            .buttonStyle(.plain)
+        } else {
+            HStack(alignment: .center, spacing: 12) {
+                Image(systemName: "play.fill")
+                Text(QuestionsGridModuleStrings.startGame)
+                    .font(.system(size: 14))
             }
-        )
-        .buttonStyle(.plain)
-        .disabled(!isEnabled)
+            .padding(top: 8, leading: 16, bottom: 8, trailing: 16)
+            .background {
+                Color.gray
+            }
+            .clipShape(.capsule)
+        }
     }
 
     private var gamePlayersEmptyView: some View {

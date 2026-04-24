@@ -20,54 +20,57 @@ struct GameProcessQuestionView: View {
     weak var delegate: GameProcessQuestionViewDelegate?
 
     @State private var isAnswerHidden: Bool = true
-    @State private var scoreAssigningMode: ScoreAssigningMode = .ready
 
     var body: some View {
         GeometryReader { geoProxy in
-            ScrollView(.vertical) {
-                ForEach(viewModel.medias, id: \.fileName) { media in
-                    switch media.type {
-                    case "photo":
-                        if let uiImage = UIImage(data: media.data) {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(maxWidth: geoProxy.size.width * 0.5, maxHeight: geoProxy.size.height * 0.5)
-                        } else {
+            VStack(alignment: .center, spacing: 0) {
+                ScrollView(.vertical) {
+                    HStack {
+                        Spacer()
+                        Text(viewModel.text)
+                            .font(.system(size: 72))
+                            .fontWeight(.bold)
+                        Spacer()
+                    }
+                    .padding(top: 40, bottom: 40)
+                    ForEach(viewModel.medias, id: \.fileName) { media in
+                        switch media.type {
+                        case "photo":
+                            if let uiImage = UIImage(data: media.data) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(maxWidth: geoProxy.size.width * 0.5, maxHeight: geoProxy.size.height * 0.5)
+                            } else {
+                                mediaLoadErrorView
+                            }
+                        case "video":
+                            if let url = media.getTemporaryUrl() {
+                                GameProcessQuestionVideoPlayerView(
+                                    url: url,
+                                    width: getVideoPlayerWidth(windowSize: geoProxy.size),
+                                    height: getVideoPlayerHeight(windowSize: geoProxy.size)
+                                )
+                            } else {
+                                mediaLoadErrorView
+                            }
+                        case "audio":
+                            if let url = media.getTemporaryUrl() {
+                                GameProcessQuestionVideoPlayerView(
+                                    url: url,
+                                    width: getVideoPlayerWidth(windowSize: geoProxy.size),
+                                    height: 150
+                                )
+                            } else {
+                                mediaLoadErrorView
+                            }
+                        default:
                             mediaLoadErrorView
                         }
-                    case "video":
-                        if let url = media.getTemporaryUrl() {
-                            GameProcessQuestionVideoPlayerView(
-                                url: url,
-                                width: getVideoPlayerWidth(windowSize: geoProxy.size),
-                                height: getVideoPlayerHeight(windowSize: geoProxy.size)
-                            )
-                        } else {
-                            mediaLoadErrorView
-                        }
-                    case "audio":
-                        if let url = media.getTemporaryUrl() {
-                            GameProcessQuestionVideoPlayerView(
-                                url: url,
-                                width: getVideoPlayerWidth(windowSize: geoProxy.size),
-                                height: 150
-                            )
-                        } else {
-                            mediaLoadErrorView
-                        }
-                    default:
-                        mediaLoadErrorView
                     }
                 }
-                HStack {
-                    Spacer()
-                    Text(viewModel.text)
-                        .font(.system(size: 72))
-                        .fontWeight(.bold)
-                    Spacer()
-                }
-                .padding(top: 40, bottom: 40)
+
+                Spacer()
 
                 if isAnswerHidden {
                     HStack {
@@ -96,22 +99,10 @@ struct GameProcessQuestionView: View {
                     }
                     .padding(top: 40, bottom: 40)
                 }
+
+                playersView
+                    .padding(top: 0, leading: 8, bottom: 8, trailing: 8)
             }
-            .safeAreaInset(edge: .bottom, alignment: .center, spacing: 0) {
-                HStack(alignment: .center, spacing: 0) {
-                    Spacer()
-                    VStack(alignment: .center, spacing: 16) {
-                        actionButtonsView
-                        playersView
-                    }
-                    Spacer()
-                }
-                .padding(top: 16, bottom: 16)
-                .background {
-                    Color(UIColor.systemBackground)
-                }
-            }
-            .clipped()
         }
     }
 
@@ -126,122 +117,44 @@ struct GameProcessQuestionView: View {
     }
 
     @ViewBuilder
-    private var actionButtonsView: some View {
-        HStack {
-            Spacer()
-            switch scoreAssigningMode {
-            case .hidden:
-                EmptyView()
-            case .ready:
-                Button(
-                    action: {
-                        scoreAssigningMode = .adding
-                    },
-                    label: {
-                        HStack(alignment: .center, spacing: 8) {
-                            Image(systemName: "plus")
-                            Text(Strings.addScore)
-                                .font(.title)
-                        }
-                        .padding(top: 4, leading: 8, bottom: 4, trailing: 8)
-                        .background {
-                            Color.green
-                        }
-                        .clipShape(.capsule)
-                    }
-                )
-                .buttonStyle(.plain)
-
-                Button(
-                    action: {
-                        scoreAssigningMode = .subtracting
-                    },
-                    label: {
-                        HStack(alignment: .center, spacing: 12) {
-                            Image(systemName: "minus")
-                            Text(Strings.subtractScore)
-                                .font(.title)
-                        }
-                        .padding(top: 4, leading: 8, bottom: 4, trailing: 8)
-                        .background {
-                            Color.red
-                        }
-                        .clipShape(.capsule)
-                    }
-                )
-                .buttonStyle(.plain)
-            case .adding, .subtracting:
-                Button(
-                    action: {
-                        scoreAssigningMode = .ready
-                    },
-                    label: {
-                        HStack(alignment: .center, spacing: 12) {
-                            Text(Strings.cancelScore)
-                                .font(.title3)
-                        }
-                        .padding(top: 4, leading: 8, bottom: 4, trailing: 8)
-                        .background {
-                            Color.gray
-                        }
-                        .clipShape(.capsule)
-                    }
-                )
-                .buttonStyle(.plain)
-            }
-            Spacer()
-        }
-    }
-
-    @ViewBuilder
     private var playersView: some View {
-        HStack(alignment: .center, spacing: 0) {
+        HStack(alignment: .center, spacing: 8) {
             Spacer(minLength: 0)
-            VStack(alignment: .leading, spacing: 8) {
-                Text(Strings.players)
-                    .font(.title3)
-                    .fontWeight(.bold)
-                makePlayersRowView(itemSpacing: 16)
-            }
-            Spacer(minLength: 0)
-        }
-    }
-
-    @ViewBuilder
-    private func makePlayersRowView(itemSpacing: CGFloat) -> some View {
-        HStack(alignment: .center, spacing: itemSpacing) {
             ForEach(viewModel.players) { player in
-                Button(
-                    action: {
-                        switch scoreAssigningMode {
-                        case .hidden, .ready:
-                            break
-                        case .adding:
-                            scoreAssigningMode = .hidden
-                            delegate?.didAssignScore(player: player, isAddition: true)
-                        case .subtracting:
-                            scoreAssigningMode = .hidden
-                            delegate?.didAssignScore(player: player, isAddition: false)
+                Menu(
+                    content: {
+                        Section("\(player.emoji) \(player.name)") {
+                            Button(
+                                action: {
+                                    delegate?.didAssignScore(player: player, isAddition: false)
+                                },
+                                label: {
+                                    Label("\(Strings.subtractScore) \(viewModel.price)", systemImage: "minus")
+                                }
+                            )
+                            Button(
+                                action: {
+                                    delegate?.didAssignScore(player: player, isAddition: true)
+                                },
+                                label: {
+                                    Label("\(Strings.addScore) \(viewModel.price)", systemImage: "plus")
+                                }
+                            )
                         }
                     },
                     label: {
-                        VStack(alignment: .center, spacing: 8) {
-                            Text(player.emoji)
-                                .font(.system(size: 50, weight: .bold))
-                            Text(player.name)
-                                .font(.system(size: 16, weight: .medium))
-                            Text("\(player.score)")
-                                .font(.system(size: 16, weight: .regular))
-                        }
-                        .padding(all: 16)
-                        .background {
-                            Color(UIColor.secondarySystemBackground)
-                        }
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        Text("\(player.emoji)  \(player.name)  \(player.score)")
+                            .font(.system(size: 16, weight: .regular))
+                            .padding(all: 8)
+                            .background {
+                                Color(UIColor.secondarySystemBackground)
+                            }
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
                     }
                 )
-                .buttonStyle(.plain)
+                .foregroundStyle(.primary)
             }
+            Spacer(minLength: 0)
         }
     }
 
@@ -284,11 +197,4 @@ private struct GameProcessQuestionVideoPlayerView: View {
             player = AVPlayer(url: url)
         }
     }
-}
-
-private enum ScoreAssigningMode {
-    case hidden
-    case ready
-    case adding
-    case subtracting
 }

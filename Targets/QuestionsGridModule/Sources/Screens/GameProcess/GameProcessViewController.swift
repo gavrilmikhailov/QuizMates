@@ -119,7 +119,7 @@ extension GameProcessViewController: GameProcessViewControllerProtocol {
         prices: [Int],
         players: [PlayerDTO]
     ) {
-        viewModel.title = title
+        navigationItem.title = title
         viewModel.prices = prices
         viewModel.topics = topics
         viewModel.players = players

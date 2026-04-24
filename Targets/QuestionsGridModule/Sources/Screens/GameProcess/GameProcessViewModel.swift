@@ -9,7 +9,6 @@ import SwiftUI
 
 @Observable
 final class GameProcessViewModel {
-    var title: String
     var prices: [Int]
     var topics: [(TopicDTO, [QuestionDTO])]
     var players: [PlayerDTO]
@@ -21,7 +20,6 @@ final class GameProcessViewModel {
     var cellColor: ColorPreset
 
     init(
-        title: String = "",
         prices: [Int] = [],
         topics: [(TopicDTO, [QuestionDTO])] = [],
         players: [PlayerDTO] = [],
@@ -31,7 +29,6 @@ final class GameProcessViewModel {
         cellSize: CGFloat = 100,
         cellColor: ColorPreset = .blue
     ) {
-        self.title = title
         self.prices = prices
         self.topics = topics
         self.players = players

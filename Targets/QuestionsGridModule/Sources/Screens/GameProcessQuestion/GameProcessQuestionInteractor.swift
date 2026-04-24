@@ -60,6 +60,7 @@ final class GameProcessQuestionInteractor: GameProcessQuestionInteractorProtocol
                 configurations.append(configuration)
             }
             view?.displayQuestionContent(
+                price: question.price,
                 title: "\(topic.name) – \(question.price.description)",
                 medias: configurations,
                 text: question.text,

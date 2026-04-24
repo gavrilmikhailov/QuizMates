@@ -10,6 +10,7 @@ import SwiftUI
 @MainActor
 protocol GameProcessQuestionViewControllerProtocol: AnyObject {
     func displayQuestionContent(
+        price: Int,
         title: String,
         medias: [MediaPreviewConfiguration],
         text: String,
@@ -112,19 +113,23 @@ final class GameProcessQuestionViewController: UIHostingController<GameProcessQu
 extension GameProcessQuestionViewController: GameProcessQuestionViewControllerProtocol {
 
     func displayQuestionContent(
+        price: Int,
         title: String,
         medias: [MediaPreviewConfiguration],
         text: String,
         answer: String
     ) {
-        self.title = title
+        navigationItem.title = title
+        viewModel.price = price
         viewModel.medias = medias
         viewModel.text = text
         viewModel.answer = answer
     }
 
     func displayPlayers(players: [PlayerDTO]) {
-        viewModel.players = players
+        withAnimation(.easeInOut(duration: 0.2)) {
+            viewModel.players = players
+        }
     }
 
     func displayMarkQuestionAsAnswered() {

@@ -20,26 +20,13 @@ struct GameProcessView: View {
     var body: some View {
         if Device.current.isPad {
             VStack(alignment: .center, spacing: 0) {
-                Text(viewModel.title)
-                    .font(.title)
-                    .fontWeight(.bold)
-                Spacer()
                 makeQuestionsGridView()
                 Spacer()
-            }
-            .safeAreaInset(edge: .bottom, alignment: .center, spacing: 0) {
                 playersView
             }
         } else {
-            ScrollView(.vertical) {
-                VStack(alignment: .center, spacing: 0) {
-                    Text(viewModel.title)
-                        .font(.title)
-                        .fontWeight(.bold)
-                    ScrollView(.horizontal) {
-                        makeQuestionsGridView()
-                    }
-                }
+            ScrollView(.horizontal) {
+                makeQuestionsGridView()
             }
             .safeAreaInset(edge: .bottom, alignment: .center, spacing: 0) {
                 playersView
@@ -96,32 +83,19 @@ struct GameProcessView: View {
 
     @ViewBuilder
     private var playersView: some View {
-        if Device.current.isPhone {
-            ScrollView(.horizontal) {
-                makePlayersRowView(itemSpacing: 8)
-                    .padding(leading: 16, trailing: 16)
+        ScrollView(.horizontal) {
+            HStack(alignment: .center, spacing: 8) {
+                ForEach(viewModel.players) { player in
+                    Text("\(player.emoji)  \(player.name)  \(player.score)")
+                        .font(.system(size: viewModel.playerNameFontSize, weight: .regular))
+                        .padding(all: 8)
+                        .background {
+                            Color(UIColor.secondarySystemBackground)
+                        }
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                }
             }
-        } else {
-            HStack(alignment: .center, spacing: 0) {
-                Spacer(minLength: 0)
-                makePlayersRowView(itemSpacing: 16)
-                Spacer(minLength: 0)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func makePlayersRowView(itemSpacing: CGFloat) -> some View {
-        HStack(alignment: .center, spacing: itemSpacing) {
-            ForEach(viewModel.players) { player in
-                Text("\(player.emoji)  \(player.name)  \(player.score)")
-                    .font(.system(size: viewModel.playerNameFontSize, weight: .regular))
-                    .padding(all: 16)
-                    .background {
-                        Color(UIColor.secondarySystemBackground)
-                    }
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-            }
+            .padding(leading: 16, bottom: 8, trailing: 16)
         }
     }
 }
