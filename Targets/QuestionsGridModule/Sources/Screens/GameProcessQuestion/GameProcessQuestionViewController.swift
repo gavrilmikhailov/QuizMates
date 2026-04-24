@@ -26,6 +26,7 @@ final class GameProcessQuestionViewController: UIHostingController<GameProcessQu
     // MARK: - Internal properties
 
     var onClose: (() -> Void)?
+    var onOpenSettings: ((GameProcessQuestionSettingsConfiguration, UIPopoverPresentationControllerSourceItem) -> Void)?
 
     // MARK: - Private properties
 
@@ -98,8 +99,11 @@ final class GameProcessQuestionViewController: UIHostingController<GameProcessQu
 
     @objc
     private func settingsButtonTapped(_ sender: UIBarButtonItem) {
-//        let alertController = UIAlertController(title: "Венера", message: "Привет!", preferredStyle: .alert)
-//        present(alertController, animated: true)
+        let configuration = GameProcessQuestionSettingsConfiguration(
+            questionFontSize: viewModel.questionFontSize,
+            playerNameFontSize: viewModel.playerNameFontSize
+        )
+        onOpenSettings?(configuration, sender)
     }
 
     @objc
@@ -150,5 +154,29 @@ extension GameProcessQuestionViewController: GameProcessQuestionViewDelegate {
 
     func didAssignScore(player: PlayerDTO, isAddition: Bool) {
         interactor.assignScore(player: player, isAddition: isAddition)
+    }
+}
+
+// MARK: - UIPopoverPresentationControllerDelegate
+
+extension GameProcessQuestionViewController: UIPopoverPresentationControllerDelegate {
+
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
+    }
+}
+
+// MARK: - GameProcessQuestionSettingsDelegate
+
+extension GameProcessQuestionViewController: GameProcessQuestionSettingsDelegate {
+
+    func didChangeQuestionFontSize(value: CGFloat) {
+        interactor.saveQuestionFontSize(value: value)
+        viewModel.questionFontSize = value
+    }
+
+    func didChangePlayerNameFontSize(value: CGFloat) {
+        interactor.savePlayerNameFontSize(value: value)
+        viewModel.playerNameFontSize = value
     }
 }

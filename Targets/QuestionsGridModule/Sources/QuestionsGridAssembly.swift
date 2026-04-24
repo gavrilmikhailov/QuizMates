@@ -215,9 +215,11 @@ public final class QuestionsGridAssembly: Assembly {
             // Game process question
             container.register(GameProcessQuestionViewController.self) { (resolver: Resolver, topic: TopicDTO, question: QuestionDTO, players: [PlayerDTO]) in
                 let databaseService = resolver.resolve(DatabaseServiceProtocol.self)!
+                let userDefaultsService = resolver.resolve(UserDefaultsServiceProtocol.self)!
                 let viewModel = GameProcessQuestionViewModel()
                 let interactor = GameProcessQuestionInteractor(
                     databaseService: databaseService,
+                    userDefaultsService: userDefaultsService,
                     topic: topic,
                     question: question,
                     players: players
@@ -235,6 +237,13 @@ public final class QuestionsGridAssembly: Assembly {
             container.register(GameProcessSettingsViewController.self) { (resolver: Resolver, configuration: GameProcessSettingsConfiguration, delegate: GameProcessSettingsDelegate?) in
                 let view = GameProcessSettingsViewController(
                     rootView: GameProcessSettingsView(configuration: configuration, delegate: delegate)
+                )
+                return view
+            }
+            // Game process question settings
+            container.register(GameProcessQuestionSettingsViewController.self) { (resolver: Resolver, configuration: GameProcessQuestionSettingsConfiguration, delegate: GameProcessQuestionSettingsDelegate?) in
+                let view = GameProcessQuestionSettingsViewController(
+                    rootView: GameProcessQuestionSettingsView(configuration: configuration, delegate: delegate)
                 )
                 return view
             }

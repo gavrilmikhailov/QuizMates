@@ -19,4 +19,7 @@ public extension UserDefaultsKey {
     static let gameProcessPlayerNameFontSize = UserDefaultsKey(rawValue: "gameProcessPlayerNameFontSize")
     static let gameProcessCellSize = UserDefaultsKey(rawValue: "gameProcessCellSize")
     static let gameProcessCellColor = UserDefaultsKey(rawValue: "gameProcessCellColor")
+
+    static let gameProcessQuestionQuestionFontSize = UserDefaultsKey(rawValue: "gameProcessQuestionQuestionFontSize")
+    static let gameProcessQuestionPlayerNameFontSize = UserDefaultsKey(rawValue: "gameProcessQuestionPlayerNameFontSize")
 }

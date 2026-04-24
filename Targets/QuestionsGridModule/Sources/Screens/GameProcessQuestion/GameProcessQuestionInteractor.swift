@@ -5,11 +5,16 @@
 //  Created by Gavriil Mikhailov on 04.02.2026.
 //
 
+import CoreGraphics
+import CoreModule
 import DatabaseModule
+import UserDefaultsModule
 
 @MainActor
 protocol GameProcessQuestionInteractorProtocol {
     func loadQuestionContent()
+    func saveQuestionFontSize(value: CGFloat)
+    func savePlayerNameFontSize(value: CGFloat)
     func assignScore(player: PlayerDTO, isAddition: Bool)
     func markQuestionAsAnswered()
 }
@@ -24,6 +29,11 @@ final class GameProcessQuestionInteractor: GameProcessQuestionInteractorProtocol
     // MARK: - Private properties
 
     private let databaseService: DatabaseServiceProtocol
+    private let userDefaultsService: UserDefaultsServiceProtocol
+    private let settingsSaveDebouncers: [String: UIDebouncer] = [
+        UserDefaultsKey.gameProcessQuestionQuestionFontSize.rawValue: UIDebouncer(duration: .seconds(1)),
+        UserDefaultsKey.gameProcessQuestionPlayerNameFontSize.rawValue: UIDebouncer(duration: .seconds(1)),
+    ]
     private let topic: TopicDTO
     private let question: QuestionDTO
     private var players: [PlayerDTO]
@@ -32,11 +42,13 @@ final class GameProcessQuestionInteractor: GameProcessQuestionInteractorProtocol
 
     init(
         databaseService: DatabaseServiceProtocol,
+        userDefaultsService: UserDefaultsServiceProtocol,
         topic: TopicDTO,
         question: QuestionDTO,
         players: [PlayerDTO]
     ) {
         self.databaseService = databaseService
+        self.userDefaultsService = userDefaultsService
         self.topic = topic
         self.question = question
         self.players = players
@@ -67,6 +79,22 @@ final class GameProcessQuestionInteractor: GameProcessQuestionInteractorProtocol
                 answer: question.answer
             )
             view?.displayPlayers(players: players)
+        }
+    }
+
+    func saveQuestionFontSize(value: CGFloat) {
+        settingsSaveDebouncers[UserDefaultsKey.gameProcessQuestionQuestionFontSize.rawValue]?.submit { [userDefaultsService] in
+            Task {
+                try? await userDefaultsService.set(Double(value), for: .gameProcessQuestionQuestionFontSize)
+            }
+        }
+    }
+
+    func savePlayerNameFontSize(value: CGFloat) {
+        settingsSaveDebouncers[UserDefaultsKey.gameProcessQuestionPlayerNameFontSize.rawValue]?.submit { [userDefaultsService] in
+            Task {
+                try? await userDefaultsService.set(Double(value), for: .gameProcessQuestionPlayerNameFontSize)
+            }
         }
     }
 

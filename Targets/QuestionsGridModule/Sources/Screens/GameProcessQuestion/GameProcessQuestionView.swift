@@ -28,7 +28,7 @@ struct GameProcessQuestionView: View {
                     HStack {
                         Spacer()
                         Text(viewModel.text)
-                            .font(.system(size: 72))
+                            .font(.system(size: viewModel.questionFontSize))
                             .fontWeight(.bold)
                         Spacer()
                     }
@@ -71,35 +71,8 @@ struct GameProcessQuestionView: View {
                 }
 
                 Spacer()
-
-                if isAnswerHidden {
-                    HStack {
-                        Spacer()
-                        Button(
-                            action: {
-                                isAnswerHidden = false
-                            },
-                            label: {
-                                Text(Strings.showAnswer)
-                                    .font(.title)
-                                    .contentShape(.rect)
-                            }
-                        )
-                        .buttonStyle(.plain)
-                        Spacer()
-                    }
-                    .padding(top: 40, bottom: 40)
-                } else {
-                    HStack {
-                        Spacer()
-                        Text(viewModel.answer)
-                            .font(.title)
-                            .fontWeight(.bold)
-                        Spacer()
-                    }
-                    .padding(top: 40, bottom: 40)
-                }
-
+                answerView
+                    .padding(top: 20, leading: 8, bottom: 20, trailing: 8)
                 playersView
                     .padding(top: 0, leading: 8, bottom: 8, trailing: 8)
             }
@@ -113,6 +86,31 @@ struct GameProcessQuestionView: View {
                 .foregroundColor(.gray)
             Text(Strings.mediaLoadError)
                 .foregroundColor(.gray)
+        }
+    }
+
+    @ViewBuilder
+    private var answerView: some View {
+        HStack {
+            Spacer()
+            if isAnswerHidden {
+                Button(
+                    action: {
+                        withAnimation {
+                            isAnswerHidden = false
+                        }
+                    },
+                    label: {
+                        Text(Strings.showAnswer)
+                    }
+                )
+                .buttonStyle(.bordered)
+            } else {
+                Text(viewModel.answer)
+                    .font(.title)
+                    .fontWeight(.bold)
+            }
+            Spacer()
         }
     }
 
@@ -144,7 +142,7 @@ struct GameProcessQuestionView: View {
                     },
                     label: {
                         Text("\(player.emoji)  \(player.name)  \(player.score)")
-                            .font(.system(size: 16, weight: .regular))
+                            .font(.system(size: viewModel.playerNameFontSize, weight: .regular))
                             .padding(all: 8)
                             .background {
                                 Color(UIColor.secondarySystemBackground)

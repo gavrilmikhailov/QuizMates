@@ -281,6 +281,7 @@ struct GameEditorView: View {
             label: {
                 HStack(alignment: .center, spacing: 12) {
                     Image(systemName: "play.fill")
+                        .foregroundStyle(.white)
                     Text(QuestionsGridModuleStrings.resumeGame)
                         .font(.system(size: 14))
                         .foregroundStyle(.white)

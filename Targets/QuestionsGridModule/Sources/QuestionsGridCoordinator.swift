@@ -173,6 +173,14 @@ public final class QuestionsGridCoordinator: BaseCoordinator {
         view.onClose = { [weak self] in
             self?.router.dismissView(animated: true, completion: nil)
         }
+        view.onOpenSettings = { [weak self, weak view] configuration, sourceItem in
+            self?.showGameProcessQuestionSettings(
+                configuration: configuration,
+                sourceItem: sourceItem,
+                delegate: view,
+                presentingView: view
+            )
+        }
 
         let nav = UINavigationController(rootViewController: view)
         nav.modalPresentationStyle = .fullScreen
@@ -188,6 +196,25 @@ public final class QuestionsGridCoordinator: BaseCoordinator {
         let view = resolver.resolve(GameProcessSettingsViewController.self, arguments: configuration, delegate)!
         view.modalPresentationStyle = .popover
         view.preferredContentSize = CGSize(width: 200, height: 600)
+
+        if let popover = view.popoverPresentationController {
+            popover.sourceItem = sourceItem
+            popover.delegate = presentingView
+            popover.backgroundColor = .systemBackground
+        }
+
+        presentingView?.present(view, animated: true)
+    }
+
+    private func showGameProcessQuestionSettings(
+        configuration: GameProcessQuestionSettingsConfiguration,
+        sourceItem: UIPopoverPresentationControllerSourceItem,
+        delegate: GameProcessQuestionSettingsDelegate?,
+        presentingView: (UIViewController & UIPopoverPresentationControllerDelegate)?
+    ) {
+        let view = resolver.resolve(GameProcessQuestionSettingsViewController.self, arguments: configuration, delegate)!
+        view.modalPresentationStyle = .popover
+        view.preferredContentSize = CGSize(width: 200, height: 200)
 
         if let popover = view.popoverPresentationController {
             popover.sourceItem = sourceItem
