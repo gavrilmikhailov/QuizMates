@@ -259,11 +259,13 @@ struct GameEditorView: View {
                         .font(.title3)
                 }
                 .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+                .background {
+                    Color.gray
+                }
+                .clipShape(.capsule)
             }
         )
-        .tint(.gray)
-        .buttonBorderShape(.capsule)
-        .glassProminentOrPlainButtonStyle()
+        .buttonStyle(.plain)
     }
 
     private var resumeGameButton: some View {
@@ -278,11 +280,13 @@ struct GameEditorView: View {
                         .font(.title3)
                 }
                 .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+                .background {
+                    Color.blue
+                }
+                .clipShape(.capsule)
             }
         )
-        .tint(.blue)
-        .buttonBorderShape(.capsule)
-        .glassProminentOrPlainButtonStyle()
+        .buttonStyle(.plain)
     }
 
     private var resultsOfGameButton: some View {
@@ -296,11 +300,13 @@ struct GameEditorView: View {
                         .font(.title3)
                 }
                 .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+                .background {
+                    Color.blue
+                }
+                .clipShape(.capsule)
             }
         )
-        .tint(.blue)
-        .buttonBorderShape(.capsule)
-        .glassProminentOrPlainButtonStyle()
+        .buttonStyle(.plain)
     }
 
     private func makeStartGameButton(isEnabled: Bool) -> some View {
@@ -315,11 +321,13 @@ struct GameEditorView: View {
                         .font(.title3)
                 }
                 .padding(top: 4, leading: 16, bottom: 4, trailing: 16)
+                .background {
+                    Color.blue
+                }
+                .clipShape(.capsule)
             }
         )
-        .tint(.blue)
-        .buttonBorderShape(.capsule)
-        .glassProminentOrPlainButtonStyle()
+        .buttonStyle(.plain)
         .disabled(!isEnabled)
     }
 

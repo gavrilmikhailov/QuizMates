@@ -79,10 +79,10 @@ struct GameProcessQuestionView: View {
                             label: {
                                 Text(Strings.showAnswer)
                                     .font(.title)
+                                    .contentShape(.rect)
                             }
                         )
-                        .buttonBorderShape(.capsule)
-                        .glassOrPlainButtonStyle()
+                        .buttonStyle(.plain)
                         Spacer()
                     }
                     .padding(top: 40, bottom: 40)
@@ -144,11 +144,13 @@ struct GameProcessQuestionView: View {
                                 .font(.title)
                         }
                         .padding(top: 4, leading: 8, bottom: 4, trailing: 8)
+                        .background {
+                            Color.green
+                        }
+                        .clipShape(.capsule)
                     }
                 )
-                .tint(.green)
-                .buttonBorderShape(.capsule)
-                .glassOrPlainButtonStyle()
+                .buttonStyle(.plain)
 
                 Button(
                     action: {
@@ -161,11 +163,13 @@ struct GameProcessQuestionView: View {
                                 .font(.title)
                         }
                         .padding(top: 4, leading: 8, bottom: 4, trailing: 8)
+                        .background {
+                            Color.red
+                        }
+                        .clipShape(.capsule)
                     }
                 )
-                .tint(.red)
-                .buttonBorderShape(.capsule)
-                .glassOrPlainButtonStyle()
+                .buttonStyle(.plain)
             case .adding, .subtracting:
                 Button(
                     action: {
@@ -177,11 +181,13 @@ struct GameProcessQuestionView: View {
                                 .font(.title3)
                         }
                         .padding(top: 4, leading: 8, bottom: 4, trailing: 8)
+                        .background {
+                            Color.gray
+                        }
+                        .clipShape(.capsule)
                     }
                 )
-                .tint(.gray)
-                .buttonBorderShape(.capsule)
-                .glassOrPlainButtonStyle()
+                .buttonStyle(.plain)
             }
             Spacer()
         }

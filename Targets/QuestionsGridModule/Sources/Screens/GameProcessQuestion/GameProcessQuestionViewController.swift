@@ -97,6 +97,8 @@ final class GameProcessQuestionViewController: UIHostingController<GameProcessQu
 
     @objc
     private func settingsButtonTapped(_ sender: UIBarButtonItem) {
+//        let alertController = UIAlertController(title: "Венера", message: "Привет!", preferredStyle: .alert)
+//        present(alertController, animated: true)
     }
 
     @objc

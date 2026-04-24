@@ -86,11 +86,12 @@ struct GameProcessView: View {
                     .font(.system(size: viewModel.questionFontSize))
                     .foregroundStyle(Color.white)
                     .frame(width: viewModel.cellSize, height: viewModel.cellSize)
+                    .background {
+                        Color(preset: viewModel.cellColor)
+                    }
             }
         )
-        .tint(Color(preset: viewModel.cellColor))
-        .buttonBorderShape(.roundedRectangle(radius: 0))
-        .glassProminentOrPlainButtonStyle()
+        .buttonStyle(.plain)
     }
 
     @ViewBuilder
