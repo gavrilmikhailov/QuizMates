@@ -131,9 +131,7 @@ extension GameProcessQuestionViewController: GameProcessQuestionViewControllerPr
     }
 
     func displayPlayers(players: [PlayerDTO]) {
-        withAnimation(.easeInOut(duration: 0.2)) {
-            viewModel.players = players
-        }
+        viewModel.players = players
     }
 
     func displayMarkQuestionAsAnswered() {

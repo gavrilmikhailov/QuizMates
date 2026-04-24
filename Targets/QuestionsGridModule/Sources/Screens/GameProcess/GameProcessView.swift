@@ -83,19 +83,19 @@ struct GameProcessView: View {
 
     @ViewBuilder
     private var playersView: some View {
-        ScrollView(.horizontal) {
-            HStack(alignment: .center, spacing: 8) {
-                ForEach(viewModel.players) { player in
-                    Text("\(player.emoji)  \(player.name)  \(player.score)")
-                        .font(.system(size: viewModel.playerNameFontSize, weight: .regular))
-                        .padding(all: 8)
-                        .background {
-                            Color(UIColor.secondarySystemBackground)
-                        }
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                }
+        HStack(alignment: .center, spacing: 8) {
+            Spacer(minLength: 0)
+            ForEach(viewModel.players) { player in
+                Text("\(player.emoji)  \(player.name)  \(player.score)")
+                    .font(.system(size: viewModel.playerNameFontSize, weight: .regular))
+                    .padding(all: 8)
+                    .background {
+                        Color(UIColor.secondarySystemBackground)
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
             }
-            .padding(leading: 16, bottom: 8, trailing: 16)
+            Spacer(minLength: 0)
         }
+        .padding(leading: 16, bottom: 8, trailing: 16)
     }
 }

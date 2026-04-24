@@ -8,7 +8,7 @@
 import Foundation
 import SwiftData
 
-struct PlayerDTO: Sendable, Identifiable {
+struct PlayerDTO: Sendable, Identifiable, Equatable {
     let id: PersistentIdentifier
     let emoji: String
     let name: String

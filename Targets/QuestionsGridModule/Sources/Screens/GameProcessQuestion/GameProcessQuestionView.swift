@@ -60,10 +60,25 @@ struct GameProcessQuestionView: View {
                 }
 
                 Spacer()
-                answerView
+
+                GameProcessQuestionAnswerView(isHidden: $isAnswerHidden, answer: viewModel.answer)
                     .padding(top: 16, leading: 8, bottom: 16, trailing: 8)
-                playersView
-                    .padding(top: 0, leading: 8, bottom: 8, trailing: 8)
+
+                Spacer()
+
+                GameProcessQuestionPlayersView(
+                    price: viewModel.price,
+                    playerNameFontSize: viewModel.playerNameFontSize,
+                    players: viewModel.players,
+                    onSubtract: { player in
+                        delegate?.didAssignScore(player: player, isAddition: false)
+                    },
+                    onAdd: { player in
+                        delegate?.didAssignScore(player: player, isAddition: true)
+                    }
+                )
+                .equatable()
+                .padding(top: 0, leading: 8, bottom: 8, trailing: 8)
             }
         }
     }
@@ -214,6 +229,88 @@ struct GameProcessQuestionView: View {
     private func getVideoPlayerHeight(windowSize: CGSize) -> CGFloat {
         let width = getVideoPlayerWidth(windowSize: windowSize)
         return width / 16 * 9
+    }
+}
+
+private struct GameProcessQuestionAnswerView: View {
+    @Binding var isHidden: Bool
+    let answer: String
+
+    var body: some View {
+        HStack {
+            Spacer()
+            if isHidden {
+                Button(
+                    action: {
+                        withAnimation {
+                            isHidden = false
+                        }
+                    },
+                    label: {
+                        Text(Strings.showAnswer)
+                    }
+                )
+                .buttonStyle(.bordered)
+            } else {
+                Text(answer)
+                    .font(.title)
+                    .fontWeight(.bold)
+            }
+            Spacer()
+        }
+    }
+}
+
+private struct GameProcessQuestionPlayersView: View, Equatable {
+    let price: Int
+    let playerNameFontSize: CGFloat
+    let players: [PlayerDTO]
+    let onSubtract: (PlayerDTO) -> Void
+    let onAdd: (PlayerDTO) -> Void
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 8) {
+            Spacer(minLength: 0)
+            ForEach(players) { player in
+                Menu(
+                    content: {
+                        Section("\(player.emoji) \(player.name)") {
+                            Button(
+                                action: {
+                                    onSubtract(player)
+                                },
+                                label: {
+                                    Label("\(Strings.subtractScore) \(price)", systemImage: "minus")
+                                }
+                            )
+                            Button(
+                                action: {
+                                    onAdd(player)
+                                },
+                                label: {
+                                    Label("\(Strings.addScore) \(price)", systemImage: "plus")
+                                }
+                            )
+                        }
+                    },
+                    label: {
+                        Text("\(player.emoji)  \(player.name)  \(player.score)")
+                            .font(.system(size: playerNameFontSize, weight: .regular))
+                            .padding(all: 8)
+                            .background {
+                                Color(UIColor.secondarySystemBackground)
+                            }
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                    }
+                )
+                .foregroundStyle(.primary)
+            }
+            Spacer(minLength: 0)
+        }
+    }
+
+    static func == (lhs: GameProcessQuestionPlayersView, rhs: GameProcessQuestionPlayersView) -> Bool {
+        return lhs.price == rhs.price && lhs.playerNameFontSize == rhs.playerNameFontSize && lhs.players == rhs.players
     }
 }
 
