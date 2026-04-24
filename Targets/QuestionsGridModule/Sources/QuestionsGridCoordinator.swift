@@ -214,7 +214,7 @@ public final class QuestionsGridCoordinator: BaseCoordinator {
     ) {
         let view = resolver.resolve(GameProcessQuestionSettingsViewController.self, arguments: configuration, delegate)!
         view.modalPresentationStyle = .popover
-        view.preferredContentSize = CGSize(width: 200, height: 200)
+        view.preferredContentSize = CGSize(width: 200, height: 175)
 
         if let popover = view.popoverPresentationController {
             popover.sourceItem = sourceItem

@@ -19,60 +19,49 @@ struct GameProcessQuestionView: View {
     @Bindable var viewModel: GameProcessQuestionViewModel
     weak var delegate: GameProcessQuestionViewDelegate?
 
+    @State private var isAttachmentsHidden: Bool = true
     @State private var isAnswerHidden: Bool = true
 
     var body: some View {
         GeometryReader { geoProxy in
             VStack(alignment: .center, spacing: 0) {
-                ScrollView(.vertical) {
-                    HStack {
-                        Spacer()
-                        Text(viewModel.text)
-                            .font(.system(size: viewModel.questionFontSize))
-                            .fontWeight(.bold)
-                        Spacer()
-                    }
-                    .padding(top: 40, bottom: 40)
-                    ForEach(viewModel.medias, id: \.fileName) { media in
-                        switch media.type {
-                        case "photo":
-                            if let uiImage = UIImage(data: media.data) {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(maxWidth: geoProxy.size.width * 0.5, maxHeight: geoProxy.size.height * 0.5)
-                            } else {
-                                mediaLoadErrorView
+                HStack {
+                    Spacer()
+                    Text(viewModel.text)
+                        .font(.system(size: viewModel.questionFontSize))
+                        .fontWeight(.bold)
+                    Spacer()
+                }
+
+                if !viewModel.medias.isEmpty {
+                    if isAttachmentsHidden {
+                        showAttachmentsButton
+                            .padding(top: 40)
+                    } else {
+                        if viewModel.medias.count == 1, let first = viewModel.medias.first {
+                            HStack {
+                                Spacer()
+                                makeAttachmentView(geoProxy: geoProxy, media: first)
+                                Spacer()
                             }
-                        case "video":
-                            if let url = media.getTemporaryUrl() {
-                                GameProcessQuestionVideoPlayerView(
-                                    url: url,
-                                    width: getVideoPlayerWidth(windowSize: geoProxy.size),
-                                    height: getVideoPlayerHeight(windowSize: geoProxy.size)
-                                )
-                            } else {
-                                mediaLoadErrorView
+                            .padding(top: 16, leading: 16, trailing: 16)
+                        } else {
+                            ScrollView(.horizontal) {
+                                HStack(alignment: .top, spacing: 16) {
+                                    ForEach(viewModel.medias, id: \.fileName) { media in
+                                        makeAttachmentView(geoProxy: geoProxy, media: media)
+                                    }
+                                }
+                                .padding(top: 16, leading: 16, trailing: 16)
                             }
-                        case "audio":
-                            if let url = media.getTemporaryUrl() {
-                                GameProcessQuestionVideoPlayerView(
-                                    url: url,
-                                    width: getVideoPlayerWidth(windowSize: geoProxy.size),
-                                    height: 150
-                                )
-                            } else {
-                                mediaLoadErrorView
-                            }
-                        default:
-                            mediaLoadErrorView
+                            .scrollIndicators(.never)
                         }
                     }
                 }
 
                 Spacer()
                 answerView
-                    .padding(top: 20, leading: 8, bottom: 20, trailing: 8)
+                    .padding(top: 16, leading: 8, bottom: 16, trailing: 8)
                 playersView
                     .padding(top: 0, leading: 8, bottom: 8, trailing: 8)
             }
@@ -86,6 +75,62 @@ struct GameProcessQuestionView: View {
                 .foregroundColor(.gray)
             Text(Strings.mediaLoadError)
                 .foregroundColor(.gray)
+        }
+    }
+
+    @ViewBuilder
+    private func makeAttachmentView(geoProxy: GeometryProxy, media: MediaPreviewConfiguration) -> some View {
+        switch media.type {
+        case "photo":
+            if let uiImage = UIImage(data: media.data) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: geoProxy.size.width * 0.5, maxHeight: geoProxy.size.height * 0.5)
+            } else {
+                mediaLoadErrorView
+            }
+        case "video":
+            if let url = media.getTemporaryUrl() {
+                GameProcessQuestionVideoPlayerView(
+                    url: url,
+                    width: getVideoPlayerWidth(windowSize: geoProxy.size),
+                    height: getVideoPlayerHeight(windowSize: geoProxy.size)
+                )
+            } else {
+                mediaLoadErrorView
+            }
+        case "audio":
+            if let url = media.getTemporaryUrl() {
+                GameProcessQuestionVideoPlayerView(
+                    url: url,
+                    width: getVideoPlayerWidth(windowSize: geoProxy.size),
+                    height: 150
+                )
+            } else {
+                mediaLoadErrorView
+            }
+        default:
+            mediaLoadErrorView
+        }
+    }
+
+    @ViewBuilder
+    private var showAttachmentsButton: some View {
+        HStack {
+            Spacer()
+            Button(
+                action: {
+                    withAnimation {
+                        isAttachmentsHidden = false
+                    }
+                },
+                label: {
+                    Text("Показать вложения")
+                }
+            )
+            .buttonStyle(.bordered)
+            Spacer()
         }
     }
 
