@@ -16,6 +16,10 @@ protocol GameProcessQuestionViewControllerProtocol: AnyObject {
         text: String,
         answer: String
     )
+    func displaySettings(
+        questionFontSize: Double?,
+        playerNameFontSize: Double?,
+    )
     func displayPlayers(players: [PlayerDTO])
     func displayMarkQuestionAsAnswered()
     func displayError(text: String)
@@ -55,6 +59,7 @@ final class GameProcessQuestionViewController: UIHostingController<GameProcessQu
         super.viewDidLoad()
         configureAppearance()
         interactor.loadQuestionContent()
+        interactor.loadSettings()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -128,6 +133,14 @@ extension GameProcessQuestionViewController: GameProcessQuestionViewControllerPr
         viewModel.medias = medias
         viewModel.text = text
         viewModel.answer = answer
+    }
+
+    func displaySettings(
+        questionFontSize: Double?,
+        playerNameFontSize: Double?,
+    ) {
+        viewModel.questionFontSize = questionFontSize ?? 72
+        viewModel.playerNameFontSize = playerNameFontSize ?? 14
     }
 
     func displayPlayers(players: [PlayerDTO]) {

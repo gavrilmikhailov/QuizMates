@@ -13,6 +13,7 @@ import UserDefaultsModule
 @MainActor
 protocol GameProcessQuestionInteractorProtocol {
     func loadQuestionContent()
+    func loadSettings()
     func saveQuestionFontSize(value: CGFloat)
     func savePlayerNameFontSize(value: CGFloat)
     func assignScore(player: PlayerDTO, isAddition: Bool)
@@ -79,6 +80,26 @@ final class GameProcessQuestionInteractor: GameProcessQuestionInteractorProtocol
                 answer: question.answer
             )
             view?.displayPlayers(players: players)
+        }
+    }
+
+    func loadSettings() {
+        Task {
+            do {
+                let questionFontSize = try await userDefaultsService.get(Double.self, for: .gameProcessQuestionQuestionFontSize)
+                let playerNameFontSize = try await userDefaultsService.get(Double.self, for: .gameProcessQuestionPlayerNameFontSize)
+
+                await MainActor.run {
+                    view?.displaySettings(
+                        questionFontSize: questionFontSize,
+                        playerNameFontSize: playerNameFontSize,
+                    )
+                }
+            } catch {
+                await MainActor.run {
+                    view?.displayError(text: error.localizedDescription)
+                }
+            }
         }
     }
 
